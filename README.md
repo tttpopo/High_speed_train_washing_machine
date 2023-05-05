@@ -17,83 +17,26 @@
  
 ## 目录结构
 ```
-├─Core				核心文件 
+├─Core				            核心文件 
 │
-└─my_drivers			驱动
-    ├─brush			刷组上层，包含大小臂
-    │      brush.c
-    │      brush.h
+└─my_drivers			        驱动
+    ├─brush			            刷组上层，包含大小臂
     │
-    ├─console
-    │      console.c
-    │      console.h
+    ├─console                   控制台驱动
     │
-    ├─easylogger
-    │  ├─inc
-    │  │      elog.h
-    │  │      elog_cfg.h
-    │  │
-    │  ├─port
-    │  │      elog_port.c
-    │  │
-    │  └─src
-    │          elog.c
-    │          elog_async.c
-    │          elog_buf.c
-    │          elog_utils.c
+    ├─easylogger                日志库
     │
-    ├─fal
-    │  ├─inc
-    │  │      fal.h
-    │  │      fal_cfg.h
-    │  │      fal_def.h
-    │  │
-    │  ├─porting
-    │  │      fal_cfg.h
-    │  │      fal_flash_port.c
-    │  │      fal_flash_sfud_port.c
-    │  │      fal_flash_stm32f2_port.c
-    │  │      README.md
-    │  │
-    │  └─src
-    │          fal.c
-    │          fal_flash.c
-    │          fal_partition.c
-    │          fal_rtt.c
+    ├─fal                       flash fal层
     │
-    ├─FlashDB
-    │  ├─inc
-    │  │      fdb_cfg.h
-    │  │      fdb_def.h
-    │  │      fdb_low_lvl.h
-    │  │      flashdb.h
-    │  │
-    │  └─src
-    │          fdb.c
-    │          fdb_file.c
-    │          fdb_kvdb.c
-    │          fdb_tsdb.c
-    │          fdb_utils.c
+    ├─FlashDB                   flash 数据库
     │
-    ├─flowmeter
-    │      flowmeter_hl.c
-    │      flowmeter_hl.h
+    ├─flowmeter                 流量计驱动
     │
-    ├─Host_computer_protocol
-    │      hcp.c
-    │      hcp.h
+    ├─Host_computer_protocol    上位机驱动
     │
-    ├─Liquid_level
-    │      liquid_level.c
-    │      liquid_level.h
+    ├─Liquid_level              液位驱动
     │
-    ├─motor
-    │      motor_drive.c
-    │      motor_drive.h
-    │      motor_hal.c
-    │      motor_hal.h
+    ├─motor                     电机底层驱动
     │
-    └─ws2812
-            ws2812.c
-            ws2812.h
+    └─ws2812                    RGB驱动
 ```
