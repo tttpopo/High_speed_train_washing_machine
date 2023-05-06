@@ -363,11 +363,17 @@ void drum_revolve(unsigned char state)
         break;
     case 0x11:
         DRUM_ON[0]();
+        DRUM_OFF[1]();
+        DRUM_OFF[2]();
         break;
     case 0x12:
+        DRUM_OFF[0]();
         DRUM_ON[1]();
+        DRUM_OFF[2]();
         break;
     case 0x13:
+        DRUM_OFF[0]();
+        DRUM_OFF[1]();
         DRUM_ON[2]();
         break;
     }
@@ -632,7 +638,6 @@ void button_reset(void)
 /// @param
 void button_stop(void)
 {
-
     for (int i = 0; i < 4; i++)
     {
         PUMP_OFF[i]();
