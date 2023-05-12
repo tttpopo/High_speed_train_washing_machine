@@ -4,6 +4,7 @@
 #include "adc.h"
 #include <stdio.h>
 #include "flowmeter_hl.h"
+#include "motor_hal.h"
 
 TaskHandle_t liquid_level_task_handle = NULL;
 unsigned short adc_buf[10];

@@ -39,6 +39,7 @@
 #include "hcp.h"
 #include "brush.h"
 #include "flowmeter_hl.h"
+#include "battery.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,6 +58,7 @@ extern TaskHandle_t liquid_level_task_handle;
 extern TaskHandle_t hcp_task_handle;
 extern TaskHandle_t brush_deamon_task_handle;
 extern TaskHandle_t flowmeter_task_handle;
+extern TaskHandle_t battery_task_handle;
 
 void test_task(void);
 
@@ -88,12 +90,12 @@ void cs_task_manager_cb(unsigned char *cmd);
 void cs_task_HighWaterMark_cb(unsigned char *cmd);
 /* USER CODE END FunctionPrototypes */
 
-void StartDefaultTask(void const * argument);
+void StartDefaultTask(void const *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /* GetIdleTaskMemory prototype (linked to static allocation support) */
-void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize );
+void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize);
 
 /* USER CODE BEGIN GET_IDLE_TASK_MEMORY */
 static StaticTask_t xIdleTaskTCBBuffer;
@@ -109,11 +111,12 @@ void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer, StackTyp
 /* USER CODE END GET_IDLE_TASK_MEMORY */
 
 /**
-  * @brief  FreeRTOS initialization
-  * @param  None
-  * @retval None
-  */
-void MX_FREERTOS_Init(void) {
+ * @brief  FreeRTOS initialization
+ * @param  None
+ * @retval None
+ */
+void MX_FREERTOS_Init(void)
+{
   /* USER CODE BEGIN Init */
   default_kv.kvs = default_kv_table;
   default_kv.num = sizeof(default_kv_table) / sizeof(default_kv_table[0]);
@@ -154,8 +157,8 @@ void MX_FREERTOS_Init(void) {
   xTaskCreate((TaskFunction_t)liquid_level_task, "liquid level task", 100, NULL, 0, &liquid_level_task_handle);
   xTaskCreate((TaskFunction_t)brush_deamon_task, "brush deamon task", 400, NULL, 4, &brush_deamon_task_handle);
   xTaskCreate((TaskFunction_t)flowmeter_task, "flowmeter task", 200, NULL, 1, &flowmeter_task_handle);
+  xTaskCreate((TaskFunction_t)battery_task, "battery task", 200, NULL, 1, &battery_task_handle);
   /* USER CODE END RTOS_THREADS */
-
 }
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -165,7 +168,7 @@ void MX_FREERTOS_Init(void) {
  * @retval None
  */
 /* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const * argument)
+void StartDefaultTask(void const *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
@@ -208,8 +211,12 @@ void StartDefaultTask(void const * argument)
   // MOTOR_BK_ON[7]();
 
   vTaskDelete(NULL);
+  // char bat = 0;
+
   for (;;)
   {
+    // bat_get_power(&bat);
+    // printf("%d", bat);
     osDelay(1000);
   }
   /* USER CODE END StartDefaultTask */
@@ -298,9 +305,10 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
   {
     hcp_recv_callback(Size);
   }
-  // else if (huart == &huart3)
-  // {
-  // }
+  else if (huart == &huart3)
+  {
+    bat_recv_callback(Size);
+  }
   // 232 serial port of upper computer
   else if (huart == &huart4)
   {
@@ -311,6 +319,13 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
   // }
 }
 
+// void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+// {
+//   if (huart == &huart3)
+//   {
+//     bat_recv_callback(1);
+//   }
+// }
 // void cs_task_manager_cb()
 // {
 //   unsigned char write_buffer[500];
@@ -321,7 +336,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 
 void cs_task_HighWaterMark_cb(unsigned char *cmd)
 {
-  elog_d("TASK-STATE", "default task      - > %d", (int)uxTaskGetStackHighWaterMark(defaultTaskHandle));
+  // elog_d("TASK-STATE", "default task      - > %d", (int)uxTaskGetStackHighWaterMark(defaultTaskHandle));
   // elog_d("TASK-STATE", "test task         - > %d", (int)uxTaskGetStackHighWaterMark(test_task_handle));
   elog_d("TASK-STATE", "console task      - > %d", (int)uxTaskGetStackHighWaterMark(console_task_handle));
   elog_d("TASK-STATE", "motor task        - > %d", (int)uxTaskGetStackHighWaterMark(motor_task_handle));
@@ -329,8 +344,8 @@ void cs_task_HighWaterMark_cb(unsigned char *cmd)
   elog_d("TASK-STATE", "liquid leval task - > %d", (int)uxTaskGetStackHighWaterMark(liquid_level_task_handle));
   elog_d("TASK-STATE", "hcp task          - > %d", (int)uxTaskGetStackHighWaterMark(hcp_task_handle));
   elog_d("TASK-STATE", "brush deamon_task - > %d", (int)uxTaskGetStackHighWaterMark(brush_deamon_task_handle));
-  elog_d("TASK-STATE", "flowmeter task - > %d", (int)uxTaskGetStackHighWaterMark(flowmeter_task_handle));
+  elog_d("TASK-STATE", "flowmeter task    - > %d", (int)uxTaskGetStackHighWaterMark(flowmeter_task_handle));
+  elog_d("TASK-STATE", "battery task      - > %d", (int)uxTaskGetStackHighWaterMark(battery_task_handle));
 }
 
 /* USER CODE END Application */
-

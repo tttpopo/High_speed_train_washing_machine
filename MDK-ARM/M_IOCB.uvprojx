@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xE</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../my_drivers/easylogger/inc;../my_drivers/motor;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3;../my_drivers/fal/inc;../my_drivers/FlashDB/inc;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../my_drivers/console;../my_drivers/ws2812;../my_drivers/Liquid_level;../my_drivers/Host_computer_protocol;../my_drivers/brush;../my_drivers/flowmeter</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;../my_drivers/easylogger/inc;../my_drivers/motor;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3;../my_drivers/fal/inc;../my_drivers/FlashDB/inc;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../my_drivers/console;../my_drivers/ws2812;../my_drivers/Liquid_level;../my_drivers/Host_computer_protocol;../my_drivers/brush;../my_drivers/flowmeter;../my_drivers/battery</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1902,6 +1902,16 @@
               <FileName>flowmeter_hl.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\my_drivers\flowmeter\flowmeter_hl.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>battery</GroupName>
+          <Files>
+            <File>
+              <FileName>battery.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\my_drivers\battery\battery.c</FilePath>
             </File>
           </Files>
         </Group>
