@@ -8,7 +8,10 @@
             "defines": [
                 "_DEBUG",
                 "UNICODE",
-                "_UNICODE"
+                "_UNICODE",
+                "__CCARM",
+                "__STATIC_INLINE=STATIC",
+                "__IO"
             ],
             "compilerPath": "D:\\mingw64\\bin\\gcc.exe",
             "cStandard": "c17",

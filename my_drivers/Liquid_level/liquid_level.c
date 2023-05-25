@@ -100,38 +100,82 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
     vTaskNotifyGiveFromISR(liquid_level_task_handle, NULL);
 }
 
-#define MIX_CAPACITY
+//////////////////////////////////// accurate ratio part///////////////////////////////////
 
-unsigned int wat_rat = 10;
-unsigned int det_rat = 1;
+#define MIX_CAPACITY
+/*
+Corresponding relationship of liquid level gauge
+ADC1 - water
+ADC2 - detergent
+ADC3 - mix
+ADC4 - spray
+
+Corresponding relationship of water pump
+pump1 - water
+pump2 - detergent
+pump3 - mix
+pump4 - spray
+*/
+TaskHandle_t accurate_ratio_task_handle = NULL;
+
+float rat = 10.0;
 
 void accurate_ratio_task()
 {
     unsigned char wat_level = 0;
     unsigned char det_level = 0;
     unsigned char mix_level = 0;
-    char open_flag = 0;
+    unsigned char spr_level = 0;
+
+    float wat_flo = 0;
+    float det_flo = 0;
+    // char start_flag = 0;
     while (1)
     {
-        get_liquid_level(&wat_level, &det_level, &mix_level, NULL);
-        if (mix_level > 90)
+        if (EMERGENCY_KEY_FLAG() == 1)
         {
-            open_flag = 0;
-        }
-        if (mix_level < 40)
-        {
-            open_flag = 1;
-        }
+            get_liquid_level(&wat_level, &det_level, &mix_level, &spr_level);
 
-        if (open_flag)
-        {
-            if ((wat_level > 1) && (det_level > 1) && (EMERGENCY_KEY_FLAG() == 0))
+            // printf("%d,%d,%d,%d\r\n", wat_level, det_level, mix_level, spr_level);
+            if (mix_level < 60)
             {
+                PUMP_ON[0]();
+                PUMP_ON[1]();
+                fm_get_total_flow(&wat_flo, &det_flo);
 
+                if (wat_flo / det_flo >= rat - 1) // det less
+                {
+                    PUMP_ON[1]();
+                }
+                else if (wat_flo / det_flo < rat + 1) // det more
+                {
+                    PUMP_OFF[1]();
+                }
             }
-            //            fm_get_total_flow
+
+            if (mix_level > 90)
+            {
+                PUMP_OFF[0]();
+                PUMP_OFF[1]();
+            }
+
+            if ((spr_level < 50) && (mix_level > 50))
+            {
+                PUMP_ON[2]();
+            }
+            if (spr_level > 80)
+            {
+                PUMP_OFF[2]();
+            }
+        }
+        else
+        {
+            PUMP_OFF[0]();
+            PUMP_OFF[1]();
+            PUMP_OFF[2]();
+            PUMP_OFF[3]();
         }
 
-        vTaskDelay(50 / portTICK_RATE_MS);
+        vTaskDelay(5 / portTICK_RATE_MS);
     }
 }

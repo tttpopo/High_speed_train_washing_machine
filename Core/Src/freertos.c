@@ -59,6 +59,7 @@ extern TaskHandle_t hcp_task_handle;
 extern TaskHandle_t brush_deamon_task_handle;
 extern TaskHandle_t flowmeter_task_handle;
 extern TaskHandle_t battery_task_handle;
+extern TaskHandle_t accurate_ratio_task_handle;
 
 void test_task(void);
 
@@ -158,6 +159,7 @@ void MX_FREERTOS_Init(void)
   xTaskCreate((TaskFunction_t)brush_deamon_task, "brush deamon task", 400, NULL, 4, &brush_deamon_task_handle);
   xTaskCreate((TaskFunction_t)flowmeter_task, "flowmeter task", 200, NULL, 1, &flowmeter_task_handle);
   xTaskCreate((TaskFunction_t)battery_task, "battery task", 200, NULL, 1, &battery_task_handle);
+  xTaskCreate((TaskFunction_t)accurate_ratio_task, "accurate ratio task", 200, NULL, 1, &accurate_ratio_task_handle);
   /* USER CODE END RTOS_THREADS */
 }
 
@@ -210,7 +212,7 @@ void StartDefaultTask(void const *argument)
   // MOTOR_BK_ON[6]();
   // MOTOR_BK_ON[7]();
 
-  vTaskDelete(NULL);
+  // vTaskDelete(NULL);
   // char bat = 0;
 
   for (;;)
@@ -218,6 +220,8 @@ void StartDefaultTask(void const *argument)
     // bat_get_power(&bat);
     // printf("%d", bat);
     osDelay(1000);
+    // HAL_GPIO_TogglePin(OU_RES_4_GPIO_Port, OU_RES_4_Pin);
+    // HAL_GPIO_TogglePin(OU_RES_5_GPIO_Port, OU_RES_5_Pin);
   }
   /* USER CODE END StartDefaultTask */
 }
@@ -338,14 +342,15 @@ void cs_task_HighWaterMark_cb(unsigned char *cmd)
 {
   // elog_d("TASK-STATE", "default task      - > %d", (int)uxTaskGetStackHighWaterMark(defaultTaskHandle));
   // elog_d("TASK-STATE", "test task         - > %d", (int)uxTaskGetStackHighWaterMark(test_task_handle));
-  elog_d("TASK-STATE", "console task      - > %d", (int)uxTaskGetStackHighWaterMark(console_task_handle));
-  elog_d("TASK-STATE", "motor task        - > %d", (int)uxTaskGetStackHighWaterMark(motor_task_handle));
-  elog_d("TASK-STATE", "rgb task          - > %d", (int)uxTaskGetStackHighWaterMark(rgb_task_handle));
-  elog_d("TASK-STATE", "liquid leval task - > %d", (int)uxTaskGetStackHighWaterMark(liquid_level_task_handle));
-  elog_d("TASK-STATE", "hcp task          - > %d", (int)uxTaskGetStackHighWaterMark(hcp_task_handle));
-  elog_d("TASK-STATE", "brush deamon_task - > %d", (int)uxTaskGetStackHighWaterMark(brush_deamon_task_handle));
-  elog_d("TASK-STATE", "flowmeter task    - > %d", (int)uxTaskGetStackHighWaterMark(flowmeter_task_handle));
-  elog_d("TASK-STATE", "battery task      - > %d", (int)uxTaskGetStackHighWaterMark(battery_task_handle));
+  elog_d("TASK-STATE", "console task           - > %d", (int)uxTaskGetStackHighWaterMark(console_task_handle));
+  elog_d("TASK-STATE", "motor task             - > %d", (int)uxTaskGetStackHighWaterMark(motor_task_handle));
+  elog_d("TASK-STATE", "rgb task               - > %d", (int)uxTaskGetStackHighWaterMark(rgb_task_handle));
+  elog_d("TASK-STATE", "liquid leval task      - > %d", (int)uxTaskGetStackHighWaterMark(liquid_level_task_handle));
+  elog_d("TASK-STATE", "hcp task               - > %d", (int)uxTaskGetStackHighWaterMark(hcp_task_handle));
+  elog_d("TASK-STATE", "brush deamon_task      - > %d", (int)uxTaskGetStackHighWaterMark(brush_deamon_task_handle));
+  elog_d("TASK-STATE", "flowmeter task         - > %d", (int)uxTaskGetStackHighWaterMark(flowmeter_task_handle));
+  elog_d("TASK-STATE", "battery task           - > %d", (int)uxTaskGetStackHighWaterMark(battery_task_handle));
+  elog_d("TASK-STATE", "accurate ratio task    - > %d", (int)uxTaskGetStackHighWaterMark(accurate_ratio_task_handle));
 }
 
 /* USER CODE END Application */

@@ -7,6 +7,11 @@
 #include "motor_hal.h"
 #include "console.h"
 
+/*
+meter1 - water
+meter2 - detergent
+*/
+
 TaskHandle_t flowmeter_task_handle;
 
 unsigned char fm_recv_buf[15] = {0};

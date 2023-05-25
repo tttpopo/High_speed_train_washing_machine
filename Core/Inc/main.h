@@ -131,6 +131,8 @@ void Error_Handler(void);
 #define MOTO_SARM_LIMIT_D_GPIO_Port GPIOD
 #define EMERG_KEY_Pin GPIO_PIN_8
 #define EMERG_KEY_GPIO_Port GPIOA
+#define OU_RES_5_Pin GPIO_PIN_0
+#define OU_RES_5_GPIO_Port GPIOD
 #define SPOT_LIGHT_2_Pin GPIO_PIN_3
 #define SPOT_LIGHT_2_GPIO_Port GPIOD
 #define SPOT_LIGHT_1_Pin GPIO_PIN_7
@@ -141,6 +143,8 @@ void Error_Handler(void);
 #define DRUM_2_GPIO_Port GPIOB
 #define DRUM_3_Pin GPIO_PIN_5
 #define DRUM_3_GPIO_Port GPIOB
+#define OU_RES_4_Pin GPIO_PIN_6
+#define OU_RES_4_GPIO_Port GPIOB
 #define PUMP_1_Pin GPIO_PIN_8
 #define PUMP_1_GPIO_Port GPIOB
 #define PUMP_2_Pin GPIO_PIN_9

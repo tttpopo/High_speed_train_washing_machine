@@ -929,7 +929,7 @@ void brush_deamon_task(void)
         {
             i = 0;
             reached_stop();
-            err_deal();
+            // err_deal();
         }
         // ///////////////////
         // ///////////////////
