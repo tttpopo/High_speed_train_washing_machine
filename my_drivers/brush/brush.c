@@ -17,19 +17,19 @@ TaskHandle_t button_all_task_handle = NULL;
 
 // void (*RUNNING_FUN)(void) = NULL;
 
-long int FB_TARG_PULSE = 50000; // Translation brush group end point pulse value
+long int FB_TARG_PULSE = 1200000; // Translation brush group end point pulse value
 // long int FB1_ORIGIN_PULSE = 0;  // Translation brush group end point pulse value
 // long int FB2_ORIGIN_PULSE = 0;
 // long int FB3_ORIGIN_PULSE = 0;
-long int UD_TARG_PULSE = 50000;    // Lifting brush group end point pulse value
-long int UD1_TARG_PULSE = 50000;   // Lifting brush group end point pulse value
+// long int UD_TARG_PULSE = 50000;    // Lifting brush group end point pulse value
+long int UD1_TARG_PULSE = 1500000; // Lifting brush group end point pulse value
 long int UD2_TARG_PULSE = 2700000; // Lifting brush group end point pulse value
 long int UD3_TARG_PULSE = 4700000; // Lifting brush group end point pulse value
 // long int UD1_ORIGIN_PULSE = 0;  // Lifting brush group end point pulse value
 // long int UD2_ORIGIN_PULSE = 0;
 // long int UD3_ORIGIN_PULSE = 0;
-long int B_ARM_ORIGIN_PULSE = 0;
-long int S_ARM_ORIGIN_PULSE = 0;
+// long int B_ARM_ORIGIN_PULSE = 0;
+// long int S_ARM_ORIGIN_PULSE = 0;
 
 long int MOTOR_ORIGIN_PULSE[8] = {0};
 
@@ -210,7 +210,7 @@ void brush_ud_1(unsigned char state)
     vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
     if (state)
     {
-        if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_1], UD1_TARG_PULSE + MOTOR_ORIGIN_PULSE[MOTOR_UD_1], FB_SPEED) == HAL_OK)
+        if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_1], UD1_TARG_PULSE + MOTOR_ORIGIN_PULSE[MOTOR_UD_1], UD_SPEED) == HAL_OK)
         {
             MOTOR_STATE_TABLE[MOTOR_UD_1] = RUNNING_TARG;
             MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_1] = MIDDLE;
@@ -224,7 +224,7 @@ void brush_ud_1(unsigned char state)
     }
     else
     {
-        if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_1], MOTOR_ORIGIN_PULSE[MOTOR_UD_1], FB_SPEED) == HAL_OK)
+        if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_1], MOTOR_ORIGIN_PULSE[MOTOR_UD_1], UD_SPEED) == HAL_OK)
         {
             MOTOR_STATE_TABLE[MOTOR_UD_1] = RUNNING_ORIGIN;
             MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_1] = MIDDLE;
@@ -244,7 +244,7 @@ void brush_ud_2(unsigned char state)
     vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
     if (state)
     {
-        if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_2], UD2_TARG_PULSE + MOTOR_ORIGIN_PULSE[MOTOR_UD_2], FB_SPEED) == HAL_OK)
+        if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_2], UD2_TARG_PULSE + MOTOR_ORIGIN_PULSE[MOTOR_UD_2], UD_SPEED) == HAL_OK)
         {
             MOTOR_STATE_TABLE[MOTOR_UD_2] = RUNNING_TARG;
             MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_2] = MIDDLE;
@@ -258,7 +258,7 @@ void brush_ud_2(unsigned char state)
     }
     else
     {
-        if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_2], MOTOR_ORIGIN_PULSE[MOTOR_UD_2], FB_SPEED) == HAL_OK)
+        if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_2], MOTOR_ORIGIN_PULSE[MOTOR_UD_2], UD_SPEED) == HAL_OK)
         {
             MOTOR_STATE_TABLE[MOTOR_UD_2] = RUNNING_ORIGIN;
             MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_2] = MIDDLE;
@@ -278,7 +278,7 @@ void brush_ud_3(unsigned char state)
     vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
     if (state)
     {
-        if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_3], UD3_TARG_PULSE + MOTOR_ORIGIN_PULSE[MOTOR_UD_3], FB_SPEED) == HAL_OK)
+        if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_3], UD3_TARG_PULSE + MOTOR_ORIGIN_PULSE[MOTOR_UD_3], UD_SPEED) == HAL_OK)
         {
             MOTOR_STATE_TABLE[MOTOR_UD_3] = RUNNING_TARG;
             MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_3] = MIDDLE;
@@ -292,7 +292,7 @@ void brush_ud_3(unsigned char state)
     }
     else
     {
-        if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_3], MOTOR_ORIGIN_PULSE[MOTOR_UD_3], FB_SPEED) == HAL_OK)
+        if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_3], MOTOR_ORIGIN_PULSE[MOTOR_UD_3], UD_SPEED) == HAL_OK)
         {
             MOTOR_STATE_TABLE[MOTOR_UD_3] = RUNNING_ORIGIN;
             MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_3] = MIDDLE;
@@ -423,7 +423,7 @@ void big_arm_start(unsigned char state)
     vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
     if (state)
     {
-        if (motor_set_pulse(MOTOR_STATION[MOTOR_B_ARM], B_ARM_TARG_PULSE + MOTOR_ORIGIN_PULSE[MOTOR_B_ARM], FB_SPEED) == HAL_OK)
+        if (motor_set_pulse(MOTOR_STATION[MOTOR_B_ARM], B_ARM_TARG_PULSE + MOTOR_ORIGIN_PULSE[MOTOR_B_ARM], B_AEM_SPEED) == HAL_OK)
         {
             MOTOR_STATE_TABLE[MOTOR_B_ARM] = RUNNING_TARG;
             MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] = MIDDLE;
@@ -437,7 +437,7 @@ void big_arm_start(unsigned char state)
     }
     else
     {
-        if (motor_set_pulse(MOTOR_STATION[MOTOR_B_ARM], MOTOR_ORIGIN_PULSE[MOTOR_B_ARM], FB_SPEED) == HAL_OK)
+        if (motor_set_pulse(MOTOR_STATION[MOTOR_B_ARM], MOTOR_ORIGIN_PULSE[MOTOR_B_ARM], B_AEM_SPEED) == HAL_OK)
         {
             MOTOR_STATE_TABLE[MOTOR_B_ARM] = RUNNING_ORIGIN;
             MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] = MIDDLE;
@@ -457,7 +457,7 @@ void small_arm_start(unsigned char state)
     vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
     if (state)
     {
-        if (motor_set_pulse(MOTOR_STATION[MOTOR_S_ARM], S_ARM_TARG_PULSE + MOTOR_ORIGIN_PULSE[MOTOR_S_ARM], FB_SPEED) == HAL_OK)
+        if (motor_set_pulse(MOTOR_STATION[MOTOR_S_ARM], S_ARM_TARG_PULSE + MOTOR_ORIGIN_PULSE[MOTOR_S_ARM], S_ARM_SPEED) == HAL_OK)
         {
             MOTOR_STATE_TABLE[MOTOR_S_ARM] = RUNNING_TARG;
             MOTOR_IN_PLACE_STAT_TABLE[MOTOR_S_ARM] = MIDDLE;
@@ -471,7 +471,7 @@ void small_arm_start(unsigned char state)
     }
     else
     {
-        if (motor_set_pulse(MOTOR_STATION[MOTOR_S_ARM], MOTOR_ORIGIN_PULSE[MOTOR_S_ARM], FB_SPEED) == HAL_OK)
+        if (motor_set_pulse(MOTOR_STATION[MOTOR_S_ARM], MOTOR_ORIGIN_PULSE[MOTOR_S_ARM], S_ARM_SPEED) == HAL_OK)
         {
             MOTOR_STATE_TABLE[MOTOR_S_ARM] = RUNNING_ORIGIN;
             MOTOR_IN_PLACE_STAT_TABLE[MOTOR_S_ARM] = MIDDLE;
@@ -933,7 +933,7 @@ void brush_deamon_task(void)
         ud_dis_cnt++;
         i++;
         limit_stop();
-        // ///////////////////
+        ///////////////////
         if (i == 4)
         {
             i = 0;
@@ -941,8 +941,8 @@ void brush_deamon_task(void)
             elog_i("test-cnt", "--->    ud1-%d,ud2-%d,ud3-%d", ud_1_cnt, ud_2_cnt, ud_3_cnt);
             // err_deal();
         }
-        // ///////////////////
-        // ///////////////////
+        ///////////////////
+        ///////////////////
         if (temp_emer_state != EMERGENCY_KEY_FLAG())
         {
             temp_emer_state = EMERGENCY_KEY_FLAG();
@@ -954,34 +954,6 @@ void brush_deamon_task(void)
             {
                 motor_restore_stat();
             }
-        }
-
-        if (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_1] == TARG)
-        {
-            brush_ud_1(1);
-        }
-        else if (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_1] == ORIGIN)
-        {
-            brush_ud_1(0);
-            ud_1_cnt++;
-        }
-        if (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_2] == TARG)
-        {
-            brush_ud_2(1);
-        }
-        else if (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_2] == ORIGIN)
-        {
-            brush_ud_2(0);
-            ud_2_cnt++;
-        }
-        if (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_3] == TARG)
-        {
-            brush_ud_3(1);
-        }
-        else if (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_3] == ORIGIN)
-        {
-            brush_ud_3(0);
-            ud_3_cnt++;
         }
 
         vTaskDelay(50 / portTICK_RATE_MS);
