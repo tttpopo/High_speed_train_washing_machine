@@ -4,6 +4,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "motor_hal.h"
+#include "stdio.h"
 
 ///////////////////////////// OUT /////////////////////////////////
 // breake
@@ -285,6 +286,7 @@ GPIO_PinState EMERGENCY_KEY_FLAG()
  ===============================================================================
  */
 
+char MOTOR_REC_FLAG_BUF[10] = {0};
 unsigned char MOTOR_REC_FLAG = 0;
 // unsigned int MOTOR_ERR_ID = 0;
 uint32_t maillbox = CAN_TX_MAILBOX0;
@@ -400,10 +402,18 @@ RETRY:
     while (out_time < MOTOR_CAN_OUT_TIME)
     {
         out_time++;
-        if (MOTOR_REC_FLAG)
+        for (char i = 0; i < 10; i++)
         {
-            return HAL_OK;
+            if (MOTOR_REC_FLAG_BUF[i] == s_id - 0x600)
+            {
+                MOTOR_REC_FLAG_BUF[i] = 0;
+                return HAL_OK;
+            }
         }
+        // if (MOTOR_REC_FLAG)
+        // {
+        //     return HAL_OK;
+        // }
         vTaskDelay(1 / portTICK_RATE_MS);
     }
     retry_count++;
@@ -414,13 +424,17 @@ RETRY:
 /// @param hcan
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
+    static unsigned char cnt_flag = 0;
     if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can_rx_head, can_rx_buf) == HAL_OK)
     {
-        MOTOR_REC_FLAG = 1;
+        MOTOR_REC_FLAG_BUF[cnt_flag++] = can_rx_head.StdId - 0x580;
+        cnt_flag %= 10;
+        // MOTOR_REC_FLAG = 1;
         // if ((can_rx_head.StdId >= (129 + MOTOR_FB_1)) && (can_rx_head.StdId <= (129 + MOTOR_S_ARM)))
         // {
         //     MOTOR_ERR_ID = can_rx_head.StdId;
         // }
+        // printf("in---");
         // printf("%x-->", can_rx_head.StdId);
         // for (int i = 0; i < can_rx_head.DLC; i++)
         // {

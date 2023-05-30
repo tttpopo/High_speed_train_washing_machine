@@ -531,6 +531,7 @@ void all_arm_start(unsigned char state)
 
 static void button_all_task(void *state)
 {
+    elog_e("TEST", "button all task is start");
     switch (*((unsigned char *)state))
     {
     case 1:
@@ -593,6 +594,7 @@ static void button_all_task(void *state)
         small_arm_start(0);
         break;
     }
+    elog_e("TEST", "button all task is delete");
     button_all_task_handle = NULL;
     vTaskDelete(NULL);
 }
@@ -700,22 +702,33 @@ static void limit_stop()
 /// @brief Stop the motor by detecting the in place state
 static void reached_stop()
 {
+    static char MOTOR_REACHED_STAT_TABLE[MOTOR_MAX_NUM] = {0};
     for (MOTOR_NUM i = MOTOR_FB_1; i < MOTOR_MAX_NUM; i++)
     {
         if (MOTOR_STATE_TABLE[i] != STOP)
         {
             if (motor_read_target_reached(MOTOR_STATION[i]) == HAL_OK)
             {
-                if (MOTOR_STATE_TABLE[i] == RUNNING_TARG)
+                MOTOR_REACHED_STAT_TABLE[i]++;
+                if (MOTOR_REACHED_STAT_TABLE[i] == 2)
                 {
-                    MOTOR_IN_PLACE_STAT_TABLE[i] = TARG;
+                    MOTOR_REACHED_STAT_TABLE[i] = 0;
+                    if (MOTOR_STATE_TABLE[i] == RUNNING_TARG)
+                    {
+                        MOTOR_IN_PLACE_STAT_TABLE[i] = TARG;
+                    }
+                    else if (MOTOR_STATE_TABLE[i] == RUNNING_ORIGIN)
+                    {
+                        MOTOR_IN_PLACE_STAT_TABLE[i] = ORIGIN;
+                    }
+                    printf("\r\nmoto reached--%d\r\n", i);
+                    MOTOR_STATE_TABLE[i] = STOP;
+                    MOTOR_BK_OFF[i]();
                 }
-                else if (MOTOR_STATE_TABLE[i] == RUNNING_ORIGIN)
-                {
-                    MOTOR_IN_PLACE_STAT_TABLE[i] = ORIGIN;
-                }
-                MOTOR_STATE_TABLE[i] = STOP;
-                MOTOR_BK_OFF[i]();
+            }
+            else
+            {
+                MOTOR_REACHED_STAT_TABLE[i] = 0;
             }
         }
     }
@@ -924,23 +937,17 @@ void brush_deamon_task(void)
 
     self_calibration(1);
 
-    int ud_dis_cnt = 0;
-    int ud_1_cnt = 0;
-    int ud_2_cnt = 0;
-    int ud_3_cnt = 0;
     while (1)
     {
-        ud_dis_cnt++;
         i++;
         limit_stop();
         ///////////////////
-        if (i == 4)
-        {
-            i = 0;
-            reached_stop();
-            elog_i("test-cnt", "--->    ud1-%d,ud2-%d,ud3-%d", ud_1_cnt, ud_2_cnt, ud_3_cnt);
-            // err_deal();
-        }
+        // if (i == 2)
+        // {
+        //     i = 0;
+        reached_stop();
+        // err_deal();
+        // }
         ///////////////////
         ///////////////////
         if (temp_emer_state != EMERGENCY_KEY_FLAG())
@@ -950,12 +957,12 @@ void brush_deamon_task(void)
             {
                 button_stop();
             }
-            else
-            {
-                motor_restore_stat();
-            }
+            // else
+            // {
+            //     motor_restore_stat();
+            // }
         }
 
-        vTaskDelay(50 / portTICK_RATE_MS);
+        vTaskDelay(10 / portTICK_RATE_MS);
     }
 }

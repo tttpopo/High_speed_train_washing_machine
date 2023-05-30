@@ -91,12 +91,12 @@ void cs_task_manager_cb(unsigned char *cmd);
 void cs_task_HighWaterMark_cb(unsigned char *cmd);
 /* USER CODE END FunctionPrototypes */
 
-void StartDefaultTask(void const *argument);
+void StartDefaultTask(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /* GetIdleTaskMemory prototype (linked to static allocation support) */
-void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize);
+void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize );
 
 /* USER CODE BEGIN GET_IDLE_TASK_MEMORY */
 static StaticTask_t xIdleTaskTCBBuffer;
@@ -112,12 +112,11 @@ void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer, StackTyp
 /* USER CODE END GET_IDLE_TASK_MEMORY */
 
 /**
- * @brief  FreeRTOS initialization
- * @param  None
- * @retval None
- */
-void MX_FREERTOS_Init(void)
-{
+  * @brief  FreeRTOS initialization
+  * @param  None
+  * @retval None
+  */
+void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
   default_kv.kvs = default_kv_table;
   default_kv.num = sizeof(default_kv_table) / sizeof(default_kv_table[0]);
@@ -145,12 +144,12 @@ void MX_FREERTOS_Init(void)
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 300);
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 800);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-  xTaskCreate((TaskFunction_t)console_task, "console_task", 200, NULL, 0, &console_task_handle);
+  xTaskCreate((TaskFunction_t)console_task, "console_task", 800, NULL, 0, &console_task_handle);
   xTaskCreate((TaskFunction_t)hcp_task, "hcp task", 400, NULL, 5, &hcp_task_handle);
   // xTaskCreate((TaskFunction_t)test_task, "test_task", 400, NULL, 0, &test_task_handle);
   xTaskCreate((TaskFunction_t)motor_task, "motor_task", 400, NULL, 0, &motor_task_handle);
@@ -161,6 +160,7 @@ void MX_FREERTOS_Init(void)
   xTaskCreate((TaskFunction_t)battery_task, "battery task", 200, NULL, 1, &battery_task_handle);
   xTaskCreate((TaskFunction_t)accurate_ratio_task, "accurate ratio task", 200, NULL, 1, &accurate_ratio_task_handle);
   /* USER CODE END RTOS_THREADS */
+
 }
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -170,7 +170,7 @@ void MX_FREERTOS_Init(void)
  * @retval None
  */
 /* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const *argument)
+void StartDefaultTask(void const * argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
@@ -202,7 +202,7 @@ void StartDefaultTask(void const *argument)
   printf("===========================================================\r\n");
 
   cs_reg_fun("info", cs_task_HighWaterMark_cb);
-
+  cs_reg_fun("sys",cs_task_manager_cb);
   // MOTOR_BK_ON[0]();
   // MOTOR_BK_ON[1]();
   // MOTOR_BK_ON[2]();
@@ -330,13 +330,13 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 //     bat_recv_callback(1);
 //   }
 // }
-// void cs_task_manager_cb()
-// {
-//   unsigned char write_buffer[500];
-//   vTaskList((char *)&write_buffer);
-//   printf("taskname      taskstate priority   free num\r\n");
-//   printf("%s\r\n\r\n\r\n\r\n", write_buffer);
-// }
+void cs_task_manager_cb(unsigned char *cmd)
+{
+  unsigned char write_buffer[500];
+  vTaskList((char *)&write_buffer);
+  printf("taskname      taskstate priority   free num\r\n");
+  printf("%s\r\n\r\n\r\n\r\n", write_buffer);
+}
 
 void cs_task_HighWaterMark_cb(unsigned char *cmd)
 {
@@ -354,3 +354,4 @@ void cs_task_HighWaterMark_cb(unsigned char *cmd)
 }
 
 /* USER CODE END Application */
+

@@ -6,6 +6,7 @@
 #include "elog.h"
 #include "motor_drive.h"
 #include "brush.h"
+#include "string.h"
 
 TaskHandle_t hcp_task_handle;
 unsigned char hcp_buf[40] = {0};
@@ -179,6 +180,7 @@ void hcp_task()
         else
         {
             hcp_analyse_callback(size);
+            memset(hcp_buf, 0, sizeof(hcp_buf));
             // for (int i = 0; i < size; i++)
             // {
             //     printf("%x", hcp_buf[i]);

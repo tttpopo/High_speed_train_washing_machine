@@ -167,18 +167,66 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>952</LineNumber>
+          <LineNumber>431</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134251518</Address>
+          <Address>134226068</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\my_drivers\brush\brush.c</Filename>
+          <Filename>..\my_drivers\motor\motor_hal.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\M_IOCB\../my_drivers/brush/brush.c\952</Expression>
+          <Expression>\\M_IOCB\../my_drivers/motor/motor_hal.c\431</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>409</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134269172</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\my_drivers\motor\motor_hal.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\M_IOCB\../my_drivers/motor/motor_hal.c\409</Expression>
+        </Bp>
+        <Bp>
+          <Number>2</Number>
+          <Type>0</Type>
+          <LineNumber>430</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134226042</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\my_drivers\motor\motor_hal.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\M_IOCB\../my_drivers/motor/motor_hal.c\430</Expression>
+        </Bp>
+        <Bp>
+          <Number>3</Number>
+          <Type>0</Type>
+          <LineNumber>407</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134269160</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\my_drivers\motor\motor_hal.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\M_IOCB\../my_drivers/motor/motor_hal.c\407</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -186,6 +234,11 @@
           <count>0</count>
           <WinNumber>1</WinNumber>
           <ItemText>MOTOR_IN_PLACE_STAT_TABLE</ItemText>
+        </Ww>
+        <Ww>
+          <count>1</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>MOTOR_REC_FLAG_BUF</ItemText>
         </Ww>
       </WatchWindow1>
       <MemoryWindow1>
