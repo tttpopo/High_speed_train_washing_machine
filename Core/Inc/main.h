@@ -158,7 +158,7 @@ void Error_Handler(void);
 #define BRUSH_START_DELAY_TIME 500 // brush one-button start interval
 #define FB_SPEED 20000               // Translation brush group running speed
 #define UD_SPEED 12000               // Lifting brush group running speed
-#define B_ARM_TARG_PULSE 50000      // Big arm end point pulse value
+#define B_ARM_TARG_PULSE -50000      // Big arm end point pulse value
 #define B_AEM_SPEED 500            // Big arm running speed
 #define S_ARM_TARG_PULSE 50000      // Small arm end point pulse value
 #define S_ARM_SPEED 500            // Small arm running speed
