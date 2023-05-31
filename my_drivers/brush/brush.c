@@ -31,6 +31,7 @@ long int UD3_TARG_PULSE = 4700000; // Lifting brush group end point pulse value
 // long int B_ARM_ORIGIN_PULSE = 0;
 // long int S_ARM_ORIGIN_PULSE = 0;
 
+// add test
 long int MOTOR_ORIGIN_PULSE[8] = {0};
 
 typedef enum
