@@ -31,7 +31,6 @@ long int UD3_TARG_PULSE = 4700000; // Lifting brush group end point pulse value
 // long int B_ARM_ORIGIN_PULSE = 0;
 // long int S_ARM_ORIGIN_PULSE = 0;
 
-// add test
 long int MOTOR_ORIGIN_PULSE[8] = {0};
 
 typedef enum
@@ -536,13 +535,13 @@ static void button_all_task(void *state)
     switch (*((unsigned char *)state))
     {
     case 1:
-        small_arm_start(1);
-        while (MOTOR_STATE_TABLE[MOTOR_S_ARM] != STOP)
-        {
-            vTaskDelay(100 / portTICK_RATE_MS);
-        }
+        // small_arm_start(1);
+        // while (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_S_ARM] == TARG)
+        // {
+        //     vTaskDelay(100 / portTICK_RATE_MS);
+        // }
         big_arm_start(1);
-        while (MOTOR_STATE_TABLE[MOTOR_B_ARM] != STOP)
+        while (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] != TARG)
         {
             vTaskDelay(100 / portTICK_RATE_MS);
         }
@@ -553,7 +552,7 @@ static void button_all_task(void *state)
         vTaskDelay(BRUSH_START_DELAY_TIME / portTICK_RATE_MS);
         brush_fb_3(1);
 
-        while (MOTOR_STATE_TABLE[MOTOR_FB_3] != STOP)
+        while ((MOTOR_IN_PLACE_STAT_TABLE[MOTOR_FB_3] != TARG) || (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_FB_2] != TARG) || (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_FB_1] != TARG))
         {
             vTaskDelay(100 / portTICK_RATE_MS);
         }
@@ -571,7 +570,7 @@ static void button_all_task(void *state)
         vTaskDelay(BRUSH_START_DELAY_TIME / portTICK_RATE_MS);
         brush_ud_3(0);
 
-        while (MOTOR_STATE_TABLE[MOTOR_UD_3] != STOP)
+        while ((MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_1] != ORIGIN) || (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_2] != ORIGIN) || (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_3] != ORIGIN))
         {
             vTaskDelay(100 / portTICK_RATE_MS);
         }
@@ -582,17 +581,17 @@ static void button_all_task(void *state)
         vTaskDelay(BRUSH_START_DELAY_TIME / portTICK_RATE_MS);
         brush_fb_3(0);
 
-        while (MOTOR_STATE_TABLE[MOTOR_FB_3] != STOP)
+        while (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_FB_3] != ORIGIN)
         {
             vTaskDelay(100 / portTICK_RATE_MS);
         }
 
         big_arm_start(0);
-        while (MOTOR_STATE_TABLE[MOTOR_B_ARM] != STOP)
+        while (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] != ORIGIN)
         {
             vTaskDelay(100 / portTICK_RATE_MS);
         }
-        small_arm_start(0);
+        // small_arm_start(0);
         break;
     }
     elog_e("TEST", "button all task is delete");
@@ -789,7 +788,7 @@ static void err_deal()
 {
     unsigned char err_code = 0;
     static int temp_err_cnt[8] = {-1, -1, -1, -1, -1, -1, -1, -1};
-    for (MOTOR_NUM i = MOTOR_FB_1; i < MOTOR_MAX_NUM; i++)
+    for (MOTOR_NUM i = MOTOR_FB_1; i < 7; i++)
     {
         motor_read_errcode(MOTOR_STATION[i], &err_code);
         MOTOR_ERR_CODE_TABLE[i] = err_code;
@@ -802,7 +801,7 @@ static void err_deal()
             {
                 motor_clear_err(MOTOR_STATION[i]);
 
-                elog_e("BRUSH", "motor %d error--->%d", i, err_code);
+                elog_e("ERR-DEAL", "motor %d error--->%d", i, err_code);
 
                 MOTOR_ERR_CNT[i] += 1;
 
@@ -819,6 +818,7 @@ static void err_deal()
         {
             if (motor_set_Position_Mode(MOTOR_STATION[i]) == HAL_OK)
             {
+                vTaskDelay(100 / portTICK_RATE_MS);
                 elog_w("BRUSH", "motor %d set p mode", i);
                 if (temp_err_cnt[i] != STOP)
                 {
@@ -964,6 +964,6 @@ void brush_deamon_task(void)
             // }
         }
 
-        vTaskDelay(10 / portTICK_RATE_MS);
+        vTaskDelay(50 / portTICK_RATE_MS);
     }
 }

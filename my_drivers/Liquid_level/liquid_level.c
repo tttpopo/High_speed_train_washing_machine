@@ -31,7 +31,7 @@ void liquid_level_task()
         ave_buf[3][index++] = adc_buf[3];
         index %= 500;
         vTaskDelay(5 / portTICK_RATE_MS);
-        // printf("%d\r\n", adc_buf[0]);
+        // printf("%d-%d-%d-%d\r\n", adc_buf[0],adc_buf[1],adc_buf[2],adc_buf[3]);
     }
 }
 
@@ -130,51 +130,53 @@ void accurate_ratio_task()
     float wat_flo = 0;
     float det_flo = 0;
     // char start_flag = 0;
+    // PUMP_ON[1]();
     while (1)
     {
-        if (EMERGENCY_KEY_FLAG() == 1)
-        {
-            get_liquid_level(&wat_level, &det_level, &mix_level, &spr_level);
+        // if (EMERGENCY_KEY_FLAG() == 1)
+        // {
+        //     get_liquid_level(&wat_level, &det_level, &mix_level, &spr_level);
 
-            // printf("%d,%d,%d,%d\r\n", wat_level, det_level, mix_level, spr_level);
-            if (mix_level < 60)
-            {
-                PUMP_ON[0]();
-                PUMP_ON[1]();
-                fm_get_total_flow(&wat_flo, &det_flo);
+        //     printf("%d,%d,%d,%d\r\n", wat_level, det_level, mix_level, spr_level);
+        //     // printf("%d,%d,%d,%d\r\n", spr_level, mix_level, det_level, wat_level);
+        //     if (mix_level < 60)
+        //     {
+        //         PUMP_ON[0]();
+        //         PUMP_ON[1]();
+        //         fm_get_total_flow(&wat_flo, &det_flo);
 
-                if (wat_flo / det_flo >= rat - 1) // det less
-                {
-                    PUMP_ON[1]();
-                }
-                else if (wat_flo / det_flo < rat + 1) // det more
-                {
-                    PUMP_OFF[1]();
-                }
-            }
+        //         if (wat_flo / det_flo >= rat - 1) // det less
+        //         {
+        //             PUMP_ON[1]();
+        //         }
+        //         else if (wat_flo / det_flo < rat + 1) // det more
+        //         {
+        //             PUMP_OFF[1]();
+        //         }
+        //     }
 
-            if (mix_level > 90)
-            {
-                PUMP_OFF[0]();
-                PUMP_OFF[1]();
-            }
+        //     if (mix_level > 90)
+        //     {
+        //         PUMP_OFF[0]();
+        //         PUMP_OFF[1]();
+        //     }
 
-            if ((spr_level < 50) && (mix_level > 50))
-            {
-                PUMP_ON[2]();
-            }
-            if (spr_level > 80)
-            {
-                PUMP_OFF[2]();
-            }
-        }
-        else
-        {
-            PUMP_OFF[0]();
-            PUMP_OFF[1]();
-            PUMP_OFF[2]();
-            PUMP_OFF[3]();
-        }
+        //     if ((spr_level < 50) && (mix_level > 50))
+        //     {
+        //         PUMP_ON[2]();
+        //     }
+        //     if (spr_level > 80)
+        //     {
+        //         PUMP_OFF[2]();
+        //     }
+        // }
+        // else
+        // {
+        //     PUMP_OFF[0]();
+        //     PUMP_OFF[1]();
+        //     PUMP_OFF[2]();
+        //     PUMP_OFF[3]();
+        // }
 
         vTaskDelay(5 / portTICK_RATE_MS);
     }

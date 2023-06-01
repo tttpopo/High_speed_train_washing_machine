@@ -6,6 +6,7 @@
 #include "stdio.h"
 #include "motor_hal.h"
 #include "console.h"
+#include <string.h>
 
 /*
 meter1 - water
@@ -50,14 +51,69 @@ void fm_recv_callback(unsigned short Size)
     xTaskNotifyFromISR(flowmeter_task_handle, Size, eSetValueWithOverwrite, NULL);
 }
 
-void cs_pump1_on_cb(unsigned char *cmd)
+void cs_pump_on_cb(unsigned char *cmd)
 {
-    PUMP_1_ON();
+
+    char *temp_p = NULL;
+    unsigned int s_id = 0;
+    long int speed = 0;
+
+    temp_p = strtok((char *)cmd, "-");
+    temp_p = strtok(NULL, "-");
+    s_id = atoi(temp_p);
+
+    switch (s_id)
+    {
+    case 1:
+        PUMP_1_ON();
+        break;
+    case 2:
+        PUMP_2_ON();
+        break;
+    case 3:
+        PUMP_3_ON();
+        break;
+    case 4:
+        PUMP_4_ON();
+        break;
+    }
+    // PUMP_1_ON();
 }
 
-void cs_pump1_off_cb(unsigned char *cmd)
+void cs_pump_off_cb(unsigned char *cmd)
 {
-    PUMP_1_OFF();
+
+    char *temp_p = NULL;
+    unsigned int s_id = 0;
+    long int speed = 0;
+
+    temp_p = strtok((char *)cmd, "-");
+    temp_p = strtok(NULL, "-");
+    s_id = atoi(temp_p);
+
+    switch (s_id)
+    {
+    case 1:
+        PUMP_1_OFF();
+        break;
+    case 2:
+        PUMP_2_OFF();
+        break;
+    case 3:
+        PUMP_3_OFF();
+        break;
+    case 4:
+        PUMP_4_OFF();
+        break;
+    case 5:
+        PUMP_1_OFF();
+        PUMP_2_OFF();
+        PUMP_3_OFF();
+        PUMP_4_OFF();
+        break;
+    }
+
+    // PUMP_1_OFF();
 }
 
 void flowmeter_task()
@@ -79,8 +135,8 @@ void flowmeter_task()
     int temp_data_b = 0;
     fm_recv_start();
 
-    cs_reg_fun("p1on", cs_pump1_on_cb);
-    cs_reg_fun("p1off", cs_pump1_off_cb);
+    cs_reg_fun("pon", cs_pump_on_cb);
+    cs_reg_fun("pof", cs_pump_off_cb);
 
     while (1)
     {
@@ -132,7 +188,8 @@ void flowmeter_task()
                     }
                 }
 
-                printf("1--->%f   2--->%f\r\n", total_flow_1 - temp_flow_1, total_flow_2 - temp_flow_2);
+                // printf("1--->%f   2--->%f\r\n", total_flow_1 - temp_flow_1, total_flow_2 - temp_flow_2);
+                printf("1--->%f   2--->%f\r\n", total_flow_1, total_flow_2);
                 /////////////////////////////////////////////////
             }
         }

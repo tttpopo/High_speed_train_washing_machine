@@ -247,53 +247,55 @@ void test_task()
     // sprintf(send_buf, "%d,%d,%d,%d\r\n", liquid_level_1, liquid_level_2, liquid_level_3, liquid_level_4);
     // printf("%s", send_buf);
 
-    HAL_GPIO_TogglePin(SIGN_LIGHT_1_GPIO_Port, SIGN_LIGHT_1_Pin);
-    vTaskDelay(50 / portTICK_RATE_MS);
-    HAL_GPIO_TogglePin(SIGN_LIGHT_2_GPIO_Port, SIGN_LIGHT_2_Pin);
-    vTaskDelay(50 / portTICK_RATE_MS);
-    HAL_GPIO_TogglePin(SIGN_LIGHT_3_GPIO_Port, SIGN_LIGHT_3_Pin);
-    vTaskDelay(50 / portTICK_RATE_MS);
-    HAL_GPIO_TogglePin(SIGN_LIGHT_4_GPIO_Port, SIGN_LIGHT_4_Pin);
-    vTaskDelay(50 / portTICK_RATE_MS);
-    HAL_GPIO_TogglePin(MOTO_BK_1_GPIO_Port, MOTO_BK_1_Pin);
-    vTaskDelay(50 / portTICK_RATE_MS);
-    HAL_GPIO_TogglePin(MOTO_BK_2_GPIO_Port, MOTO_BK_2_Pin);
-    vTaskDelay(50 / portTICK_RATE_MS);
-    HAL_GPIO_TogglePin(MOTO_BK_3_GPIO_Port, MOTO_BK_3_Pin);
-    vTaskDelay(50 / portTICK_RATE_MS);
-    HAL_GPIO_TogglePin(MOTO_BK_4_GPIO_Port, MOTO_BK_4_Pin);
-    vTaskDelay(50 / portTICK_RATE_MS);
-    HAL_GPIO_TogglePin(MOTO_BK_5_GPIO_Port, MOTO_BK_5_Pin);
-    vTaskDelay(50 / portTICK_RATE_MS);
-    HAL_GPIO_TogglePin(MOTO_BK_6_GPIO_Port, MOTO_BK_6_Pin);
-    vTaskDelay(50 / portTICK_RATE_MS);
-    HAL_GPIO_TogglePin(MOTO_BK_7_GPIO_Port, MOTO_BK_7_Pin);
-    vTaskDelay(50 / portTICK_RATE_MS);
-    HAL_GPIO_TogglePin(MOTO_BK_8_GPIO_Port, MOTO_BK_8_Pin);
+    // HAL_GPIO_TogglePin(SIGN_LIGHT_1_GPIO_Port, SIGN_LIGHT_1_Pin);
+    // vTaskDelay(50 / portTICK_RATE_MS);
+    // HAL_GPIO_TogglePin(SIGN_LIGHT_2_GPIO_Port, SIGN_LIGHT_2_Pin);
+    // vTaskDelay(50 / portTICK_RATE_MS);
+    // HAL_GPIO_TogglePin(SIGN_LIGHT_3_GPIO_Port, SIGN_LIGHT_3_Pin);
+    // vTaskDelay(50 / portTICK_RATE_MS);
+    // HAL_GPIO_TogglePin(SIGN_LIGHT_4_GPIO_Port, SIGN_LIGHT_4_Pin);
+    // vTaskDelay(50 / portTICK_RATE_MS);
+    // HAL_GPIO_TogglePin(MOTO_BK_1_GPIO_Port, MOTO_BK_1_Pin);
+    // vTaskDelay(50 / portTICK_RATE_MS);
+    // HAL_GPIO_TogglePin(MOTO_BK_2_GPIO_Port, MOTO_BK_2_Pin);
+    // vTaskDelay(50 / portTICK_RATE_MS);
+    // HAL_GPIO_TogglePin(MOTO_BK_3_GPIO_Port, MOTO_BK_3_Pin);
+    // vTaskDelay(50 / portTICK_RATE_MS);
+    // HAL_GPIO_TogglePin(MOTO_BK_4_GPIO_Port, MOTO_BK_4_Pin);
+    // vTaskDelay(50 / portTICK_RATE_MS);
+    // HAL_GPIO_TogglePin(MOTO_BK_5_GPIO_Port, MOTO_BK_5_Pin);
+    // vTaskDelay(50 / portTICK_RATE_MS);
+    // HAL_GPIO_TogglePin(MOTO_BK_6_GPIO_Port, MOTO_BK_6_Pin);
+    // vTaskDelay(50 / portTICK_RATE_MS);
+    // HAL_GPIO_TogglePin(MOTO_BK_7_GPIO_Port, MOTO_BK_7_Pin);
+    // vTaskDelay(50 / portTICK_RATE_MS);
+    // HAL_GPIO_TogglePin(MOTO_BK_8_GPIO_Port, MOTO_BK_8_Pin);
 
-    vTaskDelay(50 / portTICK_RATE_MS);
-    HAL_GPIO_TogglePin(PUMP_1_GPIO_Port, PUMP_1_Pin);
-    vTaskDelay(50 / portTICK_RATE_MS);
-    HAL_GPIO_TogglePin(PUMP_2_GPIO_Port, PUMP_2_Pin);
-    vTaskDelay(50 / portTICK_RATE_MS);
-    HAL_GPIO_TogglePin(PUMP_3_GPIO_Port, PUMP_3_Pin);
-    vTaskDelay(50 / portTICK_RATE_MS);
-    HAL_GPIO_TogglePin(PUMP_4_GPIO_Port, PUMP_4_Pin);
-    vTaskDelay(50 / portTICK_RATE_MS);
+    // vTaskDelay(50 / portTICK_RATE_MS);
+    // HAL_GPIO_TogglePin(PUMP_1_GPIO_Port, PUMP_1_Pin);
+    // vTaskDelay(50 / portTICK_RATE_MS);
+    // HAL_GPIO_TogglePin(PUMP_2_GPIO_Port, PUMP_2_Pin);
+    // vTaskDelay(50 / portTICK_RATE_MS);
+    // HAL_GPIO_TogglePin(PUMP_3_GPIO_Port, PUMP_3_Pin);
+    // vTaskDelay(50 / portTICK_RATE_MS);
+    // HAL_GPIO_TogglePin(PUMP_4_GPIO_Port, PUMP_4_Pin);
+    // vTaskDelay(50 / portTICK_RATE_MS);
 
-    HAL_GPIO_TogglePin(DRUM_1_GPIO_Port, DRUM_1_Pin);
-    vTaskDelay(50 / portTICK_RATE_MS);
-    HAL_GPIO_TogglePin(DRUM_2_GPIO_Port, DRUM_2_Pin);
-    vTaskDelay(50 / portTICK_RATE_MS);
-    HAL_GPIO_TogglePin(DRUM_3_GPIO_Port, DRUM_3_Pin);
-    vTaskDelay(50 / portTICK_RATE_MS);
+    // HAL_GPIO_TogglePin(DRUM_1_GPIO_Port, DRUM_1_Pin);
+    // vTaskDelay(50 / portTICK_RATE_MS);
+    // HAL_GPIO_TogglePin(DRUM_2_GPIO_Port, DRUM_2_Pin);
+    // vTaskDelay(50 / portTICK_RATE_MS);
+    // HAL_GPIO_TogglePin(DRUM_3_GPIO_Port, DRUM_3_Pin);
+    // vTaskDelay(50 / portTICK_RATE_MS);
 
-    HAL_GPIO_TogglePin(SPOT_LIGHT_1_GPIO_Port, SPOT_LIGHT_1_Pin);
-    vTaskDelay(50 / portTICK_RATE_MS);
-    HAL_GPIO_TogglePin(SPOT_LIGHT_2_GPIO_Port, SPOT_LIGHT_2_Pin);
-    vTaskDelay(50 / portTICK_RATE_MS);
+    // HAL_GPIO_TogglePin(SPOT_LIGHT_1_GPIO_Port, SPOT_LIGHT_1_Pin);
+    // vTaskDelay(50 / portTICK_RATE_MS);
+    // HAL_GPIO_TogglePin(SPOT_LIGHT_2_GPIO_Port, SPOT_LIGHT_2_Pin);
+    // vTaskDelay(50 / portTICK_RATE_MS);
 
-    HAL_UART_Transmit(&huart2, "hello\r\n", 7, 1000);
+    // HAL_UART_Transmit(&huart2, "hello\r\n", 7, 1000);
+    vTaskDelay(50 / portTICK_RATE_MS);
+    printf("%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d\r\n",HAL_GPIO_ReadPin())
   }
 }
 
