@@ -91,12 +91,12 @@ void cs_task_manager_cb(unsigned char *cmd);
 void cs_task_HighWaterMark_cb(unsigned char *cmd);
 /* USER CODE END FunctionPrototypes */
 
-void StartDefaultTask(void const * argument);
+void StartDefaultTask(void const *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /* GetIdleTaskMemory prototype (linked to static allocation support) */
-void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize );
+void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize);
 
 /* USER CODE BEGIN GET_IDLE_TASK_MEMORY */
 static StaticTask_t xIdleTaskTCBBuffer;
@@ -112,11 +112,12 @@ void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer, StackTyp
 /* USER CODE END GET_IDLE_TASK_MEMORY */
 
 /**
-  * @brief  FreeRTOS initialization
-  * @param  None
-  * @retval None
-  */
-void MX_FREERTOS_Init(void) {
+ * @brief  FreeRTOS initialization
+ * @param  None
+ * @retval None
+ */
+void MX_FREERTOS_Init(void)
+{
   /* USER CODE BEGIN Init */
   default_kv.kvs = default_kv_table;
   default_kv.num = sizeof(default_kv_table) / sizeof(default_kv_table[0]);
@@ -160,7 +161,6 @@ void MX_FREERTOS_Init(void) {
   xTaskCreate((TaskFunction_t)battery_task, "battery task", 200, NULL, 1, &battery_task_handle);
   xTaskCreate((TaskFunction_t)accurate_ratio_task, "accurate ratio task", 200, NULL, 1, &accurate_ratio_task_handle);
   /* USER CODE END RTOS_THREADS */
-
 }
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -170,7 +170,7 @@ void MX_FREERTOS_Init(void) {
  * @retval None
  */
 /* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const * argument)
+void StartDefaultTask(void const *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
@@ -202,7 +202,7 @@ void StartDefaultTask(void const * argument)
   printf("===========================================================\r\n");
 
   cs_reg_fun("info", cs_task_HighWaterMark_cb);
-  cs_reg_fun("sys",cs_task_manager_cb);
+  cs_reg_fun("sys", cs_task_manager_cb);
   // MOTOR_BK_ON[0]();
   // MOTOR_BK_ON[1]();
   // MOTOR_BK_ON[2]();
@@ -219,7 +219,25 @@ void StartDefaultTask(void const * argument)
   {
     // bat_get_power(&bat);
     // printf("%d", bat);
-    osDelay(1000);
+    osDelay(200);
+    // printf("%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d\r\n",
+    //    HAL_GPIO_ReadPin(MOTO_FB1_LIMIT_F_GPIO_Port, MOTO_FB1_LIMIT_F_Pin),
+    //    HAL_GPIO_ReadPin(MOTO_FB1_LIMIT_B_GPIO_Port, MOTO_FB1_LIMIT_B_Pin),
+    //    HAL_GPIO_ReadPin(MOTO_FB2_LIMIT_F_GPIO_Port, MOTO_FB2_LIMIT_F_Pin),
+    //    HAL_GPIO_ReadPin(MOTO_FB2_LIMIT_B_GPIO_Port, MOTO_FB2_LIMIT_B_Pin),
+    //    HAL_GPIO_ReadPin(MOTO_FB3_LIMIT_F_GPIO_Port, MOTO_FB3_LIMIT_F_Pin),
+    //    HAL_GPIO_ReadPin(MOTO_FB3_LIMIT_B_GPIO_Port, MOTO_FB3_LIMIT_B_Pin),
+    //    HAL_GPIO_ReadPin(MOTO_UD1_LIMIT_U_GPIO_Port, MOTO_UD1_LIMIT_U_Pin),
+    //    HAL_GPIO_ReadPin(MOTO_UD1_LIMIT_D_GPIO_Port, MOTO_UD1_LIMIT_D_Pin),
+    //    HAL_GPIO_ReadPin(MOTO_UD2_LIMIT_U_GPIO_Port, MOTO_UD2_LIMIT_U_Pin),
+    //    HAL_GPIO_ReadPin(MOTO_UD2_LIMIT_D_GPIO_Port, MOTO_UD2_LIMIT_D_Pin),
+    //    HAL_GPIO_ReadPin(MOTO_UD3_LIMIT_D_GPIO_Port, MOTO_UD3_LIMIT_D_Pin),
+    //    HAL_GPIO_ReadPin(MOTO_UD3_LIMIT_U_GPIO_Port, MOTO_UD3_LIMIT_U_Pin),
+    //    HAL_GPIO_ReadPin(MOTO_BARM_LIMIT_F_GPIO_Port, MOTO_BARM_LIMIT_F_Pin),
+    //    HAL_GPIO_ReadPin(MOTO_BARM_LIMIT_B_GPIO_Port, MOTO_BARM_LIMIT_B_Pin),
+    //    HAL_GPIO_ReadPin(MOTO_SARM_LIMIT_U_GPIO_Port, MOTO_SARM_LIMIT_U_Pin),
+    //    HAL_GPIO_ReadPin(MOTO_SARM_LIMIT_D_GPIO_Port, MOTO_SARM_LIMIT_D_Pin));
+
     // HAL_GPIO_TogglePin(OU_RES_4_GPIO_Port, OU_RES_4_Pin);
     // HAL_GPIO_TogglePin(OU_RES_5_GPIO_Port, OU_RES_5_Pin);
   }
@@ -295,7 +313,23 @@ void test_task()
 
     // HAL_UART_Transmit(&huart2, "hello\r\n", 7, 1000);
     vTaskDelay(50 / portTICK_RATE_MS);
-    printf("%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d\r\n",HAL_GPIO_ReadPin())
+    printf("%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d\r\n",
+           HAL_GPIO_ReadPin(MOTO_FB1_LIMIT_F_GPIO_Port, MOTO_FB1_LIMIT_F_Pin),
+           HAL_GPIO_ReadPin(MOTO_FB1_LIMIT_B_GPIO_Port, MOTO_FB1_LIMIT_B_Pin),
+           HAL_GPIO_ReadPin(MOTO_FB2_LIMIT_F_GPIO_Port, MOTO_FB2_LIMIT_F_Pin),
+           HAL_GPIO_ReadPin(MOTO_FB2_LIMIT_B_GPIO_Port, MOTO_FB2_LIMIT_B_Pin),
+           HAL_GPIO_ReadPin(MOTO_FB3_LIMIT_F_GPIO_Port, MOTO_FB3_LIMIT_F_Pin),
+           HAL_GPIO_ReadPin(MOTO_FB3_LIMIT_B_GPIO_Port, MOTO_FB3_LIMIT_B_Pin),
+           HAL_GPIO_ReadPin(MOTO_UD1_LIMIT_U_GPIO_Port, MOTO_UD1_LIMIT_U_Pin),
+           HAL_GPIO_ReadPin(MOTO_UD1_LIMIT_D_GPIO_Port, MOTO_UD1_LIMIT_D_Pin),
+           HAL_GPIO_ReadPin(MOTO_UD2_LIMIT_U_GPIO_Port, MOTO_UD2_LIMIT_U_Pin),
+           HAL_GPIO_ReadPin(MOTO_UD2_LIMIT_D_GPIO_Port, MOTO_UD2_LIMIT_D_Pin),
+           HAL_GPIO_ReadPin(MOTO_UD3_LIMIT_D_GPIO_Port, MOTO_UD3_LIMIT_D_Pin),
+           HAL_GPIO_ReadPin(MOTO_UD3_LIMIT_U_GPIO_Port, MOTO_UD3_LIMIT_U_Pin),
+           HAL_GPIO_ReadPin(MOTO_BARM_LIMIT_F_GPIO_Port, MOTO_BARM_LIMIT_F_Pin),
+           HAL_GPIO_ReadPin(MOTO_BARM_LIMIT_B_GPIO_Port, MOTO_BARM_LIMIT_B_Pin),
+           HAL_GPIO_ReadPin(MOTO_SARM_LIMIT_U_GPIO_Port, MOTO_SARM_LIMIT_U_Pin),
+           HAL_GPIO_ReadPin(MOTO_SARM_LIMIT_D_GPIO_Port, MOTO_SARM_LIMIT_D_Pin));
   }
 }
 
@@ -356,4 +390,3 @@ void cs_task_HighWaterMark_cb(unsigned char *cmd)
 }
 
 /* USER CODE END Application */
-

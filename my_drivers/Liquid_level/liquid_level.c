@@ -102,7 +102,6 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 
 //////////////////////////////////// accurate ratio part///////////////////////////////////
 
-#define MIX_CAPACITY
 /*
 Corresponding relationship of liquid level gauge
 ADC1 - water
@@ -118,6 +117,10 @@ pump4 - spray
 */
 TaskHandle_t accurate_ratio_task_handle = NULL;
 
+#define MIX_CAPACITY 20
+
+char HCP_START_ALLOCATE = 1;
+
 float rat = 10.0;
 
 void accurate_ratio_task()
@@ -129,10 +132,39 @@ void accurate_ratio_task()
 
     float wat_flo = 0;
     float det_flo = 0;
-    // char start_flag = 0;
+
+    char start_flag = 0;
+
     // PUMP_ON[1]();
     while (1)
     {
+        get_liquid_level(&wat_level, &det_level, &mix_level, &spr_level);
+        fm_get_total_flow(&wat_flo, &det_flo);
+        printf("%d,%d,%d,%d---  1->>%f  2->>%f\r\n", wat_level, det_level, mix_level, spr_level, wat_flo, det_flo);
+        // printf("%d,%d,%d,%d\r\n", spr_level, mix_level, det_level, wat_level);
+
+        if (mix_level < 40)
+        {
+            start_flag = 1;
+        }
+
+        if (mix_level > 80)
+        {
+            start_flag = 0;
+        }
+
+        if (start_flag)
+        {
+            PUMP_1_ON
+        }
+        else
+        {
+            PUMP_1_OFF();
+            PUMP_2_OFF();
+            PUMP_3_OFF();
+            PUMP_4_OFF();
+        }
+
         // if (EMERGENCY_KEY_FLAG() == 1)
         // {
         //     get_liquid_level(&wat_level, &det_level, &mix_level, &spr_level);
@@ -178,6 +210,12 @@ void accurate_ratio_task()
         //     PUMP_OFF[3]();
         // }
 
-        vTaskDelay(5 / portTICK_RATE_MS);
+        vTaskDelay(50 / portTICK_RATE_MS);
     }
+}
+
+// Control allocation flag bit
+void allocate_en(char en)
+{
+    HCP_START_ALLOCATE = en;
 }

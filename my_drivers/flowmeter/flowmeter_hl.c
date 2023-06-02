@@ -7,6 +7,7 @@
 #include "motor_hal.h"
 #include "console.h"
 #include <string.h>
+#include <stdlib.h>
 
 /*
 meter1 - water
@@ -18,6 +19,8 @@ TaskHandle_t flowmeter_task_handle;
 unsigned char fm_recv_buf[15] = {0};
 float total_flow_1 = 0;
 float total_flow_2 = 0;
+float temp_flow_1 = 0;
+float temp_flow_2 = 0;
 
 int fm_get_total_flow(float *fm_1, float *fm_2)
 {
@@ -34,8 +37,10 @@ int fm_get_total_flow(float *fm_1, float *fm_2)
         return 2;
     }
 
-    *fm_1 = total_flow_1;
-    *fm_2 = total_flow_2;
+    *fm_1 = total_flow_1 - temp_flow_1;
+    *fm_2 = total_flow_2 - temp_flow_2;
+    // *fm_1 = total_flow_1;
+    // *fm_2 = total_flow_2;
 
     return 0;
 }
@@ -56,7 +61,7 @@ void cs_pump_on_cb(unsigned char *cmd)
 
     char *temp_p = NULL;
     unsigned int s_id = 0;
-    long int speed = 0;
+    // long int speed = 0;
 
     temp_p = strtok((char *)cmd, "-");
     temp_p = strtok(NULL, "-");
@@ -85,7 +90,7 @@ void cs_pump_off_cb(unsigned char *cmd)
 
     char *temp_p = NULL;
     unsigned int s_id = 0;
-    long int speed = 0;
+    // long int speed = 0;
 
     temp_p = strtok((char *)cmd, "-");
     temp_p = strtok(NULL, "-");
@@ -122,8 +127,8 @@ void flowmeter_task()
 
     char switch_fm_flag = 0;
 
-    float temp_flow_1 = 0;
-    float temp_flow_2 = 0;
+    // float temp_flow_1 = 0;
+    // float temp_flow_2 = 0;
 
     char first_flag_1 = 1;
     char first_flag_2 = 1;
@@ -187,9 +192,10 @@ void flowmeter_task()
                         temp_flow_2 = total_flow_2;
                     }
                 }
-
+                // total_flow_1-=temp_flow_1;
+                // total_flow_2-=temp_flow_2;
                 // printf("1--->%f   2--->%f\r\n", total_flow_1 - temp_flow_1, total_flow_2 - temp_flow_2);
-                printf("1--->%f   2--->%f\r\n", total_flow_1, total_flow_2);
+                // printf("1--->%f   2--->%f\r\n", total_flow_1, total_flow_2);
                 /////////////////////////////////////////////////
             }
         }
