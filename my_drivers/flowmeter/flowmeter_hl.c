@@ -45,6 +45,16 @@ int fm_get_total_flow(float *fm_1, float *fm_2)
     return 0;
 }
 
+void fm_reset_wat_flow(void)
+{
+    temp_flow_1 = temp_flow_1;
+}
+
+void fm_reset_det_flow(void)
+{
+    temp_flow_2 = temp_flow_2;
+}
+
 static void fm_recv_start()
 {
     HAL_UARTEx_ReceiveToIdle_DMA(&huart4, fm_recv_buf, sizeof(fm_recv_buf));

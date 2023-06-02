@@ -119,51 +119,116 @@ TaskHandle_t accurate_ratio_task_handle = NULL;
 
 #define MIX_CAPACITY 20
 
-char HCP_START_ALLOCATE = 1;
-
+// char HCP_START_ALLOCATE = 1;
+char stat = 1;
+char TARG_CAP = 80;
+char EME_CAP = 90;
 float rat = 10.0;
 
 void accurate_ratio_task()
 {
+    // water level
     unsigned char wat_level = 0;
     unsigned char det_level = 0;
     unsigned char mix_level = 0;
     unsigned char spr_level = 0;
 
+    // flow
     float wat_flo = 0;
     float det_flo = 0;
 
-    char start_flag = 0;
+    // targ flow
+    float temp_targ_wat_flo = 0;
+    float temp_targ_det_flo = 0;
 
-    // PUMP_ON[1]();
+    // wait system stable
+    PUMP_3_ON();
+    vTaskDelay(5000 / portTICK_RATE_MS);
+
     while (1)
     {
-        get_liquid_level(&wat_level, &det_level, &mix_level, &spr_level);
-        fm_get_total_flow(&wat_flo, &det_flo);
-        printf("%d,%d,%d,%d---  1->>%f  2->>%f\r\n", wat_level, det_level, mix_level, spr_level, wat_flo, det_flo);
+        // get_liquid_level(&wat_level, &det_level, &mix_level, &spr_level);
+        // fm_get_total_flow(&wat_flo, &det_flo);
+
+        // printf("%d,%d,%d,%d---  1->>%f  2->>%f\r\n", wat_level, det_level, mix_level, spr_level, wat_flo, det_flo);
         // printf("%d,%d,%d,%d\r\n", spr_level, mix_level, det_level, wat_level);
 
-        if (mix_level < 40)
+        switch (stat)
         {
-            start_flag = 1;
-        }
-
-        if (mix_level > 80)
-        {
-            start_flag = 0;
-        }
-
-        if (start_flag)
-        {
-            PUMP_1_ON
-        }
-        else
-        {
+        case 0:
             PUMP_1_OFF();
             PUMP_2_OFF();
             PUMP_3_OFF();
             PUMP_4_OFF();
+            stat = 3;
+            break;
+        case 1:
+            get_liquid_level(&wat_level, &det_level, &mix_level, &spr_level);
+            printf("%d,%d,%d,%d\r\n", spr_level, mix_level, det_level, wat_level);
+            if ((mix_level < 40))
+            {
+                temp_targ_wat_flo = (((80 - mix_level) / 100) * 20) * (rat / (rat + 1));
+                temp_targ_det_flo = (((80 - mix_level) / 100) * 20) * (1 / (rat + 1));
+                PUMP_1_ON();
+                PUMP_2_ON();
+                PUMP_3_OFF();
+                stat = 2;
+            }
+            break;
+        case 2:
+            fm_get_total_flow(&wat_flo, &det_flo);
+            printf("targ wat - >%f,tart det - >%f  ------  curt wat - >%f,curt det - >%f\r\n", temp_targ_wat_flo, temp_targ_det_flo, wat_flo, det_flo);
+            if ((wat_flo >= temp_targ_wat_flo) && (det_flo >= temp_targ_det_flo))
+            {
+                fm_reset_wat_flow();
+                fm_reset_det_flow();
+                PUMP_1_OFF();
+                PUMP_2_OFF();
+                PUMP_3_ON();
+                stat = 1;
+            }
+            else
+            {
+                if (wat_flo >= temp_targ_wat_flo)
+                {
+                    fm_reset_wat_flow();
+                    PUMP_1_OFF();
+                }
+                if (det_flo >= temp_targ_det_flo)
+                {
+                    fm_reset_det_flow();
+                    PUMP_2_OFF();
+                }
+            }
+            break;
+        case 3:
+
+            break;
         }
+
+        // Emergency judgment
+        if (mix_level > 90)
+        {
+            PUMP_1_OFF();
+            PUMP_2_OFF();
+            PUMP_3_ON();
+            PUMP_4_OFF();
+            stat = 1;
+        }
+
+        // if (start_flag)
+        // {
+        //     PUMP_1_ON();
+        //     PUMP_2_ON();
+        // }
+
+        // else
+        // {
+        //     PUMP_1_OFF();
+        //     PUMP_2_OFF();
+        //     PUMP_3_OFF();
+        //     PUMP_4_OFF();
+        // }
 
         // if (EMERGENCY_KEY_FLAG() == 1)
         // {
@@ -217,5 +282,5 @@ void accurate_ratio_task()
 // Control allocation flag bit
 void allocate_en(char en)
 {
-    HCP_START_ALLOCATE = en;
+    stat = en;
 }

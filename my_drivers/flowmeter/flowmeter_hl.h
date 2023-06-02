@@ -5,6 +5,8 @@
 #define _FLOWMETER_H_
 
 int fm_get_total_flow(float *fm_1, float *fm_2);
+void fm_reset_wat_flow(void);
+void fm_reset_det_flow(void);
 void fm_recv_callback(unsigned short Size);
 void flowmeter_task(void);
 
