@@ -47,12 +47,12 @@ int fm_get_total_flow(float *fm_1, float *fm_2)
 
 void fm_reset_wat_flow(void)
 {
-    temp_flow_1 = temp_flow_1;
+    temp_flow_1 = total_flow_1;
 }
 
 void fm_reset_det_flow(void)
 {
-    temp_flow_2 = temp_flow_2;
+    temp_flow_2 = total_flow_2;
 }
 
 static void fm_recv_start()
@@ -211,6 +211,6 @@ void flowmeter_task()
         }
 
         switch_fm_flag = ~switch_fm_flag;
-        vTaskDelay(500 / portTICK_RATE_MS);
+        vTaskDelay(200 / portTICK_RATE_MS);
     }
 }

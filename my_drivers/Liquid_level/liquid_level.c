@@ -5,6 +5,10 @@
 #include <stdio.h>
 #include "flowmeter_hl.h"
 #include "motor_hal.h"
+#include "console.h"
+#include "elog.h"
+#include <stdlib.h>
+#include <string.h>
 
 TaskHandle_t liquid_level_task_handle = NULL;
 unsigned short adc_buf[10];
@@ -115,18 +119,33 @@ pump2 - detergent
 pump3 - mix
 pump4 - spray
 */
+
 TaskHandle_t accurate_ratio_task_handle = NULL;
 
 #define MIX_CAPACITY 20
 
 // char HCP_START_ALLOCATE = 1;
 char stat = 1;
-char TARG_CAP = 80;
-char EME_CAP = 90;
-float rat = 10.0;
+char TARG_CAP = 90;
+char EME_CAP = 95;
+float rat = 1.0;
+
+void cs_set_ratio_cb(unsigned char *cmd)
+{
+    char *temp_p = NULL;
+    unsigned int s_id = 0;
+
+    temp_p = strtok((char *)cmd, "-");
+    temp_p = strtok(NULL, "-");
+    s_id = atoi(temp_p);
+    rat = s_id;
+    elog_i("RATIO", "set ratio %f", rat);
+}
 
 void accurate_ratio_task()
 {
+    static unsigned int switch_flag = 0;
+
     // water level
     unsigned char wat_level = 0;
     unsigned char det_level = 0;
@@ -141,140 +160,146 @@ void accurate_ratio_task()
     float temp_targ_wat_flo = 0;
     float temp_targ_det_flo = 0;
 
-    // wait system stable
-    PUMP_3_ON();
-    vTaskDelay(5000 / portTICK_RATE_MS);
+    // complete flag
+    char wat_cmp = 0;
+    char det_cmp = 0;
 
+    // wait system stable
+    PUMP_1_OFF();
+    PUMP_2_OFF();
+    PUMP_3_ON();
+    PUMP_4_OFF();
+
+    cs_reg_fun("setratio", cs_set_ratio_cb);
+
+    // vTaskDelay(4000 / portTICK_RATE_MS);
+
+    // get_liquid_level(&wat_level, &det_level, &mix_level, &spr_level);
+    // fm_get_total_flow(&wat_flo, &det_flo);
+
+    // printf("%d,%d,%d,%d---  1->>%f  2->>%f\r\n", wat_level, det_level, mix_level, spr_level, wat_flo, det_flo);
+    // PUMP_2_ON();
+    // vTaskDelay(1000 / portTICK_RATE_MS);
+    // PUMP_2_OFF();
+
+    // get_liquid_level(&wat_level, &det_level, &mix_level, &spr_level);
+    // fm_get_total_flow(&wat_flo, &det_flo);
+
+    // printf("%d,%d,%d,%d---  1->>%f  2->>%f\r\n", wat_level, det_level, mix_level, spr_level, wat_flo, det_flo);
+
+    PUMP_2_ON();
     while (1)
     {
-        // get_liquid_level(&wat_level, &det_level, &mix_level, &spr_level);
-        // fm_get_total_flow(&wat_flo, &det_flo);
+        get_liquid_level(&wat_level, &det_level, &mix_level, &spr_level);
+        fm_get_total_flow(&wat_flo, &det_flo);
 
-        // printf("%d,%d,%d,%d---  1->>%f  2->>%f\r\n", wat_level, det_level, mix_level, spr_level, wat_flo, det_flo);
+        printf("%d,%d,%d,%d---  1->>%f  2->>%f\r\n", wat_level, det_level, mix_level, spr_level, wat_flo, det_flo);
         // printf("%d,%d,%d,%d\r\n", spr_level, mix_level, det_level, wat_level);
 
-        switch (stat)
+        if (det_flo >= 1)
         {
-        case 0:
-            PUMP_1_OFF();
             PUMP_2_OFF();
-            PUMP_3_OFF();
-            PUMP_4_OFF();
-            stat = 3;
-            break;
-        case 1:
-            get_liquid_level(&wat_level, &det_level, &mix_level, &spr_level);
-            printf("%d,%d,%d,%d\r\n", spr_level, mix_level, det_level, wat_level);
-            if ((mix_level < 40))
-            {
-                temp_targ_wat_flo = (((80 - mix_level) / 100) * 20) * (rat / (rat + 1));
-                temp_targ_det_flo = (((80 - mix_level) / 100) * 20) * (1 / (rat + 1));
-                PUMP_1_ON();
-                PUMP_2_ON();
-                PUMP_3_OFF();
-                stat = 2;
-            }
-            break;
-        case 2:
-            fm_get_total_flow(&wat_flo, &det_flo);
-            printf("targ wat - >%f,tart det - >%f  ------  curt wat - >%f,curt det - >%f\r\n", temp_targ_wat_flo, temp_targ_det_flo, wat_flo, det_flo);
-            if ((wat_flo >= temp_targ_wat_flo) && (det_flo >= temp_targ_det_flo))
-            {
-                fm_reset_wat_flow();
-                fm_reset_det_flow();
-                PUMP_1_OFF();
-                PUMP_2_OFF();
-                PUMP_3_ON();
-                stat = 1;
-            }
-            else
-            {
-                if (wat_flo >= temp_targ_wat_flo)
+        }
+
+        /*
+                switch (stat)
                 {
-                    fm_reset_wat_flow();
+                case 0:
                     PUMP_1_OFF();
-                }
-                if (det_flo >= temp_targ_det_flo)
-                {
-                    fm_reset_det_flow();
                     PUMP_2_OFF();
+                    PUMP_3_OFF();
+                    PUMP_4_OFF();
+                    stat = 3;
+                    break;
+                case 1:
+                    // get_liquid_level(&wat_level, &det_level, &mix_level, &spr_level);
+                    // printf("%d,%d,%d,%d\r\n", wat_level, det_level, mix_level, spr_level);
+
+                    if ((wat_level > 5) && (det_level > 5))
+                    {
+                        if ((mix_level < 10))
+                        {
+                            elog_i("MIX", "Start proportioning!");
+                            temp_targ_wat_flo = (((90.0 - (float)mix_level) / 100.0) * 20.0) * (rat / (rat + 1.0));
+                            temp_targ_det_flo = (((90.0 - (float)mix_level) / 100.0) * 20.0) * (1.0 / (rat + 1.0));
+                            PUMP_1_ON();
+                            PUMP_2_ON();
+                            PUMP_3_OFF();
+                            stat = 2;
+                        }
+                    }
+
+                    break;
+                case 2:
+                    fm_get_total_flow(&wat_flo, &det_flo);
+                    printf("targ wat - >%f,tart det - >%f  ------  curt wat - >%f,curt det - >%f\r\n", temp_targ_wat_flo, temp_targ_det_flo, wat_flo, det_flo);
+
+                    if (wat_flo >= temp_targ_wat_flo)
+                    {
+                        fm_reset_wat_flow();
+                        PUMP_1_OFF();
+                        wat_cmp = 1;
+                        // elog_i("WAT","water is ok!");
+                    }
+                    if (det_flo >= temp_targ_det_flo)
+                    {
+                        fm_reset_det_flow();
+                        PUMP_2_OFF();
+                        det_cmp = 1;
+                        // elog_i("DET","detergent is ok!");
+                    }
+                    else
+                    {
+                        if (switch_flag)
+                        {
+                            PUMP_2_ON();
+                        }
+                        else
+                        {
+                            PUMP_2_OFF();
+                        }
+                        switch_flag = !switch_flag;
+                    }
+
+                    if (wat_cmp && det_cmp)
+                    {
+                        wat_cmp = 0;
+                        det_cmp = 0;
+                        PUMP_3_ON();
+                        stat = 1;
+                        elog_i("MIX", "all is ok!");
+                    }
+
+                    break;
+                case 3:
+
+                    break;
                 }
-            }
-            break;
-        case 3:
+        */
 
-            break;
-        }
-
-        // Emergency judgment
-        if (mix_level > 90)
-        {
-            PUMP_1_OFF();
-            PUMP_2_OFF();
-            PUMP_3_ON();
-            PUMP_4_OFF();
-            stat = 1;
-        }
-
-        // if (start_flag)
+        // if (switch_flag % 4 == 0)
         // {
-        //     PUMP_1_ON();
         //     PUMP_2_ON();
         // }
+        // else if (switch_flag % 5 == 0)
+        // {
+        //     PUMP_2_OFF();
+        // }
+        // switch_flag++;
+        // switch_flag%=1000000;
+        // switch_flag = !switch_flag;
 
-        // else
+        // Emergency judgment
+        // if (mix_level > 90)
         // {
         //     PUMP_1_OFF();
         //     PUMP_2_OFF();
-        //     PUMP_3_OFF();
+        //     PUMP_3_ON();
         //     PUMP_4_OFF();
+        //     fm_reset_det_flow();
+        //     fm_reset_wat_flow();
+        //     stat = 1;
         // }
-
-        // if (EMERGENCY_KEY_FLAG() == 1)
-        // {
-        //     get_liquid_level(&wat_level, &det_level, &mix_level, &spr_level);
-
-        //     printf("%d,%d,%d,%d\r\n", wat_level, det_level, mix_level, spr_level);
-        //     // printf("%d,%d,%d,%d\r\n", spr_level, mix_level, det_level, wat_level);
-        //     if (mix_level < 60)
-        //     {
-        //         PUMP_ON[0]();
-        //         PUMP_ON[1]();
-        //         fm_get_total_flow(&wat_flo, &det_flo);
-
-        //         if (wat_flo / det_flo >= rat - 1) // det less
-        //         {
-        //             PUMP_ON[1]();
-        //         }
-        //         else if (wat_flo / det_flo < rat + 1) // det more
-        //         {
-        //             PUMP_OFF[1]();
-        //         }
-        //     }
-
-        //     if (mix_level > 90)
-        //     {
-        //         PUMP_OFF[0]();
-        //         PUMP_OFF[1]();
-        //     }
-
-        //     if ((spr_level < 50) && (mix_level > 50))
-        //     {
-        //         PUMP_ON[2]();
-        //     }
-        //     if (spr_level > 80)
-        //     {
-        //         PUMP_OFF[2]();
-        //     }
-        // }
-        // else
-        // {
-        //     PUMP_OFF[0]();
-        //     PUMP_OFF[1]();
-        //     PUMP_OFF[2]();
-        //     PUMP_OFF[3]();
-        // }
-
         vTaskDelay(50 / portTICK_RATE_MS);
     }
 }
