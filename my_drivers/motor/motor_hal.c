@@ -369,7 +369,7 @@ HAL_StatusTypeDef motor_wait_en()
     // elog_d("MOTOR", "motor BOOTUP time out!");
     // return HAL_ERROR;
 
-    vTaskDelay(6000 / portTICK_RATE_MS);
+    vTaskDelay(7000 / portTICK_RATE_MS);
     return HAL_OK;
 }
 
@@ -385,6 +385,7 @@ HAL_StatusTypeDef motor_send_data(unsigned int s_id, unsigned char *s_buf, unsig
     HAL_StatusTypeDef ret;
     can_tx_head.StdId = s_id;
     can_tx_head.DLC = s_size;
+    MOTOR_REC_FLAG = 0;
 
 RETRY:
     out_time = 0;
@@ -404,19 +405,19 @@ RETRY:
     while (out_time < MOTOR_CAN_OUT_TIME)
     {
         out_time++;
-        for (char i = 0; i < 10; i++)
-        {
-            if (MOTOR_REC_FLAG_BUF[i] == s_id - 0x600)
-            {
-                memset(MOTOR_REC_FLAG_BUF,0,sizeof(MOTOR_REC_FLAG_BUF));
-                MOTOR_REC_FLAG_BUF[i] = 0;
-                return HAL_OK;
-            }
-        }
-        // if (MOTOR_REC_FLAG)
+        // for (char i = 0; i < 10; i++)
         // {
-        //     return HAL_OK;
+        //     if (MOTOR_REC_FLAG_BUF[i] == s_id - 0x600)
+        //     {
+        //         memset(MOTOR_REC_FLAG_BUF,0,sizeof(MOTOR_REC_FLAG_BUF));
+        //         MOTOR_REC_FLAG_BUF[i] = 0;
+        //         return HAL_OK;
+        //     }
         // }
+        if (MOTOR_REC_FLAG)
+        {
+            return HAL_OK;
+        }
         vTaskDelay(1 / portTICK_RATE_MS);
     }
     elog_e("MOTOR", "moto %d time out!", s_id - 0x600);
@@ -432,9 +433,9 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can_rx_head, can_rx_buf) == HAL_OK)
     {
         // memset(MOTOR_REC_FLAG_BUF, 0, sizeof(MOTOR_REC_FLAG_BUF));
-        MOTOR_REC_FLAG_BUF[cnt_flag++] = can_rx_head.StdId - 0x580;
-        cnt_flag %= 10;
-        // MOTOR_REC_FLAG = 1;
+        // MOTOR_REC_FLAG_BUF[cnt_flag++] = can_rx_head.StdId - 0x580;
+        // cnt_flag %= 10;
+        MOTOR_REC_FLAG = 1;
         // if ((can_rx_head.StdId >= (129 + MOTOR_FB_1)) && (can_rx_head.StdId <= (129 + MOTOR_S_ARM)))
         // {
         //     MOTOR_ERR_ID = can_rx_head.StdId;
