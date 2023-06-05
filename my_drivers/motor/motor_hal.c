@@ -369,7 +369,7 @@ HAL_StatusTypeDef motor_wait_en()
     // elog_d("MOTOR", "motor BOOTUP time out!");
     // return HAL_ERROR;
 
-    vTaskDelay(6000/portTICK_RATE_MS);
+    vTaskDelay(6000 / portTICK_RATE_MS);
     return HAL_OK;
 }
 
@@ -387,11 +387,12 @@ HAL_StatusTypeDef motor_send_data(unsigned int s_id, unsigned char *s_buf, unsig
     can_tx_head.DLC = s_size;
 
 RETRY:
-    MOTOR_REC_FLAG = 0;
+    // MOTOR_REC_FLAG = 0;
     out_time = 0;
     if (retry_count > MOTOR_CAN_RETRY_COUNT)
     {
         // taskEXIT_CRITICAL();
+        
         return HAL_ERROR;
     }
 
@@ -410,6 +411,7 @@ RETRY:
         {
             if (MOTOR_REC_FLAG_BUF[i] == s_id - 0x600)
             {
+                memset(MOTOR_REC_FLAG_BUF,0,sizeof(MOTOR_REC_FLAG_BUF));
                 MOTOR_REC_FLAG_BUF[i] = 0;
                 return HAL_OK;
             }
@@ -420,6 +422,7 @@ RETRY:
         // }
         vTaskDelay(1 / portTICK_RATE_MS);
     }
+    elog_e("MOTOR", "moto %d time out!", s_id - 0x600);
     retry_count++;
     goto RETRY;
 }
@@ -431,7 +434,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     static unsigned char cnt_flag = 0;
     if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can_rx_head, can_rx_buf) == HAL_OK)
     {
-        memset(MOTOR_REC_FLAG_BUF,0,sizeof(MOTOR_REC_FLAG_BUF));
+        // memset(MOTOR_REC_FLAG_BUF, 0, sizeof(MOTOR_REC_FLAG_BUF));
         MOTOR_REC_FLAG_BUF[cnt_flag++] = can_rx_head.StdId - 0x580;
         cnt_flag %= 10;
         // MOTOR_REC_FLAG = 1;

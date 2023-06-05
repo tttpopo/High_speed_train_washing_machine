@@ -160,15 +160,15 @@ void Error_Handler(void);
 #define UD_SPEED 12000               // Lifting brush group running speed
 #define B_ARM_TARG_PULSE -50000      // Big arm end point pulse value
 #define B_AEM_SPEED 1000            // Big arm running speed
-#define S_ARM_TARG_PULSE 0      // Small arm end point pulse value
-#define S_ARM_SPEED 0            // Small arm running speed
+#define S_ARM_TARG_PULSE 100000      // Small arm end point pulse value
+#define S_ARM_SPEED 50000            // Small arm running speed
 
 #define MOTOR_BK_DELAY 110          // Brake delay time when starting the motor
 
 #define MOTOR_ERR_MAX 1000          // Number of motor failure retries
 
 #define MOTOR_CAN_OUT_TIME 100      // ms
-#define MOTOR_CAN_RETRY_COUNT 0     // retry count
+#define MOTOR_CAN_RETRY_COUNT 5     // retry count
 
 #define SET 0                       // Define proximity sensor in place status
 

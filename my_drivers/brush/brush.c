@@ -536,7 +536,7 @@ static void button_all_task(void *state)
     {
     case 1:
         // small_arm_start(1);
-        // while (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_S_ARM] == TARG)
+        // while (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_S_ARM] != TARG)
         // {
         //     vTaskDelay(100 / portTICK_RATE_MS);
         // }
@@ -788,73 +788,83 @@ static void err_deal()
 {
     unsigned char err_code = 0;
     static int temp_err_cnt[8] = {-1, -1, -1, -1, -1, -1, -1, -1};
+
     for (MOTOR_NUM i = MOTOR_FB_1; i < 7; i++)
     {
         motor_read_errcode(MOTOR_STATION[i], &err_code);
-        MOTOR_ERR_CODE_TABLE[i] = err_code;
-        //        printf("%d---%d\r\n",i,err_code);
         if (err_code != 0)
         {
-            MOTOR_BK_OFF[i]();
-
-            if (MOTOR_ERR_CNT[i] <= MOTOR_ERR_MAX)
-            {
-                motor_clear_err(MOTOR_STATION[i]);
-
-                elog_e("ERR-DEAL", "motor %d error--->%d", i, err_code);
-
-                MOTOR_ERR_CNT[i] += 1;
-
-                temp_err_cnt[i] = MOTOR_STATE_TABLE[i];
-            }
-
-            MOTOR_STATE_TABLE[i] = STOP;
+            elog_e("ERR-DEAL", "motor %d error--->%d", i, err_code);
         }
     }
 
-    for (MOTOR_NUM i = MOTOR_FB_1; i < MOTOR_MAX_NUM; i++)
-    {
-        if (temp_err_cnt[i] != -1)
-        {
-            if (motor_set_Position_Mode(MOTOR_STATION[i]) == HAL_OK)
-            {
-                vTaskDelay(100 / portTICK_RATE_MS);
-                elog_w("BRUSH", "motor %d set p mode", i);
-                if (temp_err_cnt[i] != STOP)
-                {
-                    switch (i)
-                    {
-                    case MOTOR_FB_1:
-                        brush_fb_1(temp_err_cnt[i]);
-                        break;
-                    case MOTOR_FB_2:
-                        brush_fb_2(temp_err_cnt[i]);
-                        break;
-                    case MOTOR_FB_3:
-                        brush_fb_3(temp_err_cnt[i]);
-                        break;
-                    case MOTOR_UD_1:
-                        brush_ud_1(temp_err_cnt[i]);
-                        break;
-                    case MOTOR_UD_2:
-                        brush_ud_2(temp_err_cnt[i]);
-                        break;
-                    case MOTOR_UD_3:
-                        brush_ud_3(temp_err_cnt[i]);
-                        break;
-                    case MOTOR_B_ARM:
-                        big_arm_start(temp_err_cnt[i]);
-                        break;
-                    case MOTOR_S_ARM:
-                        small_arm_start(temp_err_cnt[i]);
-                        break;
-                    }
-                }
+    // for (MOTOR_NUM i = MOTOR_FB_1; i < 7; i++)
+    // {
+    //     motor_read_errcode(MOTOR_STATION[i], &err_code);
+    //     MOTOR_ERR_CODE_TABLE[i] = err_code;
+    //     //        printf("%d---%d\r\n",i,err_code);
+    //     if (err_code != 0)
+    //     {
+    //         MOTOR_BK_OFF[i]();
 
-                temp_err_cnt[i] = -1;
-            }
-        }
-    }
+    //         if (MOTOR_ERR_CNT[i] <= MOTOR_ERR_MAX)
+    //         {
+    //             motor_clear_err(MOTOR_STATION[i]);
+
+    //             elog_e("ERR-DEAL", "motor %d error--->%d", i, err_code);
+
+    //             MOTOR_ERR_CNT[i] += 1;
+
+    //             temp_err_cnt[i] = MOTOR_STATE_TABLE[i];
+    //         }
+
+    //         MOTOR_STATE_TABLE[i] = STOP;
+    //     }
+    // }
+
+    // for (MOTOR_NUM i = MOTOR_FB_1; i < MOTOR_MAX_NUM; i++)
+    // {
+    //     if (temp_err_cnt[i] != -1)
+    //     {
+    //         if (motor_set_Position_Mode(MOTOR_STATION[i]) == HAL_OK)
+    //         {
+    //             vTaskDelay(100 / portTICK_RATE_MS);
+    //             elog_w("BRUSH", "motor %d set p mode", i);
+    //             if (temp_err_cnt[i] != STOP)
+    //             {
+    //                 switch (i)
+    //                 {
+    //                 case MOTOR_FB_1:
+    //                     brush_fb_1(temp_err_cnt[i]);
+    //                     break;
+    //                 case MOTOR_FB_2:
+    //                     brush_fb_2(temp_err_cnt[i]);
+    //                     break;
+    //                 case MOTOR_FB_3:
+    //                     brush_fb_3(temp_err_cnt[i]);
+    //                     break;
+    //                 case MOTOR_UD_1:
+    //                     brush_ud_1(temp_err_cnt[i]);
+    //                     break;
+    //                 case MOTOR_UD_2:
+    //                     brush_ud_2(temp_err_cnt[i]);
+    //                     break;
+    //                 case MOTOR_UD_3:
+    //                     brush_ud_3(temp_err_cnt[i]);
+    //                     break;
+    //                 case MOTOR_B_ARM:
+    //                     big_arm_start(temp_err_cnt[i]);
+    //                     break;
+    //                 case MOTOR_S_ARM:
+    //                     small_arm_start(temp_err_cnt[i]);
+    //                     break;
+    //                 }
+    //             }
+
+    //             temp_err_cnt[i] = -1;
+    //         }
+    //     }
+    // }
 }
 
 /// @brief Obtain system status and prepare to upload data packets
@@ -934,6 +944,7 @@ void brush_deamon_task(void)
         {
             elog_e("BRUSH", "set motor %d position mode fail", i + 1);
         }
+        vTaskDelay(200 / portTICK_RATE_MS);
     }
     motor_set_pulse(MOTOR_STATION[MOTOR_S_ARM], 0, 0);
 
@@ -948,7 +959,7 @@ void brush_deamon_task(void)
         // {
         //     i = 0;
         reached_stop();
-        // err_deal();
+        err_deal();
         // }
         ///////////////////
         ///////////////////
