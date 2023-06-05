@@ -387,12 +387,9 @@ HAL_StatusTypeDef motor_send_data(unsigned int s_id, unsigned char *s_buf, unsig
     can_tx_head.DLC = s_size;
 
 RETRY:
-    // MOTOR_REC_FLAG = 0;
     out_time = 0;
     if (retry_count > MOTOR_CAN_RETRY_COUNT)
     {
-        // taskEXIT_CRITICAL();
-        
         return HAL_ERROR;
     }
 

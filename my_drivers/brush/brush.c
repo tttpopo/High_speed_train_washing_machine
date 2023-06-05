@@ -531,6 +531,7 @@ void all_arm_start(unsigned char state)
 
 static void button_all_task(void *state)
 {
+    unsigned char err_code = 0;
     elog_e("TEST", "button all task is start");
     switch (*((unsigned char *)state))
     {
@@ -543,7 +544,25 @@ static void button_all_task(void *state)
         big_arm_start(1);
         while (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] != TARG)
         {
-            vTaskDelay(100 / portTICK_RATE_MS);
+            if (motor_read_target_reached(MOTOR_STATION[MOTOR_B_ARM]) == HAL_OK)
+            {
+                MOTOR_STATE_TABLE[MOTOR_B_ARM] = STOP;
+                MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] = TARG;
+                MOTOR_BK_OFF[MOTOR_B_ARM]();
+            }
+            motor_read_errcode(MOTOR_STATION[MOTOR_B_ARM], &err_code);
+            if (err_code != 0)
+            {
+                vTaskDelay(500 / portTICK_RATE_MS);
+                motor_read_errcode(MOTOR_STATION[MOTOR_B_ARM], &err_code);
+                if (err_code != 0)
+                {
+                    MOTOR_ERR_CODE_TABLE[MOTOR_B_ARM] = err_code;
+                    MOTOR_BK_OFF[MOTOR_B_ARM]();
+                }
+            }
+
+            vTaskDelay(50 / portTICK_RATE_MS);
         }
 
         brush_fb_1(1);
@@ -554,7 +573,27 @@ static void button_all_task(void *state)
 
         while ((MOTOR_IN_PLACE_STAT_TABLE[MOTOR_FB_3] != TARG) || (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_FB_2] != TARG) || (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_FB_1] != TARG))
         {
-            vTaskDelay(100 / portTICK_RATE_MS);
+            for (int i = MOTOR_FB_1; i < MOTOR_FB_1 + 3; i++)
+            {
+                if (motor_read_target_reached(MOTOR_STATION[i]) == HAL_OK)
+                {
+                    MOTOR_STATE_TABLE[i] = STOP;
+                    MOTOR_IN_PLACE_STAT_TABLE[i] = TARG;
+                    MOTOR_BK_OFF[i]();
+                }
+                motor_read_errcode(MOTOR_STATION[i], &err_code);
+                if (err_code != 0)
+                {
+                    vTaskDelay(500 / portTICK_RATE_MS);
+                    motor_read_errcode(MOTOR_STATION[i], &err_code);
+                    if (err_code != 0)
+                    {
+                        MOTOR_ERR_CODE_TABLE[i] = err_code;
+                        MOTOR_BK_OFF[i]();
+                    }
+                }
+                vTaskDelay(50 / portTICK_RATE_MS);
+            }
         }
 
         brush_ud_1(1);
@@ -562,6 +601,32 @@ static void button_all_task(void *state)
         brush_ud_2(1);
         vTaskDelay(BRUSH_START_DELAY_TIME / portTICK_RATE_MS);
         brush_ud_3(1);
+
+        while ((MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_1] != TARG) || (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_2] != TARG) || (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_3] != TARG))
+        {
+            for (int i = MOTOR_UD_1; i < MOTOR_UD_1 + 3; i++)
+            {
+                if (motor_read_target_reached(MOTOR_STATION[i]) == HAL_OK)
+                {
+                    MOTOR_STATE_TABLE[i] = STOP;
+                    MOTOR_IN_PLACE_STAT_TABLE[i] = TARG;
+                    MOTOR_BK_OFF[i]();
+                }
+                motor_read_errcode(MOTOR_STATION[i], &err_code);
+                if (err_code != 0)
+                {
+                    vTaskDelay(500 / portTICK_RATE_MS);
+                    motor_read_errcode(MOTOR_STATION[i], &err_code);
+                    if (err_code != 0)
+                    {
+                        MOTOR_ERR_CODE_TABLE[i] = err_code;
+                        MOTOR_BK_OFF[i]();
+                    }
+                }
+                vTaskDelay(50 / portTICK_RATE_MS);
+            }
+        }
+
         break;
     case 0:
         brush_ud_1(0);
@@ -572,7 +637,27 @@ static void button_all_task(void *state)
 
         while ((MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_1] != ORIGIN) || (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_2] != ORIGIN) || (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_3] != ORIGIN))
         {
-            vTaskDelay(100 / portTICK_RATE_MS);
+            for (int i = MOTOR_UD_1; i < MOTOR_UD_1 + 3; i++)
+            {
+                if (motor_read_target_reached(MOTOR_STATION[i]) == HAL_OK)
+                {
+                    MOTOR_STATE_TABLE[i] = STOP;
+                    MOTOR_IN_PLACE_STAT_TABLE[i] = ORIGIN;
+                    MOTOR_BK_OFF[i]();
+                }
+                motor_read_errcode(MOTOR_STATION[i], &err_code);
+                if (err_code != 0)
+                {
+                    vTaskDelay(500 / portTICK_RATE_MS);
+                    motor_read_errcode(MOTOR_STATION[i], &err_code);
+                    if (err_code != 0)
+                    {
+                        MOTOR_ERR_CODE_TABLE[i] = err_code;
+                        MOTOR_BK_OFF[i]();
+                    }
+                }
+                vTaskDelay(50 / portTICK_RATE_MS);
+            }
         }
 
         brush_fb_1(0);
@@ -583,13 +668,51 @@ static void button_all_task(void *state)
 
         while (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_FB_3] != ORIGIN)
         {
-            vTaskDelay(100 / portTICK_RATE_MS);
+            for (int i = MOTOR_FB_1; i < MOTOR_FB_1 + 3; i++)
+            {
+                if (motor_read_target_reached(MOTOR_STATION[i]) == HAL_OK)
+                {
+                    MOTOR_STATE_TABLE[i] = STOP;
+                    MOTOR_IN_PLACE_STAT_TABLE[i] = ORIGIN;
+                    MOTOR_BK_OFF[i]();
+                }
+                motor_read_errcode(MOTOR_STATION[i], &err_code);
+                if (err_code != 0)
+                {
+                    vTaskDelay(500 / portTICK_RATE_MS);
+                    motor_read_errcode(MOTOR_STATION[i], &err_code);
+                    if (err_code != 0)
+                    {
+                        MOTOR_ERR_CODE_TABLE[i] = err_code;
+                        MOTOR_BK_OFF[i]();
+                    }
+                }
+                vTaskDelay(50 / portTICK_RATE_MS);
+            }
         }
 
         big_arm_start(0);
         while (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] != ORIGIN)
         {
-            vTaskDelay(100 / portTICK_RATE_MS);
+            if (motor_read_target_reached(MOTOR_STATION[MOTOR_B_ARM]) == HAL_OK)
+            {
+                MOTOR_STATE_TABLE[MOTOR_B_ARM] = STOP;
+                MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] = ORIGIN;
+                MOTOR_BK_OFF[MOTOR_B_ARM]();
+            }
+            motor_read_errcode(MOTOR_STATION[MOTOR_B_ARM], &err_code);
+            if (err_code != 0)
+            {
+                vTaskDelay(500 / portTICK_RATE_MS);
+                motor_read_errcode(MOTOR_STATION[MOTOR_B_ARM], &err_code);
+                if (err_code != 0)
+                {
+                    MOTOR_ERR_CODE_TABLE[MOTOR_B_ARM] = err_code;
+                    MOTOR_BK_OFF[MOTOR_B_ARM]();
+                }
+            }
+
+            vTaskDelay(50 / portTICK_RATE_MS);
         }
         // small_arm_start(0);
         break;
@@ -936,6 +1059,7 @@ void brush_deamon_task(void)
 {
     static int temp_emer_state = 1;
     motor_hal_can_init();
+    motor_ctrol_en();
     // motor_wait_en();
     int i = 0;
     for (MOTOR_NUM i = MOTOR_FB_1; i < MOTOR_MAX_NUM; i++)
@@ -946,7 +1070,7 @@ void brush_deamon_task(void)
         }
         vTaskDelay(200 / portTICK_RATE_MS);
     }
-    motor_set_pulse(MOTOR_STATION[MOTOR_S_ARM], 0, 0);
+    // motor_set_pulse(MOTOR_STATION[MOTOR_S_ARM], 0, 0);
 
     self_calibration(1);
 
@@ -954,15 +1078,10 @@ void brush_deamon_task(void)
     {
         i++;
         limit_stop();
-        ///////////////////
-        // if (i == 2)
-        // {
-        //     i = 0;
-        reached_stop();
-        err_deal();
-        // }
-        ///////////////////
-        ///////////////////
+
+        // reached_stop();
+        // err_deal();
+
         if (temp_emer_state != EMERGENCY_KEY_FLAG())
         {
             temp_emer_state = EMERGENCY_KEY_FLAG();

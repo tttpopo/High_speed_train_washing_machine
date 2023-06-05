@@ -21,13 +21,20 @@ extern unsigned char can_rx_buf[10];
  ===============================================================================
  */
 
+// Set the node to an operational state
+void motor_ctrol_en(void)
+{
+    unsigned char CMD_BUF[] = {0x01, 0x00};
+    motor_send_data(0, CMD_BUF, 2);
+}
+
 /// @brief set position mode
 /// @return
 HAL_StatusTypeDef motor_set_Position_Mode(unsigned int s_id)
 {
     HAL_StatusTypeDef ret;
     unsigned char CMD_BUF[][8] = {
-        {0X01, 0X00},
+        // {0X01, 0X00},
         {0x2f, 0x60, 0x60, 0x00, 0x01, 0x00, 0x00, 0x00},
         {0x23, 0x83, 0x60, 0x00, 0x88, 0x13, 0x00, 0x00},
         {0x23, 0x84, 0x60, 0x00, 0x88, 0x13, 0x00, 0x00},
@@ -36,10 +43,10 @@ HAL_StatusTypeDef motor_set_Position_Mode(unsigned int s_id)
         {0x2b, 0x93, 0x60, 0x01, 0x01, 0x00, 0x00, 0x00},
         {0x2b, 0x93, 0x60, 0x02, 0x01, 0x00, 0x00, 0x00},
     };
-    motor_send_data(0, &CMD_BUF[0][0], 2);
+    // motor_send_data(0, &CMD_BUF[0][0], 2);
     for (char i = 0; i < 5; i++)
     {
-        ret = motor_send_data(s_id, &CMD_BUF[i + 1][0], 8);
+        ret = motor_send_data(s_id, &CMD_BUF[i][0], 8);
         if (ret != HAL_OK)
         {
             return ret;
@@ -54,7 +61,7 @@ HAL_StatusTypeDef motor_set_Velocity_Mode(unsigned int s_id)
 {
     HAL_StatusTypeDef ret;
     unsigned char CMD_BUF[][8] = {
-        {0X01, 0X00},
+        // {0X01, 0X00},
         {0x2f, 0x60, 0x60, 0x00, 0x03, 0x00, 0x00, 0x00},
         {0x23, 0x83, 0x60, 0x00, 0xe8, 0x03, 0x00, 0x00},
         {0x23, 0x84, 0x60, 0x00, 0xe8, 0x03, 0x00, 0x00},
@@ -63,11 +70,11 @@ HAL_StatusTypeDef motor_set_Velocity_Mode(unsigned int s_id)
         {0x2b, 0x40, 0x60, 0x00, 0x0f, 0x00, 0x00, 0x00},
     };
 
-    motor_send_data(0, &CMD_BUF[0][0], 2);
+    // motor_send_data(0, &CMD_BUF[0][0], 2);
 
     for (char i = 0; i < 6; i++)
     {
-        ret = motor_send_data(s_id, &CMD_BUF[i + 1][0], 8);
+        ret = motor_send_data(s_id, &CMD_BUF[i][0], 8);
         if (ret != HAL_OK)
         {
             return ret;
@@ -118,17 +125,14 @@ HAL_StatusTypeDef motor_set_pulse(unsigned int s_id, long int pulse, long int sp
     CMD_BUF[1][6] = (unsigned char)(speed >> 16);
     CMD_BUF[1][7] = (unsigned char)(speed >> 24);
 
-    // vTaskSuspend(brush_deamon_task_handle);
     for (char i = 0; i < 5; i++)
     {
         ret = motor_send_data(s_id, &CMD_BUF[i][0], 8);
         if (ret != HAL_OK)
         {
-            // vTaskResume(brush_deamon_task_handle);
             return ret;
         }
     }
-    // vTaskResume(brush_deamon_task_handle);
     return ret;
 }
 
