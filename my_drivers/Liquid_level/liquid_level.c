@@ -193,7 +193,7 @@ void accurate_ratio_task()
         get_liquid_level(&wat_level, &det_level, &mix_level, &spr_level);
         fm_get_total_flow(&wat_flo, &det_flo);
 
-        printf("%d,%d,%d,%d---  1->>%f  2->>%f\r\n", wat_level, det_level, mix_level, spr_level, wat_flo, det_flo);
+        // printf("%d,%d,%d,%d---  1->>%f  2->>%f\r\n", wat_level, det_level, mix_level, spr_level, wat_flo, det_flo);
         // printf("%d,%d,%d,%d\r\n", spr_level, mix_level, det_level, wat_level);
 
         if (det_flo >= 1)

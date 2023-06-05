@@ -926,7 +926,7 @@ void brush_deamon_task(void)
 {
     static int temp_emer_state = 1;
     motor_hal_can_init();
-    motor_wait_en();
+    // motor_wait_en();
     int i = 0;
     for (MOTOR_NUM i = MOTOR_FB_1; i < MOTOR_MAX_NUM; i++)
     {
@@ -935,6 +935,7 @@ void brush_deamon_task(void)
             elog_e("BRUSH", "set motor %d position mode fail", i + 1);
         }
     }
+    motor_set_pulse(MOTOR_STATION[MOTOR_S_ARM], 0, 0);
 
     self_calibration(1);
 
@@ -963,7 +964,8 @@ void brush_deamon_task(void)
             //     motor_restore_stat();
             // }
         }
-
+        // printf("position->%ld\r\n",motor_read_position(0x601));
+        // printf("%d\r\n",motor_read_target_reached(0x601));
         vTaskDelay(50 / portTICK_RATE_MS);
     }
 }

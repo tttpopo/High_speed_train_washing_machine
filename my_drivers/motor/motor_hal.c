@@ -5,6 +5,7 @@
 #include "task.h"
 #include "motor_hal.h"
 #include "stdio.h"
+#include <string.h>
 
 ///////////////////////////// OUT /////////////////////////////////
 // breake
@@ -353,20 +354,23 @@ HAL_StatusTypeDef motor_hal_can_init()
 /// @return
 HAL_StatusTypeDef motor_wait_en()
 {
-    int out_time = 0;
-    MOTOR_REC_FLAG = 0;
-    while (out_time < 500)
-    {
-        out_time++;
-        if (MOTOR_REC_FLAG)
-        {
-            elog_d("MOTOR", "motor BOOTUP!");
-            return HAL_OK;
-        }
-        vTaskDelay(10 / portTICK_RATE_MS);
-    }
-    elog_d("MOTOR", "motor BOOTUP time out!");
-    return HAL_ERROR;
+    // int out_time = 0;
+    // MOTOR_REC_FLAG = 0;
+    // while (out_time < 500)
+    // {
+    //     out_time++;
+    //     if (MOTOR_REC_FLAG)
+    //     {
+    //         elog_d("MOTOR", "motor BOOTUP!");
+    //         return HAL_OK;
+    //     }
+    //     vTaskDelay(10 / portTICK_RATE_MS);
+    // }
+    // elog_d("MOTOR", "motor BOOTUP time out!");
+    // return HAL_ERROR;
+
+    vTaskDelay(6000/portTICK_RATE_MS);
+    return HAL_OK;
 }
 
 /// @brief Send data to the motor
@@ -427,6 +431,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     static unsigned char cnt_flag = 0;
     if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can_rx_head, can_rx_buf) == HAL_OK)
     {
+        memset(MOTOR_REC_FLAG_BUF,0,sizeof(MOTOR_REC_FLAG_BUF));
         MOTOR_REC_FLAG_BUF[cnt_flag++] = can_rx_head.StdId - 0x580;
         cnt_flag %= 10;
         // MOTOR_REC_FLAG = 1;
