@@ -156,6 +156,10 @@ static void hcp_analyse_callback(unsigned int size)
         elog_d("HCP", "Folding boom and spray bar small arm start");
         all_arm_start(hcp_buf[4]);
         break;
+    case 0xAE:
+        elog_d("HCP", "Clear fault");
+        err_deal();
+        break;
     }
 }
 

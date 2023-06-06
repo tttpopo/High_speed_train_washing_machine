@@ -912,20 +912,36 @@ void self_calibration(unsigned char type)
     }
 }
 
-/// @brief Self calibration mode 1
-static void err_deal()
+void err_deal()
 {
-    unsigned char err_code = 0;
-    static int temp_err_cnt[8] = {-1, -1, -1, -1, -1, -1, -1, -1};
-
-    for (MOTOR_NUM i = MOTOR_FB_1; i < 7; i++)
+    for (int i = MOTOR_FB_1; i < MOTOR_MAX_NUM; i++)
     {
-        motor_read_errcode(MOTOR_STATION[i], &err_code);
-        if (err_code != 0)
+        if (MOTOR_ERR_CODE_TABLE[i] != 0)
         {
-            elog_e("ERR-DEAL", "motor %d error--->%d", i, err_code);
+            motor_clear_err(MOTOR_STATION[i]);
         }
     }
+    vTaskDelay(5000 / portTICK_RATE_MS);
+    for (int i = MOTOR_FB_1; i < MOTOR_MAX_NUM; i++)
+    {
+        if (MOTOR_ERR_CODE_TABLE[i] != 0)
+        {
+            motor_set_Position_Mode(MOTOR_STATION[i]);
+            MOTOR_ERR_CODE_TABLE[i] = 0;
+        }
+    }
+
+    // unsigned char err_code = 0;
+    // static int temp_err_cnt[8] = {-1, -1, -1, -1, -1, -1, -1, -1};
+
+    // for (MOTOR_NUM i = MOTOR_FB_1; i < 7; i++)
+    // {
+    //     motor_read_errcode(MOTOR_STATION[i], &err_code);
+    //     if (err_code != 0)
+    //     {
+    //         elog_e("ERR-DEAL", "motor %d error--->%d", i, err_code);
+    //     }
+    // }
 
     // for (MOTOR_NUM i = MOTOR_FB_1; i < 7; i++)
     // {

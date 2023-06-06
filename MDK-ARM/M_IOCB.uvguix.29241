@@ -3615,9 +3615,9 @@
       </Doc>
       <Doc>
         <Name>..\my_drivers\motor\motor_drive.c</Name>
-        <ColumnNumber>23</ColumnNumber>
+        <ColumnNumber>2</ColumnNumber>
         <TopLine>13</TopLine>
-        <CurrentLine>28</CurrentLine>
+        <CurrentLine>18</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders></ContractedFolders>
         <PaneID>0</PaneID>

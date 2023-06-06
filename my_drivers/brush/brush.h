@@ -20,6 +20,7 @@ void all_arm_start(unsigned char state);
 void button_start(void);
 void button_reset(void);
 void button_stop(void);
+void err_deal(void);
 void brush_get_state(unsigned char *data);
 void motor_record_stat(unsigned char cmd);
 void brush_deamon_task(void);
