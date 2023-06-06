@@ -167,8 +167,8 @@ void Error_Handler(void);
 
 #define MOTOR_ERR_MAX 1000          // Number of motor failure retries
 
-#define MOTOR_CAN_OUT_TIME 100      // ms
-#define MOTOR_CAN_RETRY_COUNT 5     // retry count
+#define MOTOR_CAN_OUT_TIME 200      // ms
+#define MOTOR_CAN_RETRY_COUNT 0     // retry count
 
 #define SET 0                       // Define proximity sensor in place status
 

@@ -391,6 +391,7 @@ RETRY:
     out_time = 0;
     if (retry_count > MOTOR_CAN_RETRY_COUNT)
     {
+        elog_e("MOTOR", "moto %d time out!", s_id - 0x600);
         return HAL_ERROR;
     }
 
@@ -420,7 +421,6 @@ RETRY:
         }
         vTaskDelay(1 / portTICK_RATE_MS);
     }
-    elog_e("MOTOR", "moto %d time out!", s_id - 0x600);
     retry_count++;
     goto RETRY;
 }
