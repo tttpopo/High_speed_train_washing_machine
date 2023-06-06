@@ -160,8 +160,8 @@ void Error_Handler(void);
 #define UD_SPEED 12000               // Lifting brush group running speed
 #define B_ARM_TARG_PULSE -50000      // Big arm end point pulse value
 #define B_AEM_SPEED 1000            // Big arm running speed
-#define S_ARM_TARG_PULSE 100000      // Small arm end point pulse value
-#define S_ARM_SPEED 50000            // Small arm running speed
+#define S_ARM_TARG_PULSE 170000      // Small arm end point pulse value
+#define S_ARM_SPEED 20000            // Small arm running speed
 
 #define MOTOR_BK_DELAY 110          // Brake delay time when starting the motor
 
