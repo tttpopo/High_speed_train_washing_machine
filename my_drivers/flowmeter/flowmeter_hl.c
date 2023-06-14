@@ -197,7 +197,6 @@ void flowmeter_task()
                 {
                     if (total_flow_2 != 0)
                     {
-
                         first_flag_2 = 0;
                         temp_flow_2 = total_flow_2;
                     }
@@ -209,7 +208,7 @@ void flowmeter_task()
                 /////////////////////////////////////////////////
             }
         }
-
+        // printf("1--->%f   2--->%f\r\n", total_flow_1, total_flow_2);
         switch_fm_flag = ~switch_fm_flag;
         vTaskDelay(200 / portTICK_RATE_MS);
     }

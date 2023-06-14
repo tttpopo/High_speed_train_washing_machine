@@ -28,6 +28,28 @@ void motor_ctrol_en(void)
     motor_send_data(0, CMD_BUF, 2);
 }
 
+HAL_StatusTypeDef motor_en(unsigned int s_id)
+{
+    HAL_StatusTypeDef ret;
+
+    unsigned char CMD_BUF[][8] = {
+        {0x2b, 0x40, 0x60, 0x00, 0x06, 0x00, 0x00, 0x00},
+        {0x2b, 0x40, 0x60, 0x00, 0x07, 0x00, 0x00, 0x00},
+        {0x2b, 0x40, 0x60, 0x00, 0x0f, 0x00, 0x00, 0x00}
+    };
+
+    for (char i = 0; i < 3; i++)
+    {
+        ret = motor_send_data(s_id, &CMD_BUF[i][0], 8);
+        if (ret != HAL_OK)
+        {
+            return ret;
+        }
+    }
+    return ret;
+}
+
+
 /// @brief set position mode
 /// @return
 HAL_StatusTypeDef motor_set_Position_Mode(unsigned int s_id)

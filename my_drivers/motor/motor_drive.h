@@ -11,6 +11,7 @@
  */
 
 void motor_ctrol_en(void);
+HAL_StatusTypeDef motor_en(unsigned int s_id);
 HAL_StatusTypeDef motor_set_Position_Mode(unsigned int s_id);
 HAL_StatusTypeDef motor_set_Velocity_Mode(unsigned int s_id);
 HAL_StatusTypeDef motor_set_speed(unsigned int s_id, long int speed);
