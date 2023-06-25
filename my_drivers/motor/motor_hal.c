@@ -118,6 +118,16 @@ GPIO_PinState MOTOR_SARM_BK_GET()
 
 // pump
 
+/*
+PUMP1 - water pump
+PUMP2 - Detergent pump
+PUMP3 - spray pump
+PUMP4 - brush water pump
+PUMP5 - Detergent suction pump
+PUMP6 - vacuum pump(sewage pump)
+PUMP7 - solenoid valve
+*/
+
 void PUMP_1_ON()
 {
     HAL_GPIO_WritePin(PUMP_1_GPIO_Port, PUMP_1_Pin, GPIO_PIN_SET);
@@ -133,6 +143,18 @@ void PUMP_3_ON()
 void PUMP_4_ON()
 {
     HAL_GPIO_WritePin(PUMP_4_GPIO_Port, PUMP_4_Pin, GPIO_PIN_SET);
+}
+void PUMP_5_ON()
+{
+    HAL_GPIO_WritePin(PUMP_5_GPIO_Port, PUMP_5_Pin, GPIO_PIN_SET);
+}
+void PUMP_6_ON()
+{
+    HAL_GPIO_WritePin(PUMP_6_GPIO_Port, PUMP_6_Pin, GPIO_PIN_SET);
+}
+void PUMP_7_ON()
+{
+    HAL_GPIO_WritePin(PUMP_7_GPIO_Port, PUMP_7_Pin, GPIO_PIN_SET);
 }
 
 void PUMP_1_OFF()
@@ -151,6 +173,18 @@ void PUMP_4_OFF()
 {
     HAL_GPIO_WritePin(PUMP_4_GPIO_Port, PUMP_4_Pin, GPIO_PIN_RESET);
 }
+void PUMP_5_OFF()
+{
+    HAL_GPIO_WritePin(PUMP_5_GPIO_Port, PUMP_5_Pin, GPIO_PIN_RESET);
+}
+void PUMP_6_OFF()
+{
+    HAL_GPIO_WritePin(PUMP_6_GPIO_Port, PUMP_6_Pin, GPIO_PIN_RESET);
+}
+void PUMP_7_OFF()
+{
+    HAL_GPIO_WritePin(PUMP_7_GPIO_Port, PUMP_7_Pin, GPIO_PIN_RESET);
+}
 
 GPIO_PinState PUMP_1_GET()
 {
@@ -168,32 +202,44 @@ GPIO_PinState PUMP_4_GET()
 {
     return HAL_GPIO_ReadPin(PUMP_4_GPIO_Port, PUMP_4_Pin);
 }
+GPIO_PinState PUMP_5_GET()
+{
+    return HAL_GPIO_ReadPin(PUMP_5_GPIO_Port, PUMP_5_Pin);
+}
+GPIO_PinState PUMP_6_GET()
+{
+    return HAL_GPIO_ReadPin(PUMP_6_GPIO_Port, PUMP_6_Pin);
+}
+GPIO_PinState PUMP_7_GET()
+{
+    return HAL_GPIO_ReadPin(PUMP_7_GPIO_Port, PUMP_7_Pin);
+}
 
 // drum
 
 void DRUM_1_ON(void)
 {
-    HAL_GPIO_WritePin(DRUM_1_GPIO_Port, DRUM_1_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DRUM_1_GPIO_Port, DRUM_1_Pin, GPIO_PIN_SET);
 }
 void DRUM_2_ON(void)
 {
-    HAL_GPIO_WritePin(DRUM_2_GPIO_Port, DRUM_2_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DRUM_2_GPIO_Port, DRUM_2_Pin, GPIO_PIN_SET);
 }
 void DRUM_3_ON(void)
 {
-    HAL_GPIO_WritePin(DRUM_3_GPIO_Port, DRUM_3_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DRUM_3_GPIO_Port, DRUM_3_Pin, GPIO_PIN_SET);
 }
 void DRUM_1_OFF(void)
 {
-    HAL_GPIO_WritePin(DRUM_1_GPIO_Port, DRUM_1_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(DRUM_1_GPIO_Port, DRUM_1_Pin, GPIO_PIN_RESET);
 }
 void DRUM_2_OFF(void)
 {
-    HAL_GPIO_WritePin(DRUM_2_GPIO_Port, DRUM_2_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(DRUM_2_GPIO_Port, DRUM_2_Pin, GPIO_PIN_RESET);
 }
 void DRUM_3_OFF(void)
 {
-    HAL_GPIO_WritePin(DRUM_3_GPIO_Port, DRUM_3_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(DRUM_3_GPIO_Port, DRUM_3_Pin, GPIO_PIN_RESET);
 }
 GPIO_PinState DRUM_1_GET(void)
 {
@@ -279,6 +325,11 @@ GPIO_PinState MOTOR_SARM_D_FLAG()
 GPIO_PinState EMERGENCY_KEY_FLAG()
 {
     return HAL_GPIO_ReadPin(EMERG_KEY_GPIO_Port, EMERG_KEY_Pin);
+}
+
+GPIO_PinState ANTI_COLLISION_FLAG()
+{
+    return HAL_GPIO_ReadPin(IN_RES_1_GPIO_Port, IN_RES_1_Pin);
 }
 
 /*
@@ -391,7 +442,7 @@ RETRY:
     out_time = 0;
     if (retry_count > MOTOR_CAN_RETRY_COUNT)
     {
-        elog_e("MOTOR", "moto %d time out!", s_id - 0x600);
+        // elog_e("MOTOR", "moto %d time out!", s_id - 0x600);
         return HAL_ERROR;
     }
 
@@ -429,7 +480,7 @@ RETRY:
 /// @param hcan
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
-    static unsigned char cnt_flag = 0;
+    //static unsigned char cnt_flag = 0;
     if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can_rx_head, can_rx_buf) == HAL_OK)
     {
         // memset(MOTOR_REC_FLAG_BUF, 0, sizeof(MOTOR_REC_FLAG_BUF));
@@ -500,11 +551,11 @@ GPIO_PinState (*MOTOR_LIMIT_FLAG[])(void) = {
     MOTOR_SARM_U_FLAG,
     MOTOR_SARM_D_FLAG};
 
-void (*PUMP_ON[])(void) = {PUMP_1_ON, PUMP_2_ON, PUMP_3_ON, PUMP_4_ON};
+void (*PUMP_ON[])(void) = {PUMP_1_ON, PUMP_2_ON, PUMP_3_ON, PUMP_4_ON, PUMP_5_ON, PUMP_6_ON, PUMP_7_ON};
 
-void (*PUMP_OFF[])(void) = {PUMP_1_OFF, PUMP_2_OFF, PUMP_3_OFF, PUMP_4_OFF};
+void (*PUMP_OFF[])(void) = {PUMP_1_OFF, PUMP_2_OFF, PUMP_3_OFF, PUMP_4_OFF, PUMP_5_OFF, PUMP_6_OFF, PUMP_7_OFF};
 
-GPIO_PinState (*PUMP_STAT[])(void) = {PUMP_1_GET, PUMP_2_GET, PUMP_3_GET, PUMP_4_GET};
+GPIO_PinState (*PUMP_STAT[])(void) = {PUMP_1_GET, PUMP_2_GET, PUMP_3_GET, PUMP_4_GET, PUMP_5_GET, PUMP_6_GET, PUMP_7_GET};
 
 void (*DRUM_ON[])(void) = {DRUM_1_ON, DRUM_2_ON, DRUM_3_ON};
 

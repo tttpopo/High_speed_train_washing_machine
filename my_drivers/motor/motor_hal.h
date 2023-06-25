@@ -49,10 +49,10 @@ void PUMP_1_OFF(void);
 void PUMP_2_OFF(void);
 void PUMP_3_OFF(void);
 void PUMP_4_OFF(void);
-GPIO_PinState PUMP_1_GET(void);
-GPIO_PinState PUMP_2_GET(void);
-GPIO_PinState PUMP_3_GET(void);
-GPIO_PinState PUMP_4_GET(void);
+// GPIO_PinState PUMP_1_GET(void);
+// GPIO_PinState PUMP_2_GET(void);
+// GPIO_PinState PUMP_3_GET(void);
+// GPIO_PinState PUMP_4_GET(void);
 // drum
 // void DRUM_1_ON(void);HAL_GPIO_WritePin(PUMP_1_GPIO_Port,PUMP_1_Pin,GPIO_PIN_RESET);
 // void DRUM_2_ON(void);HAL_GPIO_WritePin(PUMP_2_GPIO_Port,PUMP_2_Pin,GPIO_PIN_RESET);
@@ -84,5 +84,7 @@ GPIO_PinState MOTOR_SARM_D_FLAG(void);
 
 // Emergency stop button
 GPIO_PinState EMERGENCY_KEY_FLAG(void);
+// Anti-collision strip
+GPIO_PinState ANTI_COLLISION_FLAG(void);
 
 #endif

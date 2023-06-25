@@ -144,7 +144,7 @@ void cs_set_ratio_cb(unsigned char *cmd)
 
 void accurate_ratio_task()
 {
-    static unsigned int switch_flag = 0;
+    // static unsigned int switch_flag = 0;
 
     // water level
     unsigned char wat_level = 0;

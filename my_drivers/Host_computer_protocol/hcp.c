@@ -35,7 +35,7 @@ static unsigned short CRC16_Modbus(unsigned char *pdata, int len)
 /// @brief Collect all information and upload it
 static void response_beat()
 {
-    static unsigned char heart_buf[26] = {0x5a, 0x20, 0x10, 0x11};
+    static unsigned char heart_buf[29] = {0x5a, 0x17, 0x10, 0x11};
     brush_get_state(&heart_buf[4]);
     unsigned short crc_code = CRC16_Modbus(heart_buf, sizeof(heart_buf) - 2);
     heart_buf[sizeof(heart_buf) - 2] = (crc_code & 0x00ff);
@@ -64,7 +64,7 @@ static void hcp_analyse_callback(unsigned int size)
         elog_d("HCP", "heartbeat");
         // response 0x11
         response_beat();
-        water_pump_set(&hcp_buf[4]);
+        // water_pump_set(&hcp_buf[4]);
         break;
     case 0x02:
         elog_d("HCP", "one button start");
