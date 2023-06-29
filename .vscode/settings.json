@@ -36,6 +36,10 @@
         "flowmeter_hl.h": "c",
         "stdio.h": "c",
         "battery_hl.h": "c",
-        "battery.h": "c"
+        "battery.h": "c",
+        "tim.h": "c",
+        "rtc.h": "c",
+        "dma.h": "c",
+        "cmsis_os.h": "c"
     }
 }

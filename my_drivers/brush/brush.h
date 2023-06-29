@@ -4,6 +4,7 @@
 #include "main.h"
 #include "gpio.h"
 
+void brush_position_set(unsigned char *data);
 void brush_fb_1(unsigned char state);
 void brush_fb_2(unsigned char state);
 void brush_fb_3(unsigned char state);

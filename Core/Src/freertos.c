@@ -39,7 +39,7 @@
 #include "hcp.h"
 #include "brush.h"
 #include "flowmeter_hl.h"
-#include "battery.h"
+// #include "battery.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -72,6 +72,9 @@ static struct fdb_default_kv_node default_kv_table[] = {
     {"boot_count", &boot_count, sizeof(boot_count)}, /* int type KV */
 };
 
+unsigned char pb_bat_level = 0;
+unsigned char pb_rec_buf[5] = {0};
+unsigned char pb_rec = 0;
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -91,12 +94,12 @@ void cs_task_manager_cb(unsigned char *cmd);
 void cs_task_HighWaterMark_cb(unsigned char *cmd);
 /* USER CODE END FunctionPrototypes */
 
-void StartDefaultTask(void const * argument);
+void StartDefaultTask(void const *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /* GetIdleTaskMemory prototype (linked to static allocation support) */
-void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize );
+void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize);
 
 /* USER CODE BEGIN GET_IDLE_TASK_MEMORY */
 static StaticTask_t xIdleTaskTCBBuffer;
@@ -112,17 +115,19 @@ void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer, StackTyp
 /* USER CODE END GET_IDLE_TASK_MEMORY */
 
 /**
-  * @brief  FreeRTOS initialization
-  * @param  None
-  * @retval None
-  */
-void MX_FREERTOS_Init(void) {
+ * @brief  FreeRTOS initialization
+ * @param  None
+ * @retval None
+ */
+void MX_FREERTOS_Init(void)
+{
   /* USER CODE BEGIN Init */
   default_kv.kvs = default_kv_table;
   default_kv.num = sizeof(default_kv_table) / sizeof(default_kv_table[0]);
   fdb_kvdb_init(&kvdb, "NVS", "fdb", &default_kv, NULL);
   elog_my_init();
   cs_init();
+  HAL_UART_Receive_IT(&huart5, &pb_rec, 1);
   // cs_recv_start();
   /* USER CODE END Init */
 
@@ -156,11 +161,10 @@ void MX_FREERTOS_Init(void) {
   // xTaskCreate((TaskFunction_t)rgb_task, "rgb_task", 100, NULL, 2, &rgb_task_handle);
   xTaskCreate((TaskFunction_t)liquid_level_task, "liquid level task", 100, NULL, 0, &liquid_level_task_handle);
   xTaskCreate((TaskFunction_t)brush_deamon_task, "brush deamon task", 400, NULL, 4, &brush_deamon_task_handle);
-  // xTaskCreate((TaskFunction_t)flowmeter_task, "flowmeter task", 200, NULL, 1, &flowmeter_task_handle);
+  xTaskCreate((TaskFunction_t)flowmeter_task, "flowmeter task", 200, NULL, 1, &flowmeter_task_handle);
   // xTaskCreate((TaskFunction_t)battery_task, "battery task", 200, NULL, 1, &battery_task_handle);
-  // xTaskCreate((TaskFunction_t)accurate_ratio_task, "accurate ratio task", 200, NULL, 1, &accurate_ratio_task_handle);
+  xTaskCreate((TaskFunction_t)accurate_ratio_task, "accurate ratio task", 200, NULL, 1, &accurate_ratio_task_handle);
   /* USER CODE END RTOS_THREADS */
-
 }
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -170,7 +174,7 @@ void MX_FREERTOS_Init(void) {
  * @retval None
  */
 /* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const * argument)
+void StartDefaultTask(void const *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
@@ -345,27 +349,40 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
   {
     hcp_recv_callback(Size);
   }
-  else if (huart == &huart3)
-  {
-    bat_recv_callback(Size);
-  }
-  // 232 serial port of upper computer
+  // power
+  // else if (huart == &huart3)
+  // {
+  //   bat_recv_callback(Size);
+  // }
   else if (huart == &huart4)
   {
     fm_recv_callback(Size);
   }
-  // else if (huart == &huart5)
-  // {
-  // }
 }
 
-// void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-// {
-//   if (huart == &huart3)
-//   {
-//     bat_recv_callback(1);
-//   }
-// }
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  static unsigned char pb_rec_buf[5] = {0};
+  static unsigned char pb_rec_index = 0;
+  if (huart == &huart5)
+  {
+    if (pb_rec == 0x5a)
+    {
+      pb_rec_index = 0;
+    }
+    pb_rec_buf[pb_rec_index++] = pb_rec;
+    if (pb_rec_index > 2)
+    {
+      if (pb_rec == 0xa5)
+      {
+        pb_bat_level = pb_rec_buf[1];
+        // printf("%d", pb_bat_level);
+      }
+      pb_rec_index = 0;
+    }
+    HAL_UART_Receive_IT(&huart5, &pb_rec, 1);
+  }
+}
 void cs_task_manager_cb(unsigned char *cmd)
 {
   unsigned char write_buffer[500];
@@ -390,4 +407,3 @@ void cs_task_HighWaterMark_cb(unsigned char *cmd)
 }
 
 /* USER CODE END Application */
-

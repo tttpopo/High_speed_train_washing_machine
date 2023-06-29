@@ -7,5 +7,5 @@ void get_liquid_level(unsigned char *l_1, unsigned char *l_2, unsigned char *l_3
 // accurate ratio part
 void accurate_ratio_task(void);
 void allocate_en(char en);
-
+void set_ratio(float ratio);
 #endif

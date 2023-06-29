@@ -144,8 +144,6 @@ void cs_set_ratio_cb(unsigned char *cmd)
 
 void accurate_ratio_task()
 {
-    // static unsigned int switch_flag = 0;
-
     // water level
     unsigned char wat_level = 0;
     unsigned char det_level = 0;
@@ -165,10 +163,9 @@ void accurate_ratio_task()
     char det_cmp = 0;
 
     // wait system stable
-    PUMP_1_OFF();
-    PUMP_2_OFF();
-    PUMP_3_ON();
-    PUMP_4_OFF();
+    // PUMP_1_OFF();
+    // PUMP_2_OFF();
+    // PUMP_7_ON();
 
     cs_reg_fun("setratio", cs_set_ratio_cb);
 
@@ -176,26 +173,17 @@ void accurate_ratio_task()
 
     // get_liquid_level(&wat_level, &det_level, &mix_level, &spr_level);
     // fm_get_total_flow(&wat_flo, &det_flo);
-
     // printf("%d,%d,%d,%d---  1->>%f  2->>%f\r\n", wat_level, det_level, mix_level, spr_level, wat_flo, det_flo);
-
-    // printf("%d,%d,%d,%d---  1->>%f  2->>%f\r\n", wat_level, det_level, mix_level, spr_level, wat_flo, det_flo);
-
     while (1)
     {
         get_liquid_level(&wat_level, &det_level, &mix_level, &spr_level);
         fm_get_total_flow(&wat_flo, &det_flo);
-
-        // printf("%d,%d,%d,%d---  1->>%f  2->>%f\r\n", wat_level, det_level, mix_level, spr_level, wat_flo, det_flo);
-        // printf("%d,%d,%d,%d\r\n", spr_level, mix_level, det_level, wat_level);
-
         switch (stat)
         {
         case 0:
             PUMP_1_OFF();
             PUMP_2_OFF();
-            PUMP_3_OFF();
-            PUMP_4_OFF();
+            PUMP_7_OFF();
             stat = 3;
             break;
         case 1:
@@ -208,16 +196,17 @@ void accurate_ratio_task()
                     elog_i("MIX", "Start proportioning!");
                     temp_targ_wat_flo = (((90.0 - (float)mix_level) / 100.0) * 20.0) * (rat / (rat + 1.0));
                     temp_targ_det_flo = (((90.0 - (float)mix_level) / 100.0) * 20.0) * (1.0 / (rat + 1.0));
+                    PUMP_7_OFF();
+                    vTaskDelay(1000 / portTICK_RATE_MS);
                     PUMP_1_ON();
                     PUMP_2_ON();
-                    PUMP_3_OFF();
                     stat = 2;
                 }
             }
             break;
         case 2:
             fm_get_total_flow(&wat_flo, &det_flo);
-            printf("targ wat - >%f,tart det - >%f  ------  curt wat - >%f,curt det - >%f\r\n", temp_targ_wat_flo, temp_targ_det_flo, wat_flo, det_flo);
+            // printf("targ wat - >%f,tart det - >%f  ------  curt wat - >%f,curt det - >%f\r\n", temp_targ_wat_flo, temp_targ_det_flo, wat_flo, det_flo);
             if (wat_flo >= temp_targ_wat_flo - 0.1)
             {
                 fm_reset_wat_flow();
@@ -237,7 +226,7 @@ void accurate_ratio_task()
             {
                 wat_cmp = 0;
                 det_cmp = 0;
-                PUMP_3_ON();
+                PUMP_7_ON();
                 stat = 1;
                 elog_i("MIX", "all is ok!");
             }
@@ -245,7 +234,7 @@ void accurate_ratio_task()
             {
                 PUMP_1_OFF();
                 PUMP_2_OFF();
-                PUMP_3_ON();
+                PUMP_7_ON();
                 stat = 1;
                 elog_i("MIX", "mix is full!");
                 fm_reset_wat_flow();
@@ -257,30 +246,6 @@ void accurate_ratio_task()
 
             break;
         }
-
-        // if (switch_flag % 4 == 0)
-        // {
-        //     PUMP_2_ON();
-        // }
-        // else if (switch_flag % 5 == 0)
-        // {
-        //     PUMP_2_OFF();
-        // }
-        // switch_flag++;
-        // switch_flag%=1000000;
-        // switch_flag = !switch_flag;
-
-        // Emergency judgment
-        // if (mix_level > 90)
-        // {
-        //     PUMP_1_OFF();
-        //     PUMP_2_OFF();
-        //     PUMP_3_ON();
-        //     PUMP_4_OFF();
-        //     fm_reset_det_flow();
-        //     fm_reset_wat_flow();
-        //     stat = 1;
-        // }
         vTaskDelay(50 / portTICK_RATE_MS);
     }
 }
@@ -289,4 +254,10 @@ void accurate_ratio_task()
 void allocate_en(char en)
 {
     stat = en;
+}
+
+void set_ratio(float ratio)
+{
+    rat = ratio;
+    elog_i("SET_RAT", "ratio is %f", rat);
 }

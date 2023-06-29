@@ -30,14 +30,19 @@ static unsigned short CRC16_Modbus(unsigned char *pdata, int len)
         }
     }
     return crc;
-}
+} 
 
 /// @brief Collect all information and upload it
+extern unsigned char pb_bat_level;
 static void response_beat()
 {
-    static unsigned char heart_buf[29] = {0x5a, 0x17, 0x10, 0x11};
+    static unsigned char heart_buf[30] = {0x5a, 0x17, 0x10, 0x11};
     brush_get_state(&heart_buf[4]);
+
     unsigned short crc_code = CRC16_Modbus(heart_buf, sizeof(heart_buf) - 2);
+    // heart_buf[27] = pb_bat_level;
+    heart_buf[27] = 35;
+
     heart_buf[sizeof(heart_buf) - 2] = (crc_code & 0x00ff);
     heart_buf[sizeof(heart_buf) - 1] = (crc_code >> 8);
     // HAL_UART_Transmit_DMA(&huart2, heart_buf, sizeof(heart_buf));
@@ -47,6 +52,11 @@ static void response_beat()
 extern unsigned char pre_cmd;
 static void hcp_analyse_callback(unsigned int size)
 {
+    // for (int i = 0; i < size; i++)
+    // {
+    //     printf("-%x", hcp_buf[i]);
+    // }
+    // printf("\r\n");
     if (hcp_buf[0] != 0x5a)
     {
         return;
@@ -112,7 +122,7 @@ static void hcp_analyse_callback(unsigned int size)
         break;
     case 0x0d:
         elog_d("HCP", "position set");
-
+        brush_position_set(&hcp_buf[4]);
         break;
     case 0x0e:
         elog_d("HCP", "Forward and reverse settings");

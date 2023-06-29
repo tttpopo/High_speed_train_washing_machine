@@ -91,6 +91,15 @@ void cs_pump_on_cb(unsigned char *cmd)
     case 4:
         PUMP_4_ON();
         break;
+    case 5:
+        PUMP_5_ON();
+        break;
+    case 6:
+        PUMP_6_ON();
+        break;
+    case 7:
+        PUMP_7_ON();
+        break;
     }
     // PUMP_1_ON();
 }
@@ -121,10 +130,22 @@ void cs_pump_off_cb(unsigned char *cmd)
         PUMP_4_OFF();
         break;
     case 5:
+        PUMP_5_OFF();
+        break;
+    case 6:
+        PUMP_6_OFF();
+        break;
+    case 7:
+        PUMP_7_OFF();
+        break;
+    case 0:
         PUMP_1_OFF();
         PUMP_2_OFF();
         PUMP_3_OFF();
         PUMP_4_OFF();
+        PUMP_5_OFF();
+        PUMP_6_OFF();
+        PUMP_7_OFF();
         break;
     }
 

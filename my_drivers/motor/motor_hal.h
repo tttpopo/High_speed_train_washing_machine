@@ -45,10 +45,17 @@ void PUMP_1_ON(void);
 void PUMP_2_ON(void);
 void PUMP_3_ON(void);
 void PUMP_4_ON(void);
+void PUMP_5_ON(void);
+void PUMP_6_ON(void);
+void PUMP_7_ON(void);
+
 void PUMP_1_OFF(void);
 void PUMP_2_OFF(void);
 void PUMP_3_OFF(void);
 void PUMP_4_OFF(void);
+void PUMP_5_OFF(void);
+void PUMP_6_OFF(void);
+void PUMP_7_OFF(void);
 // GPIO_PinState PUMP_1_GET(void);
 // GPIO_PinState PUMP_2_GET(void);
 // GPIO_PinState PUMP_3_GET(void);

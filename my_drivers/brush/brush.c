@@ -17,7 +17,7 @@ TaskHandle_t button_all_task_handle = NULL;
 
 // void (*RUNNING_FUN)(void) = NULL;
 
-long int FB_TARG_PULSE = 1200000;  // Translation brush group end point pulse value
+// long int FB_TARG_PULSE = 1200000;  // Translation brush group end point pulse value
 long int FB1_TARG_PULSE = 1500000; // Translation brush group end point pulse value
 long int FB2_TARG_PULSE = 1200000; // Translation brush group end point pulse value
 long int FB3_TARG_PULSE = 1200000; // Translation brush group end point pulse value
@@ -56,6 +56,18 @@ MOTOR_IN_PLACE_STAT MOTOR_IN_PLACE_STAT_TABLE[8] = {ORIGIN};
 
 unsigned char MOTOR_ERR_CODE_TABLE[8] = {0};
 int MOTOR_ERR_CNT[8] = {0};
+
+void brush_position_set(unsigned char *data)
+{
+    UD3_TARG_PULSE = ((data[0] << 8) | (data[1])) * 10000;
+    UD2_TARG_PULSE = ((data[2] << 8) | (data[3])) * 10000;
+    UD1_TARG_PULSE = data[4] * 10000;
+    FB1_TARG_PULSE = data[5];
+    FB2_TARG_PULSE = data[6];
+    FB3_TARG_PULSE = data[7];
+    elog_i("SET_PULSE", "UD123-%ld-%ld-%ld,fb123-%ld-%ld-%ld", UD1_TARG_PULSE, UD2_TARG_PULSE, UD3_TARG_PULSE, FB1_TARG_PULSE, FB2_TARG_PULSE, FB3_TARG_PULSE);
+    set_ratio(data[8]);
+}
 
 /// @brief Control brush group 1 to move forward and backward
 /// @param state
@@ -394,7 +406,7 @@ void water_pump_set(unsigned char *data)
     {
         if (auto_allocate_flag) // allocate en
         {
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 4; i++)
             {
                 if (data[i + 3] == 1)
                 {
@@ -923,39 +935,39 @@ static void limit_stop()
 }
 
 /// @brief Stop the motor by detecting the in place state
-//static void reached_stop()
+// static void reached_stop()
 //{
-//    static char MOTOR_REACHED_STAT_TABLE[MOTOR_MAX_NUM] = {0};
-//    for (MOTOR_NUM i = MOTOR_FB_1; i < MOTOR_MAX_NUM; i++)
-//    {
-//        if (MOTOR_STATE_TABLE[i] != STOP)
-//        {
-//            if (motor_read_target_reached(MOTOR_STATION[i]) == HAL_OK)
-//            {
-//                MOTOR_REACHED_STAT_TABLE[i]++;
-//                if (MOTOR_REACHED_STAT_TABLE[i] == 2)
-//                {
-//                    MOTOR_REACHED_STAT_TABLE[i] = 0;
-//                    if (MOTOR_STATE_TABLE[i] == RUNNING_TARG)
-//                    {
-//                        MOTOR_IN_PLACE_STAT_TABLE[i] = TARG;
-//                    }
-//                    else if (MOTOR_STATE_TABLE[i] == RUNNING_ORIGIN)
-//                    {
-//                        MOTOR_IN_PLACE_STAT_TABLE[i] = ORIGIN;
-//                    }
-//                    printf("\r\nmoto reached--%d\r\n", i);
-//                    MOTOR_STATE_TABLE[i] = STOP;
-//                    MOTOR_BK_OFF[i]();
-//                }
-//            }
-//            else
-//            {
-//                MOTOR_REACHED_STAT_TABLE[i] = 0;
-//            }
-//        }
-//    }
-//}
+//     static char MOTOR_REACHED_STAT_TABLE[MOTOR_MAX_NUM] = {0};
+//     for (MOTOR_NUM i = MOTOR_FB_1; i < MOTOR_MAX_NUM; i++)
+//     {
+//         if (MOTOR_STATE_TABLE[i] != STOP)
+//         {
+//             if (motor_read_target_reached(MOTOR_STATION[i]) == HAL_OK)
+//             {
+//                 MOTOR_REACHED_STAT_TABLE[i]++;
+//                 if (MOTOR_REACHED_STAT_TABLE[i] == 2)
+//                 {
+//                     MOTOR_REACHED_STAT_TABLE[i] = 0;
+//                     if (MOTOR_STATE_TABLE[i] == RUNNING_TARG)
+//                     {
+//                         MOTOR_IN_PLACE_STAT_TABLE[i] = TARG;
+//                     }
+//                     else if (MOTOR_STATE_TABLE[i] == RUNNING_ORIGIN)
+//                     {
+//                         MOTOR_IN_PLACE_STAT_TABLE[i] = ORIGIN;
+//                     }
+//                     printf("\r\nmoto reached--%d\r\n", i);
+//                     MOTOR_STATE_TABLE[i] = STOP;
+//                     MOTOR_BK_OFF[i]();
+//                 }
+//             }
+//             else
+//             {
+//                 MOTOR_REACHED_STAT_TABLE[i] = 0;
+//             }
+//         }
+//     }
+// }
 
 /// @brief Self calibration mode 1
 static void calibration_1()
@@ -1200,17 +1212,17 @@ void motor_record_stat(unsigned char cmd)
 }
 
 /// @brief Restore system operation status
-//static void motor_restore_stat()
+// static void motor_restore_stat()
 //{
-//    if (pre_cmd == 0x02)
-//    {
-//        button_start();
-//    }
-//    else if (pre_cmd == 0x03)
-//    {
-//        button_reset();
-//    }
-//}
+//     if (pre_cmd == 0x02)
+//     {
+//         button_start();
+//     }
+//     else if (pre_cmd == 0x03)
+//     {
+//         button_reset();
+//     }
+// }
 
 /// @brief Daemon Thread
 /// @param
