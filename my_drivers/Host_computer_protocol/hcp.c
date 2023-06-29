@@ -30,18 +30,20 @@ static unsigned short CRC16_Modbus(unsigned char *pdata, int len)
         }
     }
     return crc;
-} 
+}
 
 /// @brief Collect all information and upload it
 extern unsigned char pb_bat_level;
+extern unsigned char pb_charge_state;
+
 static void response_beat()
 {
-    static unsigned char heart_buf[30] = {0x5a, 0x17, 0x10, 0x11};
+    static unsigned char heart_buf[32] = {0x5a, 0x17, 0x10, 0x11};
     brush_get_state(&heart_buf[4]);
 
     unsigned short crc_code = CRC16_Modbus(heart_buf, sizeof(heart_buf) - 2);
-    // heart_buf[27] = pb_bat_level;
-    heart_buf[27] = 35;
+    heart_buf[27] = pb_bat_level;
+    heart_buf[28] = pb_charge_state;
 
     heart_buf[sizeof(heart_buf) - 2] = (crc_code & 0x00ff);
     heart_buf[sizeof(heart_buf) - 1] = (crc_code >> 8);

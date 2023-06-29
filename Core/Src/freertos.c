@@ -73,6 +73,7 @@ static struct fdb_default_kv_node default_kv_table[] = {
 };
 
 unsigned char pb_bat_level = 0;
+unsigned char pb_charge_state = 0;
 unsigned char pb_rec_buf[5] = {0};
 unsigned char pb_rec = 0;
 /* USER CODE END PD */
@@ -371,11 +372,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
       pb_rec_index = 0;
     }
     pb_rec_buf[pb_rec_index++] = pb_rec;
-    if (pb_rec_index > 2)
+    if (pb_rec_index > 3)
     {
       if (pb_rec == 0xa5)
       {
         pb_bat_level = pb_rec_buf[1];
+        pb_charge_state = pb_rec_buf[2];
         // printf("%d", pb_bat_level);
       }
       pb_rec_index = 0;
