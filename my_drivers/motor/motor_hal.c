@@ -324,7 +324,7 @@ GPIO_PinState MOTOR_SARM_D_FLAG()
 // Emergency stop button
 GPIO_PinState EMERGENCY_KEY_FLAG()
 {
-    return HAL_GPIO_ReadPin(EMERG_KEY_GPIO_Port, EMERG_KEY_Pin);
+    return HAL_GPIO_ReadPin(IN_RES_4_GPIO_Port, IN_RES_4_Pin);
 }
 
 GPIO_PinState ANTI_COLLISION_FLAG()
@@ -420,7 +420,7 @@ HAL_StatusTypeDef motor_wait_en()
     // elog_d("MOTOR", "motor BOOTUP time out!");
     // return HAL_ERROR;
 
-    vTaskDelay(7000 / portTICK_RATE_MS);
+    vTaskDelay(4000 / portTICK_RATE_MS);
     return HAL_OK;
 }
 

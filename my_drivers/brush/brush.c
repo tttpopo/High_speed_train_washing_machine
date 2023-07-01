@@ -25,7 +25,7 @@ long int FB3_TARG_PULSE = 1200000; // Translation brush group end point pulse va
 // long int FB2_ORIGIN_PULSE = 0;
 // long int FB3_ORIGIN_PULSE = 0;
 // long int UD_TARG_PULSE = 50000;    // Lifting brush group end point pulse value
-long int UD1_TARG_PULSE = 1500000; // Lifting brush group end point pulse value
+long int UD1_TARG_PULSE = 600000;  // Lifting brush group end point pulse value
 long int UD2_TARG_PULSE = 2700000; // Lifting brush group end point pulse value
 long int UD3_TARG_PULSE = 4700000; // Lifting brush group end point pulse value
 // long int UD1_ORIGIN_PULSE = 0;  // Lifting brush group end point pulse value
@@ -1226,7 +1226,7 @@ void brush_deamon_task(void)
     static int temp_emer_state = 1;
     motor_hal_can_init();
     // motor_ctrol_en();
-    // motor_wait_en();
+    motor_wait_en();
     for (MOTOR_NUM i = MOTOR_FB_1; i < MOTOR_MAX_NUM; i++)
     {
         if (motor_set_Position_Mode(MOTOR_STATION[i]) != HAL_OK)
