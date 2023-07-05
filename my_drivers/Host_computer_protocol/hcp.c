@@ -172,6 +172,18 @@ static void hcp_analyse_callback(unsigned int size)
         elog_d("HCP", "Clear fault");
         err_deal();
         break;
+    case 0xA1:
+        elog_d("HCP", "ud1 negative pulse");
+        brush_ud_1_negative_pulse();
+        break;
+    case 0xA2:
+        elog_d("HCP", "ud1 negative pulse");
+        brush_ud_2_negative_pulse();
+        break;
+    case 0xA3:
+        elog_d("HCP", "ud1 negative pulse");
+        brush_ud_3_negative_pulse();
+        break;
     }
 }
 

@@ -379,6 +379,7 @@ void cs_moto_stop_cb(unsigned char *cmd)
     {
         elog_e("MOTOR", "stop fail\r\n");
     }
+    MOTOR_BK_OFF[s_id]();
 }
 
 void motor_task()

@@ -225,7 +225,7 @@ void flowmeter_task()
                 // total_flow_1-=temp_flow_1;
                 // total_flow_2-=temp_flow_2;
                 // printf("1--->%f   2--->%f\r\n", total_flow_1 - temp_flow_1, total_flow_2 - temp_flow_2);
-                printf("1--->%f   2--->%f\r\n", total_flow_1, total_flow_2);
+               // printf("1--->%f   2--->%f\r\n", total_flow_1, total_flow_2);
                 /////////////////////////////////////////////////
             }
         }

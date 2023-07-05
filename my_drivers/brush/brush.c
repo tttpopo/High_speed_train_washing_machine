@@ -27,7 +27,7 @@ long int FB3_TARG_PULSE = 1200000; // Translation brush group end point pulse va
 // long int UD_TARG_PULSE = 50000;    // Lifting brush group end point pulse value
 long int UD1_TARG_PULSE = 600000;  // Lifting brush group end point pulse value
 long int UD2_TARG_PULSE = 2700000; // Lifting brush group end point pulse value
-long int UD3_TARG_PULSE = 4700000; // Lifting brush group end point pulse value
+long int UD3_TARG_PULSE = 4300000; // Lifting brush group end point pulse value
 // long int UD1_ORIGIN_PULSE = 0;  // Lifting brush group end point pulse value
 // long int UD2_ORIGIN_PULSE = 0;
 // long int UD3_ORIGIN_PULSE = 0;
@@ -59,12 +59,67 @@ int MOTOR_ERR_CNT[8] = {0};
 
 void brush_position_set(unsigned char *data)
 {
-    UD3_TARG_PULSE = ((data[0] << 8) | (data[1])) * 10000;
-    UD2_TARG_PULSE = ((data[2] << 8) | (data[3])) * 10000;
-    UD1_TARG_PULSE = data[4] * 10000;
-    FB1_TARG_PULSE = data[5];
-    FB2_TARG_PULSE = data[6];
-    FB3_TARG_PULSE = data[7];
+    long int temp_val = 0;
+    temp_val = ((data[0] << 8) | (data[1])) * 10000;
+    if ((temp_val < 0) || (temp_val > 4700000))
+    {
+        ;
+    }
+    else
+    {
+        UD3_TARG_PULSE = temp_val;
+    }
+
+    temp_val = ((data[2] << 8) | (data[3])) * 10000;
+    if ((temp_val < 0) || (temp_val > 2700000))
+    {
+        ;
+    }
+    else
+    {
+        UD2_TARG_PULSE = temp_val;
+    }
+
+    temp_val = data[4] * 10000;
+    if ((temp_val < 0) || (temp_val > 1200000))
+    {
+        ;
+    }
+    else
+    {
+        UD1_TARG_PULSE = temp_val;
+    }
+
+    temp_val = data[5];
+    if ((temp_val < 0) || (temp_val > 4700000))
+    {
+        ;
+    }
+    else
+    {
+        FB1_TARG_PULSE = temp_val;
+    }
+
+    temp_val = data[6];
+    if ((temp_val < 0) || (temp_val > 4700000))
+    {
+        ;
+    }
+    else
+    {
+        FB2_TARG_PULSE = temp_val;
+    }
+
+    temp_val = data[7];
+    if ((temp_val < 0) || (temp_val > 4700000))
+    {
+        ;
+    }
+    else
+    {
+        FB3_TARG_PULSE = temp_val;
+    }
+
     elog_i("SET_PULSE", "UD123-%ld-%ld-%ld,fb123-%ld-%ld-%ld", UD1_TARG_PULSE, UD2_TARG_PULSE, UD3_TARG_PULSE, FB1_TARG_PULSE, FB2_TARG_PULSE, FB3_TARG_PULSE);
     set_ratio(data[8]);
 }
@@ -806,6 +861,60 @@ static void button_all_task(void *state)
     vTaskDelete(NULL);
 }
 
+void brush_ud_1_negative_pulse()
+{
+    motor_en(MOTOR_STATION[MOTOR_UD_1]);
+    MOTOR_BK_ON[MOTOR_UD_1]();
+    vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
+    if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_1], -5000000, UD_SPEED) == HAL_OK)
+    {
+        MOTOR_STATE_TABLE[MOTOR_UD_1] = RUNNING_ORIGIN;
+        MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_1] = MIDDLE;
+        elog_d("BRUSH", "set motor 4 pulse ok");
+    }
+    else
+    {
+        MOTOR_BK_OFF[MOTOR_UD_1]();
+        elog_e("BRUSH", "set motor 4 pulse fail");
+    }
+}
+
+void brush_ud_2_negative_pulse()
+{
+    motor_en(MOTOR_STATION[MOTOR_UD_2]);
+    MOTOR_BK_ON[MOTOR_UD_2]();
+    vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
+    if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_2], -5000000, UD_SPEED) == HAL_OK)
+    {
+        MOTOR_STATE_TABLE[MOTOR_UD_2] = RUNNING_ORIGIN;
+        MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_2] = MIDDLE;
+        elog_d("BRUSH", "set motor 5 pulse ok");
+    }
+    else
+    {
+        MOTOR_BK_OFF[MOTOR_UD_2]();
+        elog_e("BRUSH", "set motor 5 pulse fail");
+    }
+}
+
+void brush_ud_3_negative_pulse()
+{
+    motor_en(MOTOR_STATION[MOTOR_UD_3]);
+    MOTOR_BK_ON[MOTOR_UD_3]();
+    vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
+    if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_3], -5000000, UD_SPEED) == HAL_OK)
+    {
+        MOTOR_STATE_TABLE[MOTOR_UD_3] = RUNNING_ORIGIN;
+        MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_3] = MIDDLE;
+        elog_d("BRUSH", "set motor 6 pulse ok");
+    }
+    else
+    {
+        MOTOR_BK_OFF[MOTOR_UD_3]();
+        elog_e("BRUSH", "set motor 6 pulse fail");
+    }
+}
+
 /// @brief button start
 /// @param
 void button_start(void)
@@ -844,7 +953,7 @@ void button_reset(void)
 /// @param
 void button_stop(void)
 {
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 7; i++)
     {
         PUMP_OFF[i]();
     }
@@ -1163,7 +1272,7 @@ void brush_get_state(unsigned char *data)
 {
     data[0] = !EMERGENCY_KEY_FLAG();
     data[1] = !ANTI_COLLISION_FLAG();
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 8; i++)
     {
         data[i + 2] = 0;
         switch (MOTOR_IN_PLACE_STAT_TABLE[i])
@@ -1180,8 +1289,6 @@ void brush_get_state(unsigned char *data)
         }
         data[i + 2] |= MOTOR_ERR_CODE_TABLE[i];
     }
-    data[8] = 0;
-    data[9] = 0;
     for (int i = 0; i < 3; i++)
     {
         data[10 + i] = DRUM_STAT[i]();
@@ -1223,7 +1330,7 @@ void motor_record_stat(unsigned char cmd)
 /// @param
 void brush_deamon_task(void)
 {
-    static int temp_emer_state = 1;
+    static int temp_emer_state = 0;
     motor_hal_can_init();
     // motor_ctrol_en();
     motor_wait_en();
@@ -1249,7 +1356,7 @@ void brush_deamon_task(void)
         if (temp_emer_state != EMERGENCY_KEY_FLAG())
         {
             temp_emer_state = EMERGENCY_KEY_FLAG();
-            if (temp_emer_state == 0)
+            if (temp_emer_state == 1)
             {
                 button_stop();
             }

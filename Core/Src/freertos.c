@@ -329,8 +329,8 @@ void test_task()
            HAL_GPIO_ReadPin(MOTO_UD1_LIMIT_D_GPIO_Port, MOTO_UD1_LIMIT_D_Pin),
            HAL_GPIO_ReadPin(MOTO_UD2_LIMIT_U_GPIO_Port, MOTO_UD2_LIMIT_U_Pin),
            HAL_GPIO_ReadPin(MOTO_UD2_LIMIT_D_GPIO_Port, MOTO_UD2_LIMIT_D_Pin),
-           HAL_GPIO_ReadPin(MOTO_UD3_LIMIT_D_GPIO_Port, MOTO_UD3_LIMIT_D_Pin),
            HAL_GPIO_ReadPin(MOTO_UD3_LIMIT_U_GPIO_Port, MOTO_UD3_LIMIT_U_Pin),
+           HAL_GPIO_ReadPin(MOTO_UD3_LIMIT_D_GPIO_Port, MOTO_UD3_LIMIT_D_Pin),
            HAL_GPIO_ReadPin(MOTO_BARM_LIMIT_F_GPIO_Port, MOTO_BARM_LIMIT_F_Pin),
            HAL_GPIO_ReadPin(MOTO_BARM_LIMIT_B_GPIO_Port, MOTO_BARM_LIMIT_B_Pin),
            HAL_GPIO_ReadPin(MOTO_SARM_LIMIT_U_GPIO_Port, MOTO_SARM_LIMIT_U_Pin),
@@ -378,7 +378,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
       {
         pb_bat_level = pb_rec_buf[1];
         pb_charge_state = pb_rec_buf[2];
-        // printf("%d", pb_bat_level);
+        printf("%d-%d\r\n", pb_bat_level,pb_charge_state);
       }
       pb_rec_index = 0;
     }

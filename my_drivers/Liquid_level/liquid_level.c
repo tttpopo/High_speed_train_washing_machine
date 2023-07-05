@@ -177,75 +177,77 @@ void accurate_ratio_task()
     while (1)
     {
         get_liquid_level(&wat_level, &det_level, &mix_level, &spr_level);
-        fm_get_total_flow(&wat_flo, &det_flo);
-        switch (stat)
-        {
-        case 0:
-            PUMP_1_OFF();
-            PUMP_2_OFF();
-            PUMP_7_OFF();
-            stat = 3;
-            break;
-        case 1:
-            // get_liquid_level(&wat_level, &det_level, &mix_level, &spr_level);
-            // printf("%d,%d,%d,%d\r\n", wat_level, det_level, mix_level, spr_level);
-            if ((wat_level > 5) && (det_level > 5))
-            {
-                if ((mix_level < 10))
-                {
-                    elog_i("MIX", "Start proportioning!");
-                    temp_targ_wat_flo = (((90.0 - (float)mix_level) / 100.0) * 20.0) * (rat / (rat + 1.0));
-                    temp_targ_det_flo = (((90.0 - (float)mix_level) / 100.0) * 20.0) * (1.0 / (rat + 1.0));
-                    PUMP_7_OFF();
-                    vTaskDelay(1000 / portTICK_RATE_MS);
-                    PUMP_1_ON();
-                    PUMP_2_ON();
-                    stat = 2;
-                }
-            }
-            break;
-        case 2:
-            fm_get_total_flow(&wat_flo, &det_flo);
-            // printf("targ wat - >%f,tart det - >%f  ------  curt wat - >%f,curt det - >%f\r\n", temp_targ_wat_flo, temp_targ_det_flo, wat_flo, det_flo);
-            if (wat_flo >= temp_targ_wat_flo - 0.1)
-            {
-                fm_reset_wat_flow();
-                PUMP_1_OFF();
-                wat_cmp = 1;
-                // elog_i("WAT","water is ok!");
-            }
-            if (det_flo >= temp_targ_det_flo - 0.2)
-            // if (wat_flo >= temp_targ_det_flo-0.2)
-            {
-                fm_reset_det_flow();
-                PUMP_2_OFF();
-                det_cmp = 1;
-                // elog_i("DET","detergent is ok!");
-            }
-            if (wat_cmp && det_cmp)
-            {
-                wat_cmp = 0;
-                det_cmp = 0;
-                PUMP_7_ON();
-                stat = 1;
-                elog_i("MIX", "all is ok!");
-            }
-            if (mix_level >= 90)
-            {
-                PUMP_1_OFF();
-                PUMP_2_OFF();
-                PUMP_7_ON();
-                stat = 1;
-                elog_i("MIX", "mix is full!");
-                fm_reset_wat_flow();
-                fm_reset_det_flow();
-            }
+        // printf("%d,%d,%d,%d\r\n", wat_level, det_level, mix_level, spr_level);
+        // fm_get_total_flow(&wat_flo, &det_flo);
+        // switch (stat)
+        // {
+        // case 0:
+        //     PUMP_1_OFF();
+        //     PUMP_2_OFF();
+        //     PUMP_7_OFF();
+        //     stat = 3;
+        //     break;
+        // case 1:
+        //     // get_liquid_level(&wat_level, &det_level, &mix_level, &spr_level);
+        //     // printf("%d,%d,%d,%d\r\n", wat_level, det_level, mix_level, spr_level);
+        //     if ((wat_level > 5) && (det_level > 5))
+        //     {
+        //         if ((mix_level < 10))
+        //         {
+        //             elog_i("MIX", "Start proportioning!");
+        //             printf("%d,%d,%d,%d\r\n", wat_level, det_level, mix_level, spr_level);
+        //             temp_targ_wat_flo = (((90.0 - (float)mix_level) / 100.0) * 20.0) * (rat / (rat + 1.0));
+        //             temp_targ_det_flo = (((90.0 - (float)mix_level) / 100.0) * 20.0) * (1.0 / (rat + 1.0));
+        //             PUMP_7_OFF();
+        //             vTaskDelay(1000 / portTICK_RATE_MS);
+        //             PUMP_1_ON();
+        //             PUMP_2_ON();
+        //             stat = 2;
+        //         }
+        //     }
+        //     break;
+        // case 2:
+        //     fm_get_total_flow(&wat_flo, &det_flo);
+        //     // printf("targ wat - >%f,tart det - >%f  ------  curt wat - >%f,curt det - >%f\r\n", temp_targ_wat_flo, temp_targ_det_flo, wat_flo, det_flo);
+        //     if (wat_flo >= temp_targ_wat_flo - 0.1)
+        //     {
+        //         fm_reset_wat_flow();
+        //         PUMP_1_OFF();
+        //         wat_cmp = 1;
+        //         // elog_i("WAT","water is ok!");
+        //     }
+        //     if (det_flo >= temp_targ_det_flo - 0.2)
+        //     // if (wat_flo >= temp_targ_det_flo-0.2)
+        //     {
+        //         fm_reset_det_flow();
+        //         PUMP_2_OFF();
+        //         det_cmp = 1;
+        //         // elog_i("DET","detergent is ok!");
+        //     }
+        //     if (wat_cmp && det_cmp)
+        //     {
+        //         wat_cmp = 0;
+        //         det_cmp = 0;
+        //         PUMP_7_ON();
+        //         stat = 1;
+        //         elog_i("MIX", "all is ok!");
+        //     }
+        //     if (mix_level >= 90)
+        //     {
+        //         PUMP_1_OFF();
+        //         PUMP_2_OFF();
+        //         PUMP_7_ON();
+        //         stat = 1;
+        //         elog_i("MIX", "mix is full!");
+        //         fm_reset_wat_flow();
+        //         fm_reset_det_flow();
+        //     }
 
-            break;
-        case 3:
+        //     break;
+        // case 3:
 
-            break;
-        }
+        //     break;
+        // }
         vTaskDelay(50 / portTICK_RATE_MS);
     }
 }
@@ -258,6 +260,14 @@ void allocate_en(char en)
 
 void set_ratio(float ratio)
 {
-    rat = ratio;
-    elog_i("SET_RAT", "ratio is %f", rat);
+    if ((ratio >= 0) && (ratio <= 50))
+    {
+        rat = ratio;
+        elog_i("SET_RAT", "ratio is %f", rat);
+    }
+    else
+    {
+        elog_w("SET_RAT", "ratio is %f,set fail", rat);
+    }
+    
 }
