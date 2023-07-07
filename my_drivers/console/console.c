@@ -146,32 +146,41 @@ void console_task()
     while (1)
     {
         xTaskNotifyWait(0, 0, &size, portMAX_DELAY);
-        memcpy(&(temp_buf[temp_cnt]), console_rx_buf, size);
-        temp_cnt += size;
-         
-        if ((console_rx_buf[size - 1] == '\r') || (console_rx_buf[size - 1] == '\n'))
-        {
-            printf("\r\n");
-            if ((temp_cnt != 1) && (temp_cnt < sizeof(console_rx_buf)))
-            {
-                cs_fun_callback(temp_buf);
-                memset(temp_buf, 0, sizeof(console_rx_buf));
-            }
-            printf("\r\n>>");
-            temp_cnt = 0;
-        }
-        else if (console_rx_buf[size - 1] == '\b')
-        {
-            if (temp_cnt > 0)
-            {
-                temp_cnt -= 2;
-            }
 
-            printf("\b \b");
+        if ((temp_cnt + size) < sizeof(console_rx_buf))
+        {
+            memcpy(&(temp_buf[temp_cnt]), console_rx_buf, size);
+            temp_cnt += size;
+
+            if ((console_rx_buf[size - 1] == '\r') || (console_rx_buf[size - 1] == '\n'))
+            {
+                printf("\r\n");
+                if ((temp_cnt != 1) && (temp_cnt < sizeof(console_rx_buf)))
+                {
+                    cs_fun_callback(temp_buf);
+                    memset(temp_buf, 0, sizeof(console_rx_buf));
+                }
+                printf("\r\n>>");
+                temp_cnt = 0;
+            }
+            else if (console_rx_buf[size - 1] == '\b')
+            {
+                if (temp_cnt > 0)
+                {
+                    temp_cnt -= 2;
+                }
+
+                printf("\b \b");
+            }
+            else
+            {
+                printf("%c", console_rx_buf[size - 1]);
+            }
         }
         else
         {
-            printf("%c", console_rx_buf[size - 1]);
+            memset(temp_buf, 0, sizeof(console_rx_buf));
+            temp_cnt = 0;
         }
     }
 }
