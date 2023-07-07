@@ -54,11 +54,11 @@ static void response_beat()
 extern unsigned char pre_cmd;
 static void hcp_analyse_callback(unsigned int size)
 {
-    // for (int i = 0; i < size; i++)
-    // {
-    //     printf("-%x", hcp_buf[i]);
-    // }
-    // printf("\r\n");
+    for (int i = 0; i < size; i++)
+    {
+        printf("-%x", hcp_buf[i]);
+    }
+    printf("\r\n");
     if (hcp_buf[0] != 0x5a)
     {
         return;

@@ -61,6 +61,12 @@ void PUMP_7_OFF(void);
 // GPIO_PinState PUMP_3_GET(void);
 // GPIO_PinState PUMP_4_GET(void);
 // drum
+void DRUM_1_ON(void);
+void DRUM_2_ON(void);
+void DRUM_3_ON(void);
+void DRUM_1_OFF(void);
+void DRUM_2_OFF(void);
+void DRUM_3_OFF(void);
 // void DRUM_1_ON(void);HAL_GPIO_WritePin(PUMP_1_GPIO_Port,PUMP_1_Pin,GPIO_PIN_RESET);
 // void DRUM_2_ON(void);HAL_GPIO_WritePin(PUMP_2_GPIO_Port,PUMP_2_Pin,GPIO_PIN_RESET);
 // void DRUM_3_ON(void);HAL_GPIO_WritePin(PUMP_3_GPIO_Port,PUMP_3_Pin,GPIO_PIN_RESET);

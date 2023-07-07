@@ -100,6 +100,15 @@ void cs_pump_on_cb(unsigned char *cmd)
     case 7:
         PUMP_7_ON();
         break;
+    case 8:
+        DRUM_1_ON();
+        break;
+    case 9:
+        DRUM_2_ON();
+        break;
+    case 10:
+        DRUM_3_ON();
+        break;
     }
     // PUMP_1_ON();
 }
@@ -138,6 +147,15 @@ void cs_pump_off_cb(unsigned char *cmd)
     case 7:
         PUMP_7_OFF();
         break;
+    case 8:
+        DRUM_1_OFF();
+        break;
+    case 9:
+        DRUM_2_OFF();
+        break;
+    case 10:
+        DRUM_3_OFF();
+        break;
     case 0:
         PUMP_1_OFF();
         PUMP_2_OFF();
@@ -146,6 +164,9 @@ void cs_pump_off_cb(unsigned char *cmd)
         PUMP_5_OFF();
         PUMP_6_OFF();
         PUMP_7_OFF();
+        DRUM_1_OFF();
+        DRUM_2_OFF();
+        DRUM_3_OFF();
         break;
     }
 
@@ -225,7 +246,7 @@ void flowmeter_task()
                 // total_flow_1-=temp_flow_1;
                 // total_flow_2-=temp_flow_2;
                 // printf("1--->%f   2--->%f\r\n", total_flow_1 - temp_flow_1, total_flow_2 - temp_flow_2);
-               // printf("1--->%f   2--->%f\r\n", total_flow_1, total_flow_2);
+                // printf("1--->%f   2--->%f\r\n", total_flow_1, total_flow_2);
                 /////////////////////////////////////////////////
             }
         }

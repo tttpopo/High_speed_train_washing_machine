@@ -317,7 +317,7 @@ void test_task()
     // vTaskDelay(50 / portTICK_RATE_MS);
 
     // HAL_UART_Transmit(&huart2, "hello\r\n", 7, 1000);
-    vTaskDelay(50 / portTICK_RATE_MS);
+    vTaskDelay(500 / portTICK_RATE_MS);
     printf("%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d\r\n",
            HAL_GPIO_ReadPin(MOTO_FB1_LIMIT_F_GPIO_Port, MOTO_FB1_LIMIT_F_Pin),
            HAL_GPIO_ReadPin(MOTO_FB1_LIMIT_B_GPIO_Port, MOTO_FB1_LIMIT_B_Pin),
@@ -378,7 +378,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
       {
         pb_bat_level = pb_rec_buf[1];
         pb_charge_state = pb_rec_buf[2];
-        printf("%d-%d\r\n", pb_bat_level,pb_charge_state);
+        // printf("%d-%d\r\n", pb_bat_level,pb_charge_state);
       }
       pb_rec_index = 0;
     }

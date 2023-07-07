@@ -20,7 +20,7 @@ extern unsigned char can_rx_buf[10];
                  ##### control functions #####
  ===============================================================================
  */
-
+extern long int MOTOR_ORIGIN_PULSE[8];
 // Set the node to an operational state
 void motor_ctrol_en(void)
 {
@@ -35,8 +35,7 @@ HAL_StatusTypeDef motor_en(unsigned int s_id)
     unsigned char CMD_BUF[][8] = {
         {0x2b, 0x40, 0x60, 0x00, 0x06, 0x00, 0x00, 0x00},
         {0x2b, 0x40, 0x60, 0x00, 0x07, 0x00, 0x00, 0x00},
-        {0x2b, 0x40, 0x60, 0x00, 0x0f, 0x00, 0x00, 0x00}
-    };
+        {0x2b, 0x40, 0x60, 0x00, 0x0f, 0x00, 0x00, 0x00}};
 
     for (char i = 0; i < 3; i++)
     {
@@ -48,7 +47,6 @@ HAL_StatusTypeDef motor_en(unsigned int s_id)
     }
     return ret;
 }
-
 
 /// @brief set position mode
 /// @return
@@ -68,7 +66,7 @@ HAL_StatusTypeDef motor_set_Position_Mode(unsigned int s_id)
     motor_send_data(0, &CMD_BUF[0][0], 2);
     for (char i = 0; i < 5; i++)
     {
-        ret = motor_send_data(s_id, &CMD_BUF[i+1][0], 8);
+        ret = motor_send_data(s_id, &CMD_BUF[i + 1][0], 8);
         if (ret != HAL_OK)
         {
             return ret;
@@ -96,7 +94,7 @@ HAL_StatusTypeDef motor_set_Velocity_Mode(unsigned int s_id)
 
     for (char i = 0; i < 6; i++)
     {
-        ret = motor_send_data(s_id, &CMD_BUF[i+1][0], 8);
+        ret = motor_send_data(s_id, &CMD_BUF[i + 1][0], 8);
         if (ret != HAL_OK)
         {
             return ret;
@@ -341,7 +339,7 @@ void cs_moto_set_pulse_cb(unsigned char *cmd)
 
     elog_d("MOTOR", "id = %d,pulse = %d,speed = %d", s_id, pulse, speed);
     MOTOR_BK_ON[s_id]();
-    if (motor_set_pulse(MOTOR_STATION[s_id], pulse, speed) == HAL_OK)
+    if (motor_set_pulse(MOTOR_STATION[s_id], pulse + MOTOR_ORIGIN_PULSE[s_id], speed) == HAL_OK)
     {
         elog_d("MOTOR", "motor set ok");
     }
