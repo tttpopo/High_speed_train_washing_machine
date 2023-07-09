@@ -207,7 +207,10 @@ void hcp_task()
         }
         else
         {
-            hcp_analyse_callback(size);
+            if (EMERGENCY_KEY_FLAG() == 1)
+            {
+                hcp_analyse_callback(size);
+            }
             memset(hcp_buf, 0, sizeof(hcp_buf));
             // for (int i = 0; i < size; i++)
             // {

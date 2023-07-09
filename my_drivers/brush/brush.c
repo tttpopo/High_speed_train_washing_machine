@@ -608,10 +608,6 @@ static void all_arm_start_task(void *state)
             vTaskDelay(50 / portTICK_RATE_MS);
         }
         big_arm_start(1);
-        break;
-    case 0:
-        // go to origin
-        big_arm_start(0);
         while (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] != TARG)
         {
             if (motor_read_target_reached(MOTOR_STATION[MOTOR_B_ARM]) == HAL_OK)
@@ -635,7 +631,57 @@ static void all_arm_start_task(void *state)
             }
             vTaskDelay(50 / portTICK_RATE_MS);
         }
+        break;
+    case 0:
+        // go to origin
+        big_arm_start(0);
+        while (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] != ORIGIN)
+        {
+            if (motor_read_target_reached(MOTOR_STATION[MOTOR_B_ARM]) == HAL_OK)
+            {
+                MOTOR_STATE_TABLE[MOTOR_B_ARM] = STOP;
+                MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] = ORIGIN;
+                MOTOR_BK_OFF[MOTOR_B_ARM]();
+                motor_stop(MOTOR_STATION[MOTOR_B_ARM]);
+            }
+            motor_read_errcode(MOTOR_STATION[MOTOR_B_ARM], &err_code);
+            if (err_code != 0)
+            {
+                vTaskDelay(500 / portTICK_RATE_MS);
+                motor_read_errcode(MOTOR_STATION[MOTOR_B_ARM], &err_code);
+                if (err_code != 0)
+                {
+                    MOTOR_ERR_CODE_TABLE[MOTOR_B_ARM] = err_code;
+                    MOTOR_BK_OFF[MOTOR_B_ARM]();
+                    elog_e("ERR-CODE", "moto%d--->%d", MOTOR_B_ARM, err_code);
+                }
+            }
+            vTaskDelay(50 / portTICK_RATE_MS);
+        }
         small_arm_start(0);
+        while (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_S_ARM] != ORIGIN)
+        {
+            if (motor_read_target_reached(MOTOR_STATION[MOTOR_S_ARM]) == HAL_OK)
+            {
+                MOTOR_STATE_TABLE[MOTOR_S_ARM] = STOP;
+                MOTOR_IN_PLACE_STAT_TABLE[MOTOR_S_ARM] = ORIGIN;
+                MOTOR_BK_OFF[MOTOR_S_ARM]();
+                motor_stop(MOTOR_STATION[MOTOR_S_ARM]);
+            }
+            motor_read_errcode(MOTOR_STATION[MOTOR_S_ARM], &err_code);
+            if (err_code != 0)
+            {
+                vTaskDelay(500 / portTICK_RATE_MS);
+                motor_read_errcode(MOTOR_STATION[MOTOR_S_ARM], &err_code);
+                if (err_code != 0)
+                {
+                    MOTOR_ERR_CODE_TABLE[MOTOR_S_ARM] = err_code;
+                    MOTOR_BK_OFF[MOTOR_S_ARM]();
+                    elog_e("ERR-CODE", "moto%d--->%d", MOTOR_S_ARM, err_code);
+                }
+            }
+            vTaskDelay(50 / portTICK_RATE_MS);
+        }
         break;
     case 3:
         // stop
@@ -996,6 +1042,7 @@ void button_reset(void)
 /// @param
 void button_stop(void)
 {
+    allocate_en(0);
     for (int i = 0; i < 7; i++)
     {
         PUMP_OFF[i]();
