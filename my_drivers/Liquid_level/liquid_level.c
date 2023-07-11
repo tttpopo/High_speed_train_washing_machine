@@ -189,7 +189,6 @@ void accurate_ratio_task()
             break;
         case 1:
             PUMP_7_ON();
-            // get_liquid_level(&wat_level, &det_level, &mix_level, &spr_level);
             printf("%d,%d,%d,%d\r\n", wat_level, det_level, mix_level, spr_level);
             if ((wat_level > 5) && (det_level > 5))
             {
@@ -206,6 +205,13 @@ void accurate_ratio_task()
                     stat = 2;
                 }
             }
+            else
+            {
+                PUMP_1_OFF();
+                PUMP_2_OFF();
+                PUMP_7_OFF();
+            }
+
             break;
         case 2:
             fm_get_total_flow(&wat_flo, &det_flo);
@@ -232,13 +238,13 @@ void accurate_ratio_task()
                 stat = 1;
                 elog_i("MIX", "all is ok!");
             }
-            if (mix_level >= 90)
+            if ((mix_level >= 90) || (wat_level < 5) || (det_level < 5))
             {
                 PUMP_1_OFF();
                 PUMP_2_OFF();
                 PUMP_7_ON();
                 stat = 1;
-                elog_i("MIX", "mix is full!");
+                elog_i("MIX", "mix stop,mix-%d,wat-%d,det-%d", mix_level, wat_level, det_level);
                 fm_reset_wat_flow();
                 fm_reset_det_flow();
             }

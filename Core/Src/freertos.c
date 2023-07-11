@@ -65,12 +65,12 @@ void test_task(void);
 
 unsigned char u1_rec_buf[100];
 
-static uint32_t boot_count = 0;
-struct fdb_default_kv default_kv;
-static struct fdb_kvdb kvdb = {0};
-static struct fdb_default_kv_node default_kv_table[] = {
-    {"boot_count", &boot_count, sizeof(boot_count)}, /* int type KV */
-};
+// static uint32_t boot_count = 0;
+// struct fdb_default_kv default_kv;
+// static struct fdb_kvdb kvdb = {0};
+// static struct fdb_default_kv_node default_kv_table[] = {
+//     {"boot_count", &boot_count, sizeof(boot_count)}, /* int type KV */
+// };
 
 unsigned char pb_bat_level = 0;
 unsigned char pb_charge_state = 0;
@@ -95,12 +95,12 @@ void cs_task_manager_cb(unsigned char *cmd);
 void cs_task_HighWaterMark_cb(unsigned char *cmd);
 /* USER CODE END FunctionPrototypes */
 
-void StartDefaultTask(void const * argument);
+void StartDefaultTask(void const *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /* GetIdleTaskMemory prototype (linked to static allocation support) */
-void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize );
+void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize);
 
 /* USER CODE BEGIN GET_IDLE_TASK_MEMORY */
 static StaticTask_t xIdleTaskTCBBuffer;
@@ -116,15 +116,16 @@ void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer, StackTyp
 /* USER CODE END GET_IDLE_TASK_MEMORY */
 
 /**
-  * @brief  FreeRTOS initialization
-  * @param  None
-  * @retval None
-  */
-void MX_FREERTOS_Init(void) {
+ * @brief  FreeRTOS initialization
+ * @param  None
+ * @retval None
+ */
+void MX_FREERTOS_Init(void)
+{
   /* USER CODE BEGIN Init */
-  default_kv.kvs = default_kv_table;
-  default_kv.num = sizeof(default_kv_table) / sizeof(default_kv_table[0]);
-  fdb_kvdb_init(&kvdb, "NVS", "fdb", &default_kv, NULL);
+  // default_kv.kvs = default_kv_table;
+  // default_kv.num = sizeof(default_kv_table) / sizeof(default_kv_table[0]);
+  // fdb_kvdb_init(&kvdb, "NVS", "fdb", &default_kv, NULL);
   elog_my_init();
   cs_init();
   HAL_UART_Receive_IT(&huart5, &pb_rec, 1);
@@ -155,7 +156,7 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   xTaskCreate((TaskFunction_t)console_task, "console_task", 800, NULL, 0, &console_task_handle);
-  xTaskCreate((TaskFunction_t)hcp_task, "hcp task", 400, NULL, 5, &hcp_task_handle);
+  xTaskCreate((TaskFunction_t)hcp_task, "hcp task", 800, NULL, 5, &hcp_task_handle);
   // xTaskCreate((TaskFunction_t)test_task, "test_task", 400, NULL, 0, &test_task_handle);
   xTaskCreate((TaskFunction_t)motor_task, "motor_task", 400, NULL, 0, &motor_task_handle);
   // xTaskCreate((TaskFunction_t)rgb_task, "rgb_task", 100, NULL, 2, &rgb_task_handle);
@@ -165,7 +166,6 @@ void MX_FREERTOS_Init(void) {
   // xTaskCreate((TaskFunction_t)battery_task, "battery task", 200, NULL, 1, &battery_task_handle);
   xTaskCreate((TaskFunction_t)accurate_ratio_task, "accurate ratio task", 200, NULL, 1, &accurate_ratio_task_handle);
   /* USER CODE END RTOS_THREADS */
-
 }
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -175,36 +175,36 @@ void MX_FREERTOS_Init(void) {
  * @retval None
  */
 /* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const * argument)
+void StartDefaultTask(void const *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
 
-  struct fdb_blob blob;
-  int boot_count = 0;
+  // struct fdb_blob blob;
+  // int boot_count = 0;
 
-  printf("\r==================== kvdb_basic_sample ====================\r\n");
-  { /* GET the KV value */
-    /* get the "boot_count" KV value */
-    fdb_kv_get_blob(&kvdb, "boot_count", fdb_blob_make(&blob, &boot_count, sizeof(boot_count)));
-    /* the blob.saved.len is more than 0 when get the value successful */
-    if (blob.saved.len > 0)
-    {
-      printf("get the 'boot_count' value is %d\r\n", boot_count);
-    }
-    else
-    {
-      printf("get the 'boot_count' failed\r\n");
-    }
-  }
-  { /* CHANGE the KV value */
-    /* increase the boot count */
-    boot_count++;
-    /* change the "boot_count" KV's value */
-    fdb_kv_set_blob(&kvdb, "boot_count", fdb_blob_make(&blob, &boot_count, sizeof(boot_count)));
-    // printf("set the 'boot_count' value to %d\n", boot_count);
-  }
-  printf("===========================================================\r\n");
+  // printf("\r==================== kvdb_basic_sample ====================\r\n");
+  // { /* GET the KV value */
+  //   /* get the "boot_count" KV value */
+  //   fdb_kv_get_blob(&kvdb, "boot_count", fdb_blob_make(&blob, &boot_count, sizeof(boot_count)));
+  //   /* the blob.saved.len is more than 0 when get the value successful */
+  //   if (blob.saved.len > 0)
+  //   {
+  //     printf("get the 'boot_count' value is %d\r\n", boot_count);
+  //   }
+  //   else
+  //   {
+  //     printf("get the 'boot_count' failed\r\n");
+  //   }
+  // }
+  // { /* CHANGE the KV value */
+  //   /* increase the boot count */
+  //   boot_count++;
+  //   /* change the "boot_count" KV's value */
+  //   fdb_kv_set_blob(&kvdb, "boot_count", fdb_blob_make(&blob, &boot_count, sizeof(boot_count)));
+  //   // printf("set the 'boot_count' value to %d\n", boot_count);
+  // }
+  // printf("===========================================================\r\n");
 
   cs_reg_fun("info", cs_task_HighWaterMark_cb);
   cs_reg_fun("sys", cs_task_manager_cb);
@@ -409,4 +409,3 @@ void cs_task_HighWaterMark_cb(unsigned char *cmd)
 }
 
 /* USER CODE END Application */
-

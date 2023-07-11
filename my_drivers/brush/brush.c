@@ -16,6 +16,7 @@ TaskHandle_t brush_fb_123_task_handle = NULL;
 TaskHandle_t brush_ud_123_task_handle = NULL;
 TaskHandle_t all_arm_start_task_handle = NULL;
 TaskHandle_t button_all_task_handle = NULL;
+TaskHandle_t self_cali_task_handle = NULL;
 
 // void (*RUNNING_FUN)(void) = NULL;
 
@@ -64,64 +65,64 @@ int MOTOR_ERR_CNT[8] = {0};
 void brush_position_set(unsigned char *data)
 {
     long int temp_val = 0;
-    temp_val = ((data[0] << 8) | (data[1])) * 10000;
-    if ((temp_val < 0) || (temp_val > 4700000))
+    temp_val = ((data[0] << 8) | (data[1]));
+    if ((temp_val < 0) || (temp_val > 470))
     {
         ;
     }
     else
     {
-        UD3_TARG_PULSE = temp_val;
+        UD3_TARG_PULSE = temp_val * 10000;
     }
 
-    temp_val = ((data[2] << 8) | (data[3])) * 10000;
-    if ((temp_val < 0) || (temp_val > 2700000))
+    temp_val = ((data[2] << 8) | (data[3]));
+    if ((temp_val < 0) || (temp_val > 270))
     {
         ;
     }
     else
     {
-        UD2_TARG_PULSE = temp_val;
+        UD2_TARG_PULSE = temp_val * 10000;
     }
 
-    temp_val = data[4] * 10000;
-    if ((temp_val < 0) || (temp_val > 1200000))
+    temp_val = data[4];
+    if ((temp_val < 0) || (temp_val > 120))
     {
         ;
     }
     else
     {
-        UD1_TARG_PULSE = temp_val;
+        UD1_TARG_PULSE = temp_val * 10000;
     }
 
     temp_val = data[5];
-    if ((temp_val < 0) || (temp_val > 4700000))
+    if ((temp_val < 0) || (temp_val > 150))
     {
         ;
     }
     else
     {
-        FB1_TARG_PULSE = temp_val;
+        FB1_TARG_PULSE = temp_val * 10000;
     }
 
     temp_val = data[6];
-    if ((temp_val < 0) || (temp_val > 4700000))
+    if ((temp_val < 0) || (temp_val > 120))
     {
         ;
     }
     else
     {
-        FB2_TARG_PULSE = temp_val;
+        FB2_TARG_PULSE = temp_val * 10000;
     }
 
     temp_val = data[7];
-    if ((temp_val < 0) || (temp_val > 4700000))
+    if ((temp_val < 0) || (temp_val > 120))
     {
         ;
     }
     else
     {
-        FB3_TARG_PULSE = temp_val;
+        FB3_TARG_PULSE = temp_val * 10000;
     }
 
     elog_i("SET_PULSE", "UD123-%ld-%ld-%ld,fb123-%ld-%ld-%ld", UD1_TARG_PULSE, UD2_TARG_PULSE, UD3_TARG_PULSE, FB1_TARG_PULSE, FB2_TARG_PULSE, FB3_TARG_PULSE);
@@ -459,11 +460,11 @@ void drum_revolve(unsigned char state)
 // Switching on and off the water pump
 void water_pump_set(unsigned char *data)
 {
-    static int auto_allocate_flag = 1;
+    static int auto_allocate_flag = 0;
 
     if (data[0] == 0)
     {
-        if (auto_allocate_flag) // allocate en
+        if (auto_allocate_flag == 1) // allocate en
         {
             for (int i = 0; i < 4; i++)
             {
@@ -481,7 +482,7 @@ void water_pump_set(unsigned char *data)
         {
             for (int i = 0; i < 7; i++)
             {
-                if (data[i + 1] == 1)
+                if (data[i] == 1)
                 {
                     PUMP_ON[i]();
                 }
@@ -494,13 +495,21 @@ void water_pump_set(unsigned char *data)
     }
     else if (data[0] == 1)
     {
-        allocate_en(1);
-        auto_allocate_flag = 1;
+        if (auto_allocate_flag == 0)
+        {
+            auto_allocate_flag = 1;
+            allocate_en(1);
+            // elog_e("auto", "----------------------------------on-----\r\n");
+        }
     }
     else if (data[0] == 2)
     {
-        allocate_en(0);
-        auto_allocate_flag = 0;
+        if (auto_allocate_flag == 1)
+        {
+            auto_allocate_flag = 0;
+            allocate_en(0);
+            // elog_e("auto", "----------------------------------off-----\r\n");
+        }
     }
 }
 
@@ -950,59 +959,41 @@ static void button_all_task(void *state)
     vTaskDelete(NULL);
 }
 
-void brush_ud_1_negative_pulse()
-{
-    motor_en(MOTOR_STATION[MOTOR_UD_1]);
-    MOTOR_BK_ON[MOTOR_UD_1]();
-    vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
-    if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_1], MOTOR_ORIGIN_PULSE[MOTOR_UD_1] - 5000000, UD_SPEED) == HAL_OK)
-    {
-        MOTOR_STATE_TABLE[MOTOR_UD_1] = RUNNING_ORIGIN;
-        MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_1] = MIDDLE;
-        elog_d("BRUSH", "set motor 4 pulse ok");
-    }
-    else
-    {
-        MOTOR_BK_OFF[MOTOR_UD_1]();
-        elog_e("BRUSH", "set motor 4 pulse fail");
-    }
-}
+// void brush_ud_2_negative_pulse()
+// {
+//     motor_en(MOTOR_STATION[MOTOR_UD_2]);
+//     MOTOR_BK_ON[MOTOR_UD_2]();
+//     vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
+//     if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_2], MOTOR_ORIGIN_PULSE[MOTOR_UD_2] - 5000000, UD_SPEED) == HAL_OK)
+//     {
+//         MOTOR_STATE_TABLE[MOTOR_UD_2] = RUNNING_ORIGIN;
+//         MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_2] = MIDDLE;
+//         elog_d("BRUSH", "set motor 5 pulse ok");
+//     }
+//     else
+//     {
+//         MOTOR_BK_OFF[MOTOR_UD_2]();
+//         elog_e("BRUSH", "set motor 5 pulse fail");
+//     }
+// }
 
-void brush_ud_2_negative_pulse()
-{
-    motor_en(MOTOR_STATION[MOTOR_UD_2]);
-    MOTOR_BK_ON[MOTOR_UD_2]();
-    vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
-    if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_2], MOTOR_ORIGIN_PULSE[MOTOR_UD_2] - 5000000, UD_SPEED) == HAL_OK)
-    {
-        MOTOR_STATE_TABLE[MOTOR_UD_2] = RUNNING_ORIGIN;
-        MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_2] = MIDDLE;
-        elog_d("BRUSH", "set motor 5 pulse ok");
-    }
-    else
-    {
-        MOTOR_BK_OFF[MOTOR_UD_2]();
-        elog_e("BRUSH", "set motor 5 pulse fail");
-    }
-}
-
-void brush_ud_3_negative_pulse()
-{
-    motor_en(MOTOR_STATION[MOTOR_UD_3]);
-    MOTOR_BK_ON[MOTOR_UD_3]();
-    vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
-    if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_3], MOTOR_ORIGIN_PULSE[MOTOR_UD_3] - 5000000, UD_SPEED) == HAL_OK)
-    {
-        MOTOR_STATE_TABLE[MOTOR_UD_3] = RUNNING_ORIGIN;
-        MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_3] = MIDDLE;
-        elog_d("BRUSH", "set motor 6 pulse ok");
-    }
-    else
-    {
-        MOTOR_BK_OFF[MOTOR_UD_3]();
-        elog_e("BRUSH", "set motor 6 pulse fail");
-    }
-}
+// void brush_ud_3_negative_pulse()
+// {
+//     motor_en(MOTOR_STATION[MOTOR_UD_3]);
+//     MOTOR_BK_ON[MOTOR_UD_3]();
+//     vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
+//     if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_3], MOTOR_ORIGIN_PULSE[MOTOR_UD_3] - 5000000, UD_SPEED) == HAL_OK)
+//     {
+//         MOTOR_STATE_TABLE[MOTOR_UD_3] = RUNNING_ORIGIN;
+//         MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_3] = MIDDLE;
+//         elog_d("BRUSH", "set motor 6 pulse ok");
+//     }
+//     else
+//     {
+//         MOTOR_BK_OFF[MOTOR_UD_3]();
+//         elog_e("BRUSH", "set motor 6 pulse fail");
+//     }
+// }
 
 /// @brief button start
 /// @param
@@ -1073,7 +1064,11 @@ void button_stop(void)
         vTaskDelete(button_all_task_handle);
         button_all_task_handle = NULL;
     }
-
+    if (self_cali_task_handle != NULL)
+    {
+        vTaskDelete(self_cali_task_handle);
+        self_cali_task_handle = NULL;
+    }
     for (MOTOR_NUM i = MOTOR_FB_1; i < MOTOR_MAX_NUM; i++)
     {
         motor_stop(MOTOR_STATION[i]);
@@ -1177,10 +1172,10 @@ static void calibration_2()
         }
     }
 
-    while ((MOTOR_UD1_B_FLAG() != SET) || (MOTOR_UD2_B_FLAG() != SET) || (MOTOR_UD3_B_FLAG() != SET))
+    while ((MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_1] != ORIGIN) || (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_2] != ORIGIN) || (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_3] != ORIGIN))
     {
         limit_stop();
-        vTaskDelay(2 / portTICK_RATE_MS);
+        vTaskDelay(5 / portTICK_RATE_MS);
     }
 
     for (int i = MOTOR_FB_1; i < MOTOR_FB_1 + 3; i++)
@@ -1197,31 +1192,34 @@ static void calibration_2()
         {
             MOTOR_STATE_TABLE[i] = RUNNING_ORIGIN;
             MOTOR_IN_PLACE_STAT_TABLE[i] = MIDDLE;
-            motor_set_pulse(MOTOR_STATION[i], -5000000, 10000);
+            motor_set_pulse(MOTOR_STATION[i], -5000000, 2000);
         }
     }
 
-    while ((MOTOR_FB1_B_FLAG() != SET) || (MOTOR_FB2_B_FLAG() != SET) || (MOTOR_FB3_B_FLAG() != SET))
+    while ((MOTOR_IN_PLACE_STAT_TABLE[MOTOR_FB_1] != ORIGIN) || (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_FB_2] != ORIGIN) || (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_FB_3] != ORIGIN))
     {
         limit_stop();
-        vTaskDelay(2 / portTICK_RATE_MS);
+        vTaskDelay(5 / portTICK_RATE_MS);
     }
 
-    if (MOTOR_BARM_B_FLAG() != SET)
-    {
-        MOTOR_BK_ON[MOTOR_B_ARM]();
-        vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
-        MOTOR_STATE_TABLE[MOTOR_B_ARM] = RUNNING_ORIGIN;
-        MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] = MIDDLE;
-        motor_set_pulse(MOTOR_STATION[MOTOR_B_ARM], 1000000, 400);
-    }
-    while (MOTOR_BARM_B_FLAG() != SET)
-    {
-        limit_stop();
-        vTaskDelay(2 / portTICK_RATE_MS);
-    }
-
+    // if (MOTOR_BARM_B_FLAG() != SET)
+    // {
+    //     MOTOR_BK_ON[MOTOR_B_ARM]();
+    //     vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
+    //     MOTOR_STATE_TABLE[MOTOR_B_ARM] = RUNNING_ORIGIN;
+    //     MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] = MIDDLE;
+    //     motor_set_pulse(MOTOR_STATION[MOTOR_B_ARM], 1000000, 400);
+    // }
+    // while (MOTOR_BARM_B_FLAG() != SET)
+    // {
+    //     limit_stop();
+    //     vTaskDelay(2 / portTICK_RATE_MS);
+    // }
+    vTaskDelay(200 / portTICK_RATE_MS);
     calibration_1();
+    vTaskDelay(200 / portTICK_RATE_MS);
+    self_cali_task_handle = NULL;
+    vTaskDelete(NULL);
 }
 
 /// @brief Self calibration
@@ -1235,6 +1233,30 @@ void self_calibration(unsigned char type)
     else
     {
         calibration_2();
+    }
+}
+
+void brush_ud_1_negative_pulse()
+{
+    // motor_en(MOTOR_STATION[MOTOR_UD_1]);
+    // MOTOR_BK_ON[MOTOR_UD_1]();
+    // vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
+    // if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_1], MOTOR_ORIGIN_PULSE[MOTOR_UD_1] - 5000000, UD_SPEED) == HAL_OK)
+    // {
+    //     MOTOR_STATE_TABLE[MOTOR_UD_1] = RUNNING_ORIGIN;
+    //     MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_1] = MIDDLE;
+    //     elog_d("BRUSH", "set motor 4 pulse ok");
+    // }
+    // else
+    // {
+    //     MOTOR_BK_OFF[MOTOR_UD_1]();
+    //     elog_e("BRUSH", "set motor 4 pulse fail");
+    // }
+
+    // self_cali_task_handle
+    if (self_cali_task_handle == NULL)
+    {
+        xTaskCreate((TaskFunction_t)calibration_2, "calibration task", 200, NULL, 0, &self_cali_task_handle);
     }
 }
 
@@ -1406,6 +1428,14 @@ void brush_deamon_task(void)
     static int temp_emer_state = 0;
     motor_hal_can_init();
     // motor_ctrol_en();
+    for (int i = 0; i < 6; i++)
+    {
+        if (MOTOR_LIMIT_FLAG[i * 2 + 1]() != SET)
+        {
+            MOTOR_IN_PLACE_STAT_TABLE[i] = MIDDLE;
+        }
+    }
+
     motor_wait_en();
     for (MOTOR_NUM i = MOTOR_FB_1; i < MOTOR_MAX_NUM; i++)
     {

@@ -54,11 +54,11 @@ static void response_beat()
 extern unsigned char pre_cmd;
 static void hcp_analyse_callback(unsigned int size)
 {
-    for (int i = 0; i < size; i++)
-    {
-        printf("-%x", hcp_buf[i]);
-    }
-    printf("\r\n");
+    // for (int i = 0; i < size; i++)
+    // {
+    //     printf("-%x", hcp_buf[i]);
+    // }
+    // printf("\r\n");
     if (hcp_buf[0] != 0x5a)
     {
         return;
@@ -176,14 +176,14 @@ static void hcp_analyse_callback(unsigned int size)
         elog_d("HCP", "ud1 negative pulse");
         brush_ud_1_negative_pulse();
         break;
-    case 0xA2:
-        elog_d("HCP", "ud1 negative pulse");
-        brush_ud_2_negative_pulse();
-        break;
-    case 0xA3:
-        elog_d("HCP", "ud1 negative pulse");
-        brush_ud_3_negative_pulse();
-        break;
+        // case 0xA2:
+        //     elog_d("HCP", "ud1 negative pulse");
+        //     brush_ud_2_negative_pulse();
+        //     break;
+        // case 0xA3:
+        //     elog_d("HCP", "ud1 negative pulse");
+        //     brush_ud_3_negative_pulse();
+        //     break;
     }
 }
 
@@ -201,13 +201,13 @@ void hcp_task()
     unsigned int size;
     while (1)
     {
-        if (xTaskNotifyWait(0, 0, &size, 500) == pdFALSE)
+        if (xTaskNotifyWait(0, 0, &size, 1000) == pdFALSE)
         {
-            // elog_e("HCP", "Upper computer lost");
+            elog_e("HCP", "Upper computer lost");
         }
         else
         {
-            if (EMERGENCY_KEY_FLAG() == 1)
+            if (EMERGENCY_KEY_FLAG() == 0)
             {
                 hcp_analyse_callback(size);
             }
