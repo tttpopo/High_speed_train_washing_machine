@@ -155,8 +155,8 @@ void MX_FREERTOS_Init(void)
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-  xTaskCreate((TaskFunction_t)console_task, "console_task", 800, NULL, 0, &console_task_handle);
-  xTaskCreate((TaskFunction_t)hcp_task, "hcp task", 800, NULL, 5, &hcp_task_handle);
+  xTaskCreate((TaskFunction_t)console_task, "console_task", 600, NULL, 0, &console_task_handle);
+  xTaskCreate((TaskFunction_t)hcp_task, "hcp task", 600, NULL, 5, &hcp_task_handle);
   // xTaskCreate((TaskFunction_t)test_task, "test_task", 400, NULL, 0, &test_task_handle);
   xTaskCreate((TaskFunction_t)motor_task, "motor_task", 400, NULL, 0, &motor_task_handle);
   // xTaskCreate((TaskFunction_t)rgb_task, "rgb_task", 100, NULL, 2, &rgb_task_handle);
@@ -345,26 +345,29 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
   {
     cs_recv_callback(Size);
   }
-  // 232 serial port of upper computer
-  else if (huart == &huart2)
+  else if (huart == &huart4)
   {
-    hcp_recv_callback(Size);
+    fm_recv_callback(Size);
   }
+  // 232 serial port of upper computer
+  // else if (huart == &huart2)
+  // {
+  //   hcp_recv_callback(Size);
+  // }
   // power
   // else if (huart == &huart3)
   // {
   //   bat_recv_callback(Size);
   // }
-  else if (huart == &huart4)
-  {
-    fm_recv_callback(Size);
-  }
 }
 
+extern unsigned char hcp_buf[40];
+extern unsigned char hcp_rec_s;
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
   static unsigned char pb_rec_buf[5] = {0};
   static unsigned char pb_rec_index = 0;
+  static unsigned int hcp_rec_index = 0;
   if (huart == &huart5)
   {
     if (pb_rec == 0x5a)
@@ -383,6 +386,25 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
       pb_rec_index = 0;
     }
     HAL_UART_Receive_IT(&huart5, &pb_rec, 1);
+  }
+  else if (huart == &huart2)
+  {
+    if (hcp_rec_s == 0x5a)
+    {
+      hcp_rec_index = 0;
+    }
+    hcp_buf[hcp_rec_index++] = hcp_rec_s;
+    if (hcp_rec_index > 20)
+    {
+      hcp_rec_index = 0;
+    }
+    if (hcp_rec_index == 16)
+    {
+      hcp_recv_callback(hcp_rec_index);
+      hcp_rec_index = 0;
+    }
+
+    HAL_UART_Receive_IT(&huart2, &hcp_rec_s, 1);
   }
 }
 void cs_task_manager_cb(unsigned char *cmd)

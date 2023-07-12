@@ -7,10 +7,12 @@
 #include "motor_drive.h"
 #include "brush.h"
 #include "string.h"
+#include "dma.h"
+#include "rtc.h"
 
 TaskHandle_t hcp_task_handle;
 unsigned char hcp_buf[40] = {0};
-
+unsigned char hcp_rec_s = 0;
 static unsigned short CRC16_Modbus(unsigned char *pdata, int len)
 {
     unsigned short crc = 0xFFFF;
@@ -197,13 +199,29 @@ void hcp_task()
     // MOTOR_UD3_BK_ON;
     // MOTOR_BARM_BK_ON;
     // MOTOR_SARM_BK_ON;
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart2, hcp_buf, sizeof(hcp_buf));
+    int cnt_err = 0;
+    // HAL_UARTEx_ReceiveToIdle_DMA(&huart2, hcp_buf, sizeof(hcp_buf));
+    HAL_UART_Receive_IT(&huart2,&hcp_rec_s,1);
     unsigned int size;
     while (1)
     {
         if (xTaskNotifyWait(0, 0, &size, 1000) == pdFALSE)
         {
             elog_e("HCP", "Upper computer lost");
+            // cnt_err++;
+            // if (cnt_err == 3)
+            // {
+            // cnt_err = 0;
+            // memset(hcp_buf, 0, sizeof(hcp_buf));
+            // MX_DMA_Init();
+            // MX_RTC_Init();
+            // MX_USART1_UART_Init();
+            // MX_UART4_Init();
+            // MX_UART5_Init();
+            // MX_USART2_UART_Init();
+            // MX_USART3_UART_Init();
+            //     elog_e("HCP", "uart re init");
+            // }
         }
         else
         {
@@ -224,5 +242,5 @@ void hcp_task()
 void hcp_recv_callback(unsigned short Size)
 {
     xTaskNotifyFromISR(hcp_task_handle, Size, eSetValueWithOverwrite, NULL);
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart2, hcp_buf, sizeof(hcp_buf));
+    // HAL_UARTEx_ReceiveToIdle_DMA(&huart2, hcp_buf, sizeof(hcp_buf));
 }

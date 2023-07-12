@@ -40,6 +40,8 @@
         "tim.h": "c",
         "rtc.h": "c",
         "dma.h": "c",
-        "cmsis_os.h": "c"
+        "cmsis_os.h": "c",
+        "string.h": "c",
+        "flashdb.h": "c"
     }
 }
