@@ -38,6 +38,7 @@ long int UD3_TARG_PULSE = 4300000; // Lifting brush group end point pulse value
 // long int S_ARM_ORIGIN_PULSE = 0;
 
 #define CAL_PULSE 10000
+#define B_ARM_CAL_PULSE 500000
 
 long int MOTOR_ORIGIN_PULSE[8] = {0};
 
@@ -536,7 +537,7 @@ void big_arm_start(unsigned char state)
     }
     else
     {
-        if (motor_set_pulse(MOTOR_STATION[MOTOR_B_ARM], MOTOR_ORIGIN_PULSE[MOTOR_B_ARM] - CAL_PULSE, B_AEM_SPEED) == HAL_OK)
+        if (motor_set_pulse(MOTOR_STATION[MOTOR_B_ARM], MOTOR_ORIGIN_PULSE[MOTOR_B_ARM] - B_ARM_CAL_PULSE, B_AEM_SPEED) == HAL_OK)
         {
             MOTOR_STATE_TABLE[MOTOR_B_ARM] = RUNNING_ORIGIN;
             MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] = MIDDLE;
