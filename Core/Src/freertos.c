@@ -368,6 +368,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   static unsigned char pb_rec_buf[5] = {0};
   static unsigned char pb_rec_index = 0;
   static unsigned int hcp_rec_index = 0;
+
   if (huart == &huart5)
   {
     if (pb_rec == 0x5a)
@@ -391,22 +392,24 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   {
     if (hcp_rec_s == 0x5a)
     {
-      hcp_rec_index = 0;
+      if (hcp_buf[0] != 0x5a)
+      {
+        hcp_rec_index = 0;
+      }
     }
     hcp_buf[hcp_rec_index++] = hcp_rec_s;
-    if (hcp_rec_index > 20)
-    {
-      hcp_rec_index = 0;
-    }
-    if (hcp_rec_index == 16)
+    if (hcp_rec_index > 15)
     {
       hcp_recv_callback(hcp_rec_index);
       hcp_rec_index = 0;
     }
-
-    HAL_UART_Receive_IT(&huart2, &hcp_rec_s, 1);
+    else
+    {
+      HAL_UART_Receive_IT(&huart2, &hcp_rec_s, 1);
+    }
   }
 }
+
 void cs_task_manager_cb(unsigned char *cmd)
 {
   unsigned char write_buffer[500];

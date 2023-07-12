@@ -483,7 +483,7 @@ void water_pump_set(unsigned char *data)
         {
             for (int i = 0; i < 7; i++)
             {
-                if (data[i] == 1)
+                if (data[i+1] == 1)
                 {
                     PUMP_ON[i]();
                 }
@@ -500,7 +500,7 @@ void water_pump_set(unsigned char *data)
         {
             auto_allocate_flag = 1;
             allocate_en(1);
-            // elog_e("auto", "----------------------------------on-----\r\n");
+            elog_e("auto", "----------------------------------on-----\r\n");
         }
     }
     else if (data[0] == 2)
@@ -509,7 +509,7 @@ void water_pump_set(unsigned char *data)
         {
             auto_allocate_flag = 0;
             allocate_en(0);
-            // elog_e("auto", "----------------------------------off-----\r\n");
+            elog_e("auto", "----------------------------------off-----\r\n");
         }
     }
 }

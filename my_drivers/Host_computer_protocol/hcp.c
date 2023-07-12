@@ -50,7 +50,8 @@ static void response_beat()
     heart_buf[sizeof(heart_buf) - 2] = (crc_code & 0x00ff);
     heart_buf[sizeof(heart_buf) - 1] = (crc_code >> 8);
     // HAL_UART_Transmit_DMA(&huart2, heart_buf, sizeof(heart_buf));
-    HAL_UART_Transmit_IT(&huart2, heart_buf, sizeof(heart_buf));
+    // HAL_UART_Transmit_IT(&huart2, heart_buf, sizeof(heart_buf));
+    HAL_UART_Transmit(&huart2, heart_buf, sizeof(heart_buf), 1000);
 }
 
 extern unsigned char pre_cmd;
@@ -191,37 +192,15 @@ static void hcp_analyse_callback(unsigned int size)
 
 void hcp_task()
 {
-    // MOTOR_FB1_BK_ON;
-    // MOTOR_FB2_BK_ON;
-    // MOTOR_FB3_BK_ON;
-    // MOTOR_UD1_BK_ON;
-    // MOTOR_UD2_BK_ON;
-    // MOTOR_UD3_BK_ON;
-    // MOTOR_BARM_BK_ON;
-    // MOTOR_SARM_BK_ON;
-    int cnt_err = 0;
     // HAL_UARTEx_ReceiveToIdle_DMA(&huart2, hcp_buf, sizeof(hcp_buf));
-    HAL_UART_Receive_IT(&huart2,&hcp_rec_s,1);
+    HAL_UART_Receive_IT(&huart2, &hcp_rec_s, 1);
     unsigned int size;
     while (1)
     {
         if (xTaskNotifyWait(0, 0, &size, 1000) == pdFALSE)
         {
             elog_e("HCP", "Upper computer lost");
-            // cnt_err++;
-            // if (cnt_err == 3)
-            // {
-            // cnt_err = 0;
-            // memset(hcp_buf, 0, sizeof(hcp_buf));
-            // MX_DMA_Init();
-            // MX_RTC_Init();
-            // MX_USART1_UART_Init();
-            // MX_UART4_Init();
-            // MX_UART5_Init();
-            // MX_USART2_UART_Init();
-            // MX_USART3_UART_Init();
-            //     elog_e("HCP", "uart re init");
-            // }
+            // HAL_UART_Receive_IT(&huart2, &hcp_rec_s, 1);
         }
         else
         {
@@ -229,12 +208,14 @@ void hcp_task()
             {
                 hcp_analyse_callback(size);
             }
-            memset(hcp_buf, 0, sizeof(hcp_buf));
             // for (int i = 0; i < size; i++)
             // {
-            //     printf("%x", hcp_buf[i]);
+            //     printf("-%x", hcp_buf[i]);
             // }
             // printf("---------%d\r\n", size);
+            // vTaskDelay(100 / portTICK_RATE_MS);
+            memset(hcp_buf, 0, sizeof(hcp_buf));
+            HAL_UART_Receive_IT(&huart2, &hcp_rec_s, 1);
         }
     }
 }
