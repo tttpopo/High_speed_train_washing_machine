@@ -114,10 +114,14 @@ ADC3 - mix
 ADC4 - spray
 
 Corresponding relationship of water pump
-pump1 - water
-pump2 - detergent
-pump3 - mix
-pump4 - spray
+
+PUMP1 - water pump
+PUMP2 - Detergent pump
+PUMP3 - spray pump
+PUMP4 - brush water pump
+PUMP5 - Detergent suction pump
+PUMP6 - vacuum pump(sewage pump)
+PUMP7 - solenoid valve
 */
 
 TaskHandle_t accurate_ratio_task_handle = NULL;
@@ -126,9 +130,9 @@ TaskHandle_t accurate_ratio_task_handle = NULL;
 
 // char HCP_START_ALLOCATE = 1;
 char stat = 0;
-char TARG_CAP = 90;
-char EME_CAP = 95;
-float rat = 10.0;
+// char TARG_CAP = 90;
+// char EME_CAP = 95;
+float rat = 50.0;
 
 void cs_set_ratio_cb(unsigned char *cmd)
 {

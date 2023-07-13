@@ -382,7 +382,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
       {
         pb_bat_level = pb_rec_buf[1];
         pb_charge_state = pb_rec_buf[2];
-        // printf("%d-%d\r\n", pb_bat_level,pb_charge_state);
+        // printf("%d-%d\r\n", pb_bat_level, pb_charge_state);
       }
       pb_rec_index = 0;
     }

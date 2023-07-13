@@ -138,7 +138,8 @@ void PUMP_2_ON()
 }
 void PUMP_3_ON()
 {
-    HAL_GPIO_WritePin(PUMP_3_GPIO_Port, PUMP_3_Pin, GPIO_PIN_SET);
+    // HAL_GPIO_WritePin(PUMP_3_GPIO_Port, PUMP_3_Pin, GPIO_PIN_SET);
+    ;
 }
 void PUMP_4_ON()
 {
@@ -480,7 +481,7 @@ RETRY:
 /// @param hcan
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
-    //static unsigned char cnt_flag = 0;
+    // static unsigned char cnt_flag = 0;
     if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &can_rx_head, can_rx_buf) == HAL_OK)
     {
         // memset(MOTOR_REC_FLAG_BUF, 0, sizeof(MOTOR_REC_FLAG_BUF));
