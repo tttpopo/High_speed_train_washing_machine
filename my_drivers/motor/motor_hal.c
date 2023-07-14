@@ -138,8 +138,8 @@ void PUMP_2_ON()
 }
 void PUMP_3_ON()
 {
-    // HAL_GPIO_WritePin(PUMP_3_GPIO_Port, PUMP_3_Pin, GPIO_PIN_SET);
-    ;
+    HAL_GPIO_WritePin(PUMP_3_GPIO_Port, PUMP_3_Pin, GPIO_PIN_SET);
+    // ;
 }
 void PUMP_4_ON()
 {
@@ -330,7 +330,7 @@ GPIO_PinState EMERGENCY_KEY_FLAG()
 
 GPIO_PinState ANTI_COLLISION_FLAG()
 {
-    return HAL_GPIO_ReadPin(IN_RES_1_GPIO_Port, IN_RES_1_Pin);
+    return HAL_GPIO_ReadPin(IN_RES_3_GPIO_Port, IN_RES_3_Pin);
 }
 
 /*
