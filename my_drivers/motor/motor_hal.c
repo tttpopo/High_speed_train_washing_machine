@@ -325,12 +325,12 @@ GPIO_PinState MOTOR_SARM_D_FLAG()
 // Emergency stop button
 GPIO_PinState EMERGENCY_KEY_FLAG()
 {
-    return HAL_GPIO_ReadPin(IN_RES_4_GPIO_Port, IN_RES_4_Pin);
+    return (GPIO_PinState)((HAL_GPIO_ReadPin(IN_RES_4_GPIO_Port, IN_RES_4_Pin))||(HAL_GPIO_ReadPin(IN_RES_3_GPIO_Port, IN_RES_3_Pin)));
 }
 
 GPIO_PinState ANTI_COLLISION_FLAG()
 {
-    return HAL_GPIO_ReadPin(IN_RES_3_GPIO_Port, IN_RES_3_Pin);
+    return HAL_GPIO_ReadPin(IN_RES_2_GPIO_Port, IN_RES_2_Pin);
 }
 
 /*

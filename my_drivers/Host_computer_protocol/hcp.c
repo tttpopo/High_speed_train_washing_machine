@@ -73,6 +73,17 @@ static void hcp_analyse_callback(unsigned int size)
     }
     // Record the current one click start command
     motor_record_stat(hcp_buf[3]);
+
+    if (EMERGENCY_KEY_FLAG() != 0)
+    {
+        if (hcp_buf[3] == 0x01)
+        {
+            elog_d("HCP", "heartbeat");
+            response_beat();
+        }
+        return;
+    }
+
     switch (hcp_buf[3])
     {
     case 0x01:
@@ -204,10 +215,9 @@ void hcp_task()
         }
         else
         {
-            if (EMERGENCY_KEY_FLAG() == 0)
-            {
-                hcp_analyse_callback(size);
-            }
+
+            hcp_analyse_callback(size);
+
             // for (int i = 0; i < size; i++)
             // {
             //     printf("-%x", hcp_buf[i]);

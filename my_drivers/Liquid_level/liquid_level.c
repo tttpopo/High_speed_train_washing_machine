@@ -192,10 +192,10 @@ void accurate_ratio_task()
             stat = 3;
             break;
         case 1:
-            PUMP_7_ON();
             printf("%d,%d,%d,%d\r\n", wat_level, det_level, mix_level, spr_level);
             if ((wat_level > 5) && (det_level > 5))
             {
+                PUMP_7_ON();
                 if ((mix_level < 10))
                 {
                     elog_i("MIX", "Start proportioning!");
