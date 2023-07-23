@@ -22,7 +22,7 @@ TaskHandle_t self_cali_task_handle = NULL;
 
 // long int FB_TARG_PULSE = 1200000;  // Translation brush group end point pulse value
 long int FB1_TARG_PULSE = 1100000; // Translation brush group end point pulse value
-long int FB2_TARG_PULSE = 1000000; // Translation brush group end point pulse value
+long int FB2_TARG_PULSE = 900000; // Translation brush group end point pulse value
 long int FB3_TARG_PULSE = 800000;  // Translation brush group end point pulse value
 // long int FB1_TARG_PULSE = 1500000; // Translation brush group end point pulse value
 // long int FB2_TARG_PULSE = 1200000; // Translation brush group end point pulse value
@@ -33,7 +33,7 @@ long int FB3_TARG_PULSE = 800000;  // Translation brush group end point pulse va
 // long int UD_TARG_PULSE = 50000;    // Lifting brush group end point pulse value
 long int UD1_TARG_PULSE = 600000;  // Lifting brush group end point pulse value
 long int UD2_TARG_PULSE = 2700000; // Lifting brush group end point pulse value
-long int UD3_TARG_PULSE = 4300000; // Lifting brush group end point pulse value
+long int UD3_TARG_PULSE = 3800000; // Lifting brush group end point pulse value
 // long int UD1_ORIGIN_PULSE = 0;  // Lifting brush group end point pulse value
 // long int UD2_ORIGIN_PULSE = 0;
 // long int UD3_ORIGIN_PULSE = 0;
@@ -70,7 +70,7 @@ void brush_position_set(unsigned char *data)
 {
     long int temp_val = 0;
     temp_val = ((data[0] << 8) | (data[1]));
-    if ((temp_val < 0) || (temp_val > 470))
+    if ((temp_val < 0) || (temp_val > 390))
     {
         ;
     }
