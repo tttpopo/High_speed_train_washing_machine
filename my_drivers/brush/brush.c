@@ -22,7 +22,7 @@ TaskHandle_t self_cali_task_handle = NULL;
 
 // long int FB_TARG_PULSE = 1200000;  // Translation brush group end point pulse value
 long int FB1_TARG_PULSE = 1100000; // Translation brush group end point pulse value
-long int FB2_TARG_PULSE = 900000; // Translation brush group end point pulse value
+long int FB2_TARG_PULSE = 900000;  // Translation brush group end point pulse value
 long int FB3_TARG_PULSE = 800000;  // Translation brush group end point pulse value
 // long int FB1_TARG_PULSE = 1500000; // Translation brush group end point pulse value
 // long int FB2_TARG_PULSE = 1200000; // Translation brush group end point pulse value
@@ -616,6 +616,8 @@ static void all_arm_start_task(void *state)
                 {
                     MOTOR_ERR_CODE_TABLE[MOTOR_S_ARM] = err_code;
                     MOTOR_BK_OFF[MOTOR_S_ARM]();
+                    MOTOR_STATE_TABLE[MOTOR_S_ARM] = STOP;
+                    MOTOR_IN_PLACE_STAT_TABLE[MOTOR_S_ARM] = MIDDLE;
                     elog_e("ERR-CODE", "moto%d--->%d", MOTOR_S_ARM, err_code);
                 }
             }
@@ -640,6 +642,8 @@ static void all_arm_start_task(void *state)
                 {
                     MOTOR_ERR_CODE_TABLE[MOTOR_B_ARM] = err_code;
                     MOTOR_BK_OFF[MOTOR_B_ARM]();
+                    MOTOR_STATE_TABLE[MOTOR_B_ARM] = STOP;
+                    MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] = MIDDLE;
                     elog_e("ERR-CODE", "moto%d--->%d", MOTOR_B_ARM, err_code);
                 }
             }
@@ -667,6 +671,8 @@ static void all_arm_start_task(void *state)
                 {
                     MOTOR_ERR_CODE_TABLE[MOTOR_B_ARM] = err_code;
                     MOTOR_BK_OFF[MOTOR_B_ARM]();
+                    MOTOR_STATE_TABLE[MOTOR_B_ARM] = STOP;
+                    MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] = MIDDLE;
                     elog_e("ERR-CODE", "moto%d--->%d", MOTOR_B_ARM, err_code);
                 }
             }
@@ -691,6 +697,8 @@ static void all_arm_start_task(void *state)
                 {
                     MOTOR_ERR_CODE_TABLE[MOTOR_S_ARM] = err_code;
                     MOTOR_BK_OFF[MOTOR_S_ARM]();
+                    MOTOR_STATE_TABLE[MOTOR_S_ARM] = STOP;
+                    MOTOR_IN_PLACE_STAT_TABLE[MOTOR_S_ARM] = MIDDLE;
                     elog_e("ERR-CODE", "moto%d--->%d", MOTOR_S_ARM, err_code);
                 }
             }
@@ -729,8 +737,6 @@ static void button_all_task(void *state)
         small_arm_start(1);
         vTaskDelay(80 / portTICK_RATE_MS);
         small_arm_start(1);
-        vTaskDelay(80 / portTICK_RATE_MS);
-        small_arm_start(1);
         // while (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_S_ARM] != TARG)
         while (MOTOR_LIMIT_FLAG[MOTOR_S_ARM * 2]() != SET)
         {
@@ -750,14 +756,14 @@ static void button_all_task(void *state)
                 {
                     MOTOR_ERR_CODE_TABLE[MOTOR_S_ARM] = err_code;
                     MOTOR_BK_OFF[MOTOR_S_ARM]();
+                    MOTOR_STATE_TABLE[MOTOR_S_ARM] = STOP;
+                    MOTOR_IN_PLACE_STAT_TABLE[MOTOR_S_ARM] = MIDDLE;
                     elog_e("ERR-CODE", "moto%d--->%d", MOTOR_S_ARM, err_code);
                 }
             }
             vTaskDelay(50 / portTICK_RATE_MS);
         }
         vTaskDelay(200 / portTICK_RATE_MS);
-        big_arm_start(1);
-        vTaskDelay(80 / portTICK_RATE_MS);
         big_arm_start(1);
         vTaskDelay(80 / portTICK_RATE_MS);
         big_arm_start(1);
@@ -779,26 +785,23 @@ static void button_all_task(void *state)
                 {
                     MOTOR_ERR_CODE_TABLE[MOTOR_B_ARM] = err_code;
                     MOTOR_BK_OFF[MOTOR_B_ARM]();
+                    MOTOR_STATE_TABLE[MOTOR_B_ARM] = STOP;
+                    MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] = MIDDLE;
                     elog_e("ERR-CODE", "moto%d--->%d", MOTOR_B_ARM, err_code);
                 }
             }
             vTaskDelay(50 / portTICK_RATE_MS);
         }
+
         vTaskDelay(200 / portTICK_RATE_MS);
         brush_fb_1(1);
         vTaskDelay(100 / portTICK_RATE_MS);
         brush_fb_1(1);
-        vTaskDelay(100 / portTICK_RATE_MS);
-        brush_fb_1(1);
         vTaskDelay(BRUSH_START_DELAY_TIME / portTICK_RATE_MS);
         brush_fb_2(1);
         vTaskDelay(100 / portTICK_RATE_MS);
         brush_fb_2(1);
-        vTaskDelay(100 / portTICK_RATE_MS);
-        brush_fb_2(1);
         vTaskDelay(BRUSH_START_DELAY_TIME / portTICK_RATE_MS);
-        brush_fb_3(1);
-        vTaskDelay(100 / portTICK_RATE_MS);
         brush_fb_3(1);
         vTaskDelay(100 / portTICK_RATE_MS);
         brush_fb_3(1);
@@ -823,6 +826,8 @@ static void button_all_task(void *state)
                     {
                         MOTOR_ERR_CODE_TABLE[i] = err_code;
                         MOTOR_BK_OFF[i]();
+                        MOTOR_STATE_TABLE[i] = STOP;
+                        MOTOR_IN_PLACE_STAT_TABLE[i] = MIDDLE;
                         elog_e("ERR-CODE", "moto%d--->%d", i, err_code);
                     }
                 }
@@ -833,17 +838,11 @@ static void button_all_task(void *state)
         brush_ud_1(1);
         vTaskDelay(100 / portTICK_RATE_MS);
         brush_ud_1(1);
-        vTaskDelay(100 / portTICK_RATE_MS);
-        brush_ud_1(1);
         vTaskDelay(BRUSH_START_DELAY_TIME / portTICK_RATE_MS);
         brush_ud_2(1);
         vTaskDelay(100 / portTICK_RATE_MS);
         brush_ud_2(1);
-        vTaskDelay(100 / portTICK_RATE_MS);
-        brush_ud_2(1);
         vTaskDelay(BRUSH_START_DELAY_TIME / portTICK_RATE_MS);
-        brush_ud_3(1);
-        vTaskDelay(100 / portTICK_RATE_MS);
         brush_ud_3(1);
         vTaskDelay(100 / portTICK_RATE_MS);
         brush_ud_3(1);
@@ -868,6 +867,8 @@ static void button_all_task(void *state)
                     {
                         MOTOR_ERR_CODE_TABLE[i] = err_code;
                         MOTOR_BK_OFF[i]();
+                        MOTOR_STATE_TABLE[i] = STOP;
+                        MOTOR_IN_PLACE_STAT_TABLE[i] = MIDDLE;
                         elog_e("ERR-CODE", "moto%d--->%d", i, err_code);
                     }
                 }
@@ -880,18 +881,12 @@ static void button_all_task(void *state)
         brush_ud_3(0);
         vTaskDelay(200 / portTICK_RATE_MS);
         brush_ud_3(0);
-        vTaskDelay(200 / portTICK_RATE_MS);
-        brush_ud_3(0);
 
         vTaskDelay(200 / portTICK_RATE_MS);
         brush_ud_2(0);
         vTaskDelay(200 / portTICK_RATE_MS);
         brush_ud_2(0);
-        vTaskDelay(200 / portTICK_RATE_MS);
-        brush_ud_2(0);
 
-        vTaskDelay(200 / portTICK_RATE_MS);
-        brush_ud_1(0);
         vTaskDelay(200 / portTICK_RATE_MS);
         brush_ud_1(0);
         vTaskDelay(200 / portTICK_RATE_MS);
@@ -917,6 +912,8 @@ static void button_all_task(void *state)
                     {
                         MOTOR_ERR_CODE_TABLE[i] = err_code;
                         MOTOR_BK_OFF[i]();
+                        MOTOR_STATE_TABLE[i] = STOP;
+                        MOTOR_IN_PLACE_STAT_TABLE[i] = MIDDLE;
                         elog_e("ERR-CODE", "moto%d--->%d", i, err_code);
                     }
                 }
@@ -928,18 +925,12 @@ static void button_all_task(void *state)
         vTaskDelay(100 / portTICK_RATE_MS);
         brush_fb_1(0);
         vTaskDelay(100 / portTICK_RATE_MS);
-        brush_fb_1(0);
-        vTaskDelay(100 / portTICK_RATE_MS);
 
         brush_fb_2(0);
         vTaskDelay(100 / portTICK_RATE_MS);
         brush_fb_2(0);
         vTaskDelay(100 / portTICK_RATE_MS);
-        brush_fb_2(0);
-        vTaskDelay(100 / portTICK_RATE_MS);
 
-        brush_fb_3(0);
-        vTaskDelay(100 / portTICK_RATE_MS);
         brush_fb_3(0);
         vTaskDelay(100 / portTICK_RATE_MS);
         brush_fb_3(0);
@@ -964,6 +955,8 @@ static void button_all_task(void *state)
                     {
                         MOTOR_ERR_CODE_TABLE[i] = err_code;
                         MOTOR_BK_OFF[i]();
+                        MOTOR_STATE_TABLE[i] = STOP;
+                        MOTOR_IN_PLACE_STAT_TABLE[i] = MIDDLE;
                         elog_e("ERR-CODE", "moto%d--->%d", i, err_code);
                     }
                 }
@@ -971,8 +964,6 @@ static void button_all_task(void *state)
             }
         }
         vTaskDelay(200 / portTICK_RATE_MS);
-        big_arm_start(0);
-        vTaskDelay(100 / portTICK_RATE_MS);
         big_arm_start(0);
         vTaskDelay(100 / portTICK_RATE_MS);
         big_arm_start(0);
@@ -995,14 +986,14 @@ static void button_all_task(void *state)
                 {
                     MOTOR_ERR_CODE_TABLE[MOTOR_B_ARM] = err_code;
                     MOTOR_BK_OFF[MOTOR_B_ARM]();
+                    MOTOR_STATE_TABLE[MOTOR_B_ARM] = STOP;
+                    MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] = MIDDLE;
                     elog_e("ERR-CODE", "moto%d--->%d", MOTOR_B_ARM, err_code);
                 }
             }
             vTaskDelay(50 / portTICK_RATE_MS);
         }
         vTaskDelay(200 / portTICK_RATE_MS);
-        small_arm_start(0);
-        vTaskDelay(100 / portTICK_RATE_MS);
         small_arm_start(0);
         vTaskDelay(100 / portTICK_RATE_MS);
         small_arm_start(0);
@@ -1024,6 +1015,8 @@ static void button_all_task(void *state)
                 {
                     MOTOR_ERR_CODE_TABLE[MOTOR_S_ARM] = err_code;
                     MOTOR_BK_OFF[MOTOR_S_ARM]();
+                    MOTOR_STATE_TABLE[MOTOR_S_ARM] = STOP;
+                    MOTOR_IN_PLACE_STAT_TABLE[MOTOR_S_ARM] = MIDDLE;
                     elog_e("ERR-CODE", "moto%d--->%d", MOTOR_S_ARM, err_code);
                 }
             }
@@ -1080,12 +1073,12 @@ void button_start(void)
     temp_state = 1;
     if (button_all_task_handle == NULL)
     {
-        xTaskCreate(button_all_task, "button_all_task", 150, (void *)(&temp_state), 0, &button_all_task_handle);
+        xTaskCreate(button_all_task, "button_all_task", 180, (void *)(&temp_state), 0, &button_all_task_handle);
     }
     else
     {
         vTaskDelete(button_all_task_handle);
-        xTaskCreate(button_all_task, "button_all_task", 150, (void *)(&temp_state), 0, &button_all_task_handle);
+        xTaskCreate(button_all_task, "button_all_task", 180, (void *)(&temp_state), 0, &button_all_task_handle);
     }
 }
 
@@ -1097,12 +1090,12 @@ void button_reset(void)
     temp_state = 0;
     if (button_all_task_handle == NULL)
     {
-        xTaskCreate(button_all_task, "button_all_task", 150, (void *)(&temp_state), 0, &button_all_task_handle);
+        xTaskCreate(button_all_task, "button_all_task", 180, (void *)(&temp_state), 0, &button_all_task_handle);
     }
     else
     {
         vTaskDelete(button_all_task_handle);
-        xTaskCreate(button_all_task, "button_all_task", 150, (void *)(&temp_state), 0, &button_all_task_handle);
+        xTaskCreate(button_all_task, "button_all_task", 180, (void *)(&temp_state), 0, &button_all_task_handle);
     }
 }
 
@@ -1110,17 +1103,6 @@ void button_reset(void)
 /// @param
 void button_stop(void)
 {
-    allocate_en(0);
-    for (int i = 0; i < 7; i++)
-    {
-        PUMP_OFF[i]();
-    }
-
-    for (int i = 0; i < 3; i++)
-    {
-        DRUM_OFF[i]();
-    }
-
     if (brush_fb_123_task_handle != NULL)
     {
         vTaskDelete(brush_fb_123_task_handle);
@@ -1151,6 +1133,16 @@ void button_stop(void)
         motor_stop(MOTOR_STATION[i]);
         MOTOR_STATE_TABLE[i] = STOP;
         MOTOR_BK_OFF[i]();
+    }
+    allocate_en(0);
+    for (int i = 0; i < 7; i++)
+    {
+        PUMP_OFF[i]();
+    }
+
+    for (int i = 0; i < 3; i++)
+    {
+        DRUM_OFF[i]();
     }
 }
 
