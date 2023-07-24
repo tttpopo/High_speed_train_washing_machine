@@ -882,12 +882,12 @@ static void button_all_task(void *state)
         vTaskDelay(200 / portTICK_RATE_MS);
         brush_ud_3(0);
 
-        vTaskDelay(200 / portTICK_RATE_MS);
+        vTaskDelay(BRUSH_START_DELAY_TIME / portTICK_RATE_MS);
         brush_ud_2(0);
         vTaskDelay(200 / portTICK_RATE_MS);
         brush_ud_2(0);
 
-        vTaskDelay(200 / portTICK_RATE_MS);
+        vTaskDelay(BRUSH_START_DELAY_TIME / portTICK_RATE_MS);
         brush_ud_1(0);
         vTaskDelay(200 / portTICK_RATE_MS);
         brush_ud_1(0);
@@ -924,12 +924,12 @@ static void button_all_task(void *state)
         brush_fb_1(0);
         vTaskDelay(100 / portTICK_RATE_MS);
         brush_fb_1(0);
-        vTaskDelay(100 / portTICK_RATE_MS);
+        vTaskDelay(BRUSH_START_DELAY_TIME / portTICK_RATE_MS);
 
         brush_fb_2(0);
         vTaskDelay(100 / portTICK_RATE_MS);
         brush_fb_2(0);
-        vTaskDelay(100 / portTICK_RATE_MS);
+        vTaskDelay(BRUSH_START_DELAY_TIME / portTICK_RATE_MS);
 
         brush_fb_3(0);
         vTaskDelay(100 / portTICK_RATE_MS);
