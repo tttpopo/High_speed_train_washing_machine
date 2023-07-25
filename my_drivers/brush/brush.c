@@ -40,7 +40,7 @@ long int UD3_TARG_PULSE = 3800000; // Lifting brush group end point pulse value
 // long int B_ARM_ORIGIN_PULSE = 0;
 // long int S_ARM_ORIGIN_PULSE = 0;
 
-#define CAL_PULSE 10000
+#define CAL_PULSE 0
 #define B_ARM_CAL_PULSE 500000
 
 long int MOTOR_ORIGIN_PULSE[8] = {0};
@@ -1150,19 +1150,34 @@ void button_stop(void)
 static void limit_stop(char flag_cali)
 {
     // Determination of limit switches for the two motors of the first set of roller brushes
+    static unsigned char origin_flag_cnt_table[MOTOR_MAX_NUM] = {0};
+    static unsigned char targ_flag_cnt_table[MOTOR_MAX_NUM] = {0};
+
     for (int i = 0; i < 8; i++)
     {
         if (MOTOR_STATE_TABLE[i] == RUNNING_ORIGIN)
         {
-            if (MOTOR_LIMIT_FLAG[((2 * i) + 1)]() == GPIO_PIN_RESET)
+            if ((flag_cali == 1) || (i == MOTOR_B_ARM) || (i == MOTOR_S_ARM))
             {
-                MOTOR_IN_PLACE_STAT_TABLE[i] = ORIGIN;
-                MOTOR_STATE_TABLE[i] = STOP;
-                MOTOR_BK_OFF[i]();
-                motor_stop(MOTOR_STATION[i]);
-                if (flag_cali == 1)
+                if (MOTOR_LIMIT_FLAG[((2 * i) + 1)]() == GPIO_PIN_RESET)
                 {
-                    MOTOR_ORIGIN_PULSE[i] = motor_read_position(MOTOR_STATION[i]);
+                    origin_flag_cnt_table[i]++;
+                    if (origin_flag_cnt_table[i] > 1)
+                    {
+                        MOTOR_IN_PLACE_STAT_TABLE[i] = ORIGIN;
+                        MOTOR_STATE_TABLE[i] = STOP;
+                        MOTOR_BK_OFF[i]();
+                        motor_stop(MOTOR_STATION[i]);
+                        if (flag_cali == 1)
+                        {
+                            MOTOR_ORIGIN_PULSE[i] = motor_read_position(MOTOR_STATION[i]);
+                        }
+                        origin_flag_cnt_table[i] = 0;
+                    }
+                }
+                else
+                {
+                    origin_flag_cnt_table[i] = 0;
                 }
             }
         }
@@ -1170,10 +1185,19 @@ static void limit_stop(char flag_cali)
         {
             if (MOTOR_LIMIT_FLAG[i * 2]() == GPIO_PIN_RESET)
             {
-                MOTOR_IN_PLACE_STAT_TABLE[i] = TARG;
-                MOTOR_STATE_TABLE[i] = STOP;
-                MOTOR_BK_OFF[i]();
-                motor_stop(MOTOR_STATION[i]);
+                targ_flag_cnt_table[i]++;
+                if (targ_flag_cnt_table[i] > 1)
+                {
+                    MOTOR_IN_PLACE_STAT_TABLE[i] = TARG;
+                    MOTOR_STATE_TABLE[i] = STOP;
+                    MOTOR_BK_OFF[i]();
+                    motor_stop(MOTOR_STATION[i]);
+                    targ_flag_cnt_table[i] = 0;
+                }
+            }
+            else
+            {
+                targ_flag_cnt_table[i] = 0;
             }
         }
     }
@@ -1572,6 +1596,6 @@ void brush_deamon_task(void)
 
         // printf("position->%ld\r\n",motor_read_position(0x601));
         // printf("%d\r\n",motor_read_target_reached(0x601));
-        vTaskDelay(10 / portTICK_RATE_MS);
+        vTaskDelay(8 / portTICK_RATE_MS);
     }
 }

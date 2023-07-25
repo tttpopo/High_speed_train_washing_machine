@@ -101,10 +101,10 @@
         <yPos>-1</yPos>
       </MaxPosition>
       <NormalPosition>
-        <Top>156</Top>
-        <Left>156</Left>
-        <Right>1308</Right>
-        <Bottom>775</Bottom>
+        <Top>84</Top>
+        <Left>18</Left>
+        <Right>749</Right>
+        <Bottom>703</Bottom>
       </NormalPosition>
     </WindowPosition>
     <MDIClientArea>
@@ -3607,7 +3607,7 @@
       <Doc>
         <Name>..\my_drivers\brush\brush.c</Name>
         <ColumnNumber>7</ColumnNumber>
-        <TopLine>1420</TopLine>
+        <TopLine>1425</TopLine>
         <CurrentLine>1433</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders></ContractedFolders>
