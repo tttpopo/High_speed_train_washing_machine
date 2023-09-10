@@ -259,73 +259,76 @@ GPIO_PinState DRUM_3_GET(void)
 
 GPIO_PinState MOTOR_FB1_F_FLAG()
 {
-    return HAL_GPIO_ReadPin(MOTO_FB1_LIMIT_F_GPIO_Port, MOTO_FB1_LIMIT_F_Pin);
+    return (GPIO_PinState)(!HAL_GPIO_ReadPin(MOTO_FB1_LIMIT_F_GPIO_Port, MOTO_FB1_LIMIT_F_Pin));
 }
 GPIO_PinState MOTOR_FB1_B_FLAG()
 {
-    return HAL_GPIO_ReadPin(MOTO_FB1_LIMIT_B_GPIO_Port, MOTO_FB1_LIMIT_B_Pin);
+    return (GPIO_PinState)(!HAL_GPIO_ReadPin(MOTO_FB1_LIMIT_B_GPIO_Port, MOTO_FB1_LIMIT_B_Pin));
 }
 GPIO_PinState MOTOR_FB2_F_FLAG()
 {
-    return HAL_GPIO_ReadPin(MOTO_FB2_LIMIT_F_GPIO_Port, MOTO_FB2_LIMIT_F_Pin);
+    return (GPIO_PinState)(!HAL_GPIO_ReadPin(MOTO_FB2_LIMIT_F_GPIO_Port, MOTO_FB2_LIMIT_F_Pin));
 }
 GPIO_PinState MOTOR_FB2_B_FLAG()
 {
-    return HAL_GPIO_ReadPin(MOTO_FB2_LIMIT_B_GPIO_Port, MOTO_FB2_LIMIT_B_Pin);
+    return (GPIO_PinState)(!HAL_GPIO_ReadPin(MOTO_FB2_LIMIT_B_GPIO_Port, MOTO_FB2_LIMIT_B_Pin));
 }
 GPIO_PinState MOTOR_FB3_F_FLAG()
 {
-    return HAL_GPIO_ReadPin(MOTO_FB3_LIMIT_F_GPIO_Port, MOTO_FB3_LIMIT_F_Pin);
+    return (GPIO_PinState)(!HAL_GPIO_ReadPin(MOTO_FB3_LIMIT_F_GPIO_Port, MOTO_FB3_LIMIT_F_Pin));
 }
 GPIO_PinState MOTOR_FB3_B_FLAG()
 {
-    return HAL_GPIO_ReadPin(MOTO_FB3_LIMIT_B_GPIO_Port, MOTO_FB3_LIMIT_B_Pin);
+    return (GPIO_PinState)(!HAL_GPIO_ReadPin(MOTO_FB3_LIMIT_B_GPIO_Port, MOTO_FB3_LIMIT_B_Pin));
 }
 GPIO_PinState MOTOR_UD1_F_FLAG()
 {
-    return HAL_GPIO_ReadPin(MOTO_UD1_LIMIT_U_GPIO_Port, MOTO_UD1_LIMIT_U_Pin);
+    return GPIO_PIN_SET;
+    // return HAL_GPIO_ReadPin(MOTO_UD1_LIMIT_U_GPIO_Port, MOTO_UD1_LIMIT_U_Pin);
 }
 GPIO_PinState MOTOR_UD1_B_FLAG()
 {
-    return HAL_GPIO_ReadPin(MOTO_UD1_LIMIT_D_GPIO_Port, MOTO_UD1_LIMIT_D_Pin);
+    return (GPIO_PinState)(HAL_GPIO_ReadPin(MOTO_UD1_LIMIT_D_GPIO_Port, MOTO_UD1_LIMIT_D_Pin) | HAL_GPIO_ReadPin(MOTO_UD1_LIMIT_U_GPIO_Port, MOTO_UD1_LIMIT_U_Pin));
 }
 GPIO_PinState MOTOR_UD2_F_FLAG()
 {
-    return HAL_GPIO_ReadPin(MOTO_UD2_LIMIT_U_GPIO_Port, MOTO_UD2_LIMIT_U_Pin);
+    return GPIO_PIN_SET;
+    // return HAL_GPIO_ReadPin(MOTO_UD2_LIMIT_U_GPIO_Port, MOTO_UD2_LIMIT_U_Pin);
 }
 GPIO_PinState MOTOR_UD2_B_FLAG()
 {
-    return HAL_GPIO_ReadPin(MOTO_UD2_LIMIT_D_GPIO_Port, MOTO_UD2_LIMIT_D_Pin);
+    return (GPIO_PinState)(HAL_GPIO_ReadPin(MOTO_UD2_LIMIT_D_GPIO_Port, MOTO_UD2_LIMIT_D_Pin) | HAL_GPIO_ReadPin(MOTO_UD2_LIMIT_U_GPIO_Port, MOTO_UD2_LIMIT_U_Pin));
 }
 GPIO_PinState MOTOR_UD3_F_FLAG()
 {
-    return HAL_GPIO_ReadPin(MOTO_UD3_LIMIT_U_GPIO_Port, MOTO_UD3_LIMIT_U_Pin);
+    return GPIO_PIN_SET;
+    // return HAL_GPIO_ReadPin(MOTO_UD3_LIMIT_U_GPIO_Port, MOTO_UD3_LIMIT_U_Pin);
 }
 GPIO_PinState MOTOR_UD3_B_FLAG()
 {
-    return HAL_GPIO_ReadPin(MOTO_UD3_LIMIT_D_GPIO_Port, MOTO_UD3_LIMIT_D_Pin);
+    return (GPIO_PinState)(HAL_GPIO_ReadPin(MOTO_UD3_LIMIT_D_GPIO_Port, MOTO_UD3_LIMIT_D_Pin) | HAL_GPIO_ReadPin(MOTO_UD3_LIMIT_U_GPIO_Port, MOTO_UD3_LIMIT_U_Pin));
 }
 GPIO_PinState MOTOR_BARM_F_FLAG()
 {
-    return HAL_GPIO_ReadPin(MOTO_BARM_LIMIT_F_GPIO_Port, MOTO_BARM_LIMIT_F_Pin);
+    return (GPIO_PinState)(!HAL_GPIO_ReadPin(MOTO_BARM_LIMIT_F_GPIO_Port, MOTO_BARM_LIMIT_F_Pin));
 }
 GPIO_PinState MOTOR_BARM_B_FLAG()
 {
-    return HAL_GPIO_ReadPin(MOTO_BARM_LIMIT_B_GPIO_Port, MOTO_BARM_LIMIT_B_Pin);
+    return (GPIO_PinState)(!HAL_GPIO_ReadPin(MOTO_BARM_LIMIT_B_GPIO_Port, MOTO_BARM_LIMIT_B_Pin));
 }
 GPIO_PinState MOTOR_SARM_U_FLAG()
 {
-    return HAL_GPIO_ReadPin(MOTO_SARM_LIMIT_U_GPIO_Port, MOTO_SARM_LIMIT_U_Pin);
+    return (GPIO_PinState)(!HAL_GPIO_ReadPin(MOTO_SARM_LIMIT_U_GPIO_Port, MOTO_SARM_LIMIT_U_Pin));
 }
 GPIO_PinState MOTOR_SARM_D_FLAG()
 {
-    return HAL_GPIO_ReadPin(MOTO_SARM_LIMIT_D_GPIO_Port, MOTO_SARM_LIMIT_D_Pin);
+    return (GPIO_PinState)(!HAL_GPIO_ReadPin(MOTO_SARM_LIMIT_D_GPIO_Port, MOTO_SARM_LIMIT_D_Pin));
 }
 
 // Emergency stop button
 GPIO_PinState EMERGENCY_KEY_FLAG()
 {
-    return (GPIO_PinState)((HAL_GPIO_ReadPin(IN_RES_4_GPIO_Port, IN_RES_4_Pin))||(HAL_GPIO_ReadPin(IN_RES_3_GPIO_Port, IN_RES_3_Pin)));
+    return (HAL_GPIO_ReadPin(IN_RES_4_GPIO_Port, IN_RES_4_Pin));
 }
 
 GPIO_PinState ANTI_COLLISION_FLAG()

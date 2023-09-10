@@ -177,9 +177,36 @@ long int motor_read_position(unsigned int s_id)
         pos <<= 8;
         pos |= can_rx_buf[5];
         pos <<= 8;
-        pos |= can_rx_buf[7];
+        pos |= can_rx_buf[4];
     }
     return pos;
+}
+
+/// @brief Read the current speed of the motor
+/// @param s_id
+/// @return speed
+long int motor_read_speed(unsigned int s_id)
+{
+    // 4B 00 30 00 64 00 00 00
+    // 43-69-60-0-0-0-0-0-0-0-
+    HAL_StatusTypeDef ret;
+    MOTOR_REC_FLAG = 0;
+    long int speed = 0;
+    unsigned char CMD_BUF[] = {0x40, 0x69, 0x60, 0x00, 0x00, 0x00, 0x00, 0x00};
+    ret = motor_send_data(s_id, CMD_BUF, 8);
+    if ((ret == HAL_OK) && (can_rx_buf[0] == 0x43))
+    {
+        speed |= can_rx_buf[7];
+        speed <<= 8;
+        speed |= can_rx_buf[6];
+        speed <<= 8;
+        speed |= can_rx_buf[5];
+        speed <<= 8;
+        speed |= can_rx_buf[4];
+        return speed;
+        // return (can_rx_buf[5]<<8)|(can_rx_buf[4]);
+    }
+    return ret;
 }
 
 /// @brief read target reached flag

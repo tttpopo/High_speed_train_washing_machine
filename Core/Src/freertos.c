@@ -219,12 +219,14 @@ void StartDefaultTask(void const *argument)
 
   // vTaskDelete(NULL);
   // char bat = 0;
-
+  vTaskDelay(6000 / portTICK_RATE_MS);
   for (;;)
   {
     // bat_get_power(&bat);
     // printf("%d", bat);
     osDelay(200);
+
+    // elog_i("speed", "%d#%ld", motor_read_speed(MOTOR_STATION[MOTOR_UD_2]), motor_read_position(MOTOR_STATION[MOTOR_UD_2]));
     // printf("%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d-%d\r\n",
     //    HAL_GPIO_ReadPin(MOTO_FB1_LIMIT_F_GPIO_Port, MOTO_FB1_LIMIT_F_Pin),
     //    HAL_GPIO_ReadPin(MOTO_FB1_LIMIT_B_GPIO_Port, MOTO_FB1_LIMIT_B_Pin),

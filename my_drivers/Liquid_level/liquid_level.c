@@ -108,10 +108,10 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 
 /*
 Corresponding relationship of liquid level gauge
-ADC1 - water
-ADC2 - detergent
-ADC3 - mix
-ADC4 - spray
+ADC4 - water
+ADC3 - detergent
+ADC2 - mix
+ADC1 - spray
 
 Corresponding relationship of water pump
 
@@ -180,7 +180,7 @@ void accurate_ratio_task()
     // printf("%d,%d,%d,%d---  1->>%f  2->>%f\r\n", wat_level, det_level, mix_level, spr_level, wat_flo, det_flo);
     while (1)
     {
-        get_liquid_level(&wat_level, &det_level, &mix_level, &spr_level);
+        get_liquid_level(&spr_level, &mix_level, &det_level, &wat_level);
         // printf("%d,%d,%d,%d\r\n", wat_level, det_level, mix_level, spr_level);
         fm_get_total_flow(&wat_flo, &det_flo);
         switch (stat)

@@ -8,6 +8,7 @@
 #include "string.h"
 #include "liquid_level.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 // extern unsigned int MOTOR_ERR_ID;
 
@@ -41,9 +42,10 @@ long int UD3_TARG_PULSE = 3800000; // Lifting brush group end point pulse value
 // long int S_ARM_ORIGIN_PULSE = 0;
 
 #define CAL_PULSE 0
-#define B_ARM_CAL_PULSE 500000
+#define B_ARM_CAL_PULSE 5000000
 
 long int MOTOR_ORIGIN_PULSE[8] = {0};
+long int MOTOR_TARG_PULSE[8] = {1100000, 900000, 800000, 600000, 2700000, 3800000, -50000, 170000};
 
 typedef enum
 {
@@ -76,7 +78,7 @@ void brush_position_set(unsigned char *data)
     }
     else
     {
-        UD3_TARG_PULSE = temp_val * 10000;
+        MOTOR_TARG_PULSE[MOTOR_UD_3] = temp_val * 10000;
     }
 
     temp_val = ((data[2] << 8) | (data[3]));
@@ -86,7 +88,7 @@ void brush_position_set(unsigned char *data)
     }
     else
     {
-        UD2_TARG_PULSE = temp_val * 10000;
+        MOTOR_TARG_PULSE[MOTOR_UD_2] = temp_val * 10000;
     }
 
     temp_val = data[4];
@@ -96,7 +98,7 @@ void brush_position_set(unsigned char *data)
     }
     else
     {
-        UD1_TARG_PULSE = temp_val * 10000;
+        MOTOR_TARG_PULSE[MOTOR_UD_1] = temp_val * 10000;
     }
 
     temp_val = data[5];
@@ -106,7 +108,7 @@ void brush_position_set(unsigned char *data)
     }
     else
     {
-        FB3_TARG_PULSE = temp_val * 10000;
+        MOTOR_TARG_PULSE[MOTOR_FB_3] = temp_val * 10000;
     }
 
     temp_val = data[6];
@@ -116,7 +118,7 @@ void brush_position_set(unsigned char *data)
     }
     else
     {
-        FB2_TARG_PULSE = temp_val * 10000;
+        MOTOR_TARG_PULSE[MOTOR_FB_2] = temp_val * 10000;
     }
 
     temp_val = data[7];
@@ -126,10 +128,10 @@ void brush_position_set(unsigned char *data)
     }
     else
     {
-        FB1_TARG_PULSE = temp_val * 10000;
+        MOTOR_TARG_PULSE[MOTOR_FB_1] = temp_val * 10000;
     }
 
-    elog_i("SET_PULSE", "UD123-%ld-%ld-%ld,fb123-%ld-%ld-%ld", UD1_TARG_PULSE, UD2_TARG_PULSE, UD3_TARG_PULSE, FB1_TARG_PULSE, FB2_TARG_PULSE, FB3_TARG_PULSE);
+    elog_i("SET_PULSE", "UD123-%ld-%ld-%ld,fb123-%ld-%ld-%ld", MOTOR_TARG_PULSE[MOTOR_UD_1], MOTOR_TARG_PULSE[MOTOR_UD_2], MOTOR_TARG_PULSE[MOTOR_UD_3], MOTOR_TARG_PULSE[MOTOR_FB_1], MOTOR_TARG_PULSE[MOTOR_FB_2], MOTOR_TARG_PULSE[MOTOR_FB_3]);
     set_ratio(data[8]);
 }
 
@@ -142,7 +144,7 @@ void brush_fb_1(unsigned char state)
     vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
     if (state)
     {
-        if (motor_set_pulse(MOTOR_STATION[MOTOR_FB_1], FB1_TARG_PULSE + MOTOR_ORIGIN_PULSE[MOTOR_FB_1], FB_SPEED) == HAL_OK)
+        if (motor_set_pulse(MOTOR_STATION[MOTOR_FB_1], MOTOR_TARG_PULSE[MOTOR_FB_1] + MOTOR_ORIGIN_PULSE[MOTOR_FB_1], FB_SPEED) == HAL_OK)
         {
             MOTOR_STATE_TABLE[MOTOR_FB_1] = RUNNING_TARG;
             MOTOR_IN_PLACE_STAT_TABLE[MOTOR_FB_1] = MIDDLE;
@@ -177,7 +179,7 @@ void brush_fb_2(unsigned char state)
     vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
     if (state)
     {
-        if (motor_set_pulse(MOTOR_STATION[MOTOR_FB_2], FB2_TARG_PULSE + MOTOR_ORIGIN_PULSE[MOTOR_FB_2], FB_SPEED) == HAL_OK)
+        if (motor_set_pulse(MOTOR_STATION[MOTOR_FB_2], MOTOR_TARG_PULSE[MOTOR_FB_2] + MOTOR_ORIGIN_PULSE[MOTOR_FB_2], FB_SPEED) == HAL_OK)
         {
             MOTOR_STATE_TABLE[MOTOR_FB_2] = RUNNING_TARG;
             MOTOR_IN_PLACE_STAT_TABLE[MOTOR_FB_2] = MIDDLE;
@@ -212,7 +214,7 @@ void brush_fb_3(unsigned char state)
     vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
     if (state)
     {
-        if (motor_set_pulse(MOTOR_STATION[MOTOR_FB_3], FB3_TARG_PULSE + MOTOR_ORIGIN_PULSE[MOTOR_FB_3], FB_SPEED) == HAL_OK)
+        if (motor_set_pulse(MOTOR_STATION[MOTOR_FB_3], MOTOR_TARG_PULSE[MOTOR_FB_3] + MOTOR_ORIGIN_PULSE[MOTOR_FB_3], FB_SPEED) == HAL_OK)
         {
             MOTOR_STATE_TABLE[MOTOR_FB_3] = RUNNING_TARG;
             MOTOR_IN_PLACE_STAT_TABLE[MOTOR_FB_3] = MIDDLE;
@@ -293,7 +295,7 @@ void brush_ud_1(unsigned char state)
     vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
     if (state)
     {
-        if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_1], UD1_TARG_PULSE + MOTOR_ORIGIN_PULSE[MOTOR_UD_1], UD_SPEED) == HAL_OK)
+        if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_1], MOTOR_TARG_PULSE[MOTOR_UD_1] + MOTOR_ORIGIN_PULSE[MOTOR_UD_1], UD_SPEED) == HAL_OK)
         {
             MOTOR_STATE_TABLE[MOTOR_UD_1] = RUNNING_TARG;
             MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_1] = MIDDLE;
@@ -328,7 +330,7 @@ void brush_ud_2(unsigned char state)
     vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
     if (state)
     {
-        if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_2], UD2_TARG_PULSE + MOTOR_ORIGIN_PULSE[MOTOR_UD_2], UD_SPEED) == HAL_OK)
+        if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_2], MOTOR_TARG_PULSE[MOTOR_UD_2] + MOTOR_ORIGIN_PULSE[MOTOR_UD_2], UD_SPEED) == HAL_OK)
         {
             MOTOR_STATE_TABLE[MOTOR_UD_2] = RUNNING_TARG;
             MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_2] = MIDDLE;
@@ -363,7 +365,7 @@ void brush_ud_3(unsigned char state)
     vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
     if (state)
     {
-        if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_3], UD3_TARG_PULSE + MOTOR_ORIGIN_PULSE[MOTOR_UD_3], UD_SPEED) == HAL_OK)
+        if (motor_set_pulse(MOTOR_STATION[MOTOR_UD_3], MOTOR_TARG_PULSE[MOTOR_UD_3] + MOTOR_ORIGIN_PULSE[MOTOR_UD_3], UD_SPEED) == HAL_OK)
         {
             MOTOR_STATE_TABLE[MOTOR_UD_3] = RUNNING_TARG;
             MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_3] = MIDDLE;
@@ -527,7 +529,7 @@ void big_arm_start(unsigned char state)
     vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
     if (state)
     {
-        if (motor_set_pulse(MOTOR_STATION[MOTOR_B_ARM], B_ARM_TARG_PULSE + MOTOR_ORIGIN_PULSE[MOTOR_B_ARM], B_ARM_SPEED) == HAL_OK)
+        if (motor_set_pulse(MOTOR_STATION[MOTOR_B_ARM], MOTOR_TARG_PULSE[MOTOR_B_ARM] + MOTOR_ORIGIN_PULSE[MOTOR_B_ARM], B_ARM_SPEED) == HAL_OK)
         {
             MOTOR_STATE_TABLE[MOTOR_B_ARM] = RUNNING_TARG;
             MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] = MIDDLE;
@@ -562,7 +564,7 @@ void small_arm_start(unsigned char state)
     vTaskDelay(MOTOR_BK_DELAY / portTICK_RATE_MS);
     if (state)
     {
-        if (motor_set_pulse(MOTOR_STATION[MOTOR_S_ARM], S_ARM_TARG_PULSE + MOTOR_ORIGIN_PULSE[MOTOR_S_ARM], S_ARM_SPEED) == HAL_OK)
+        if (motor_set_pulse(MOTOR_STATION[MOTOR_S_ARM], MOTOR_TARG_PULSE[MOTOR_S_ARM] + MOTOR_ORIGIN_PULSE[MOTOR_S_ARM], S_ARM_SPEED) == HAL_OK)
         {
             MOTOR_STATE_TABLE[MOTOR_S_ARM] = RUNNING_TARG;
             MOTOR_IN_PLACE_STAT_TABLE[MOTOR_S_ARM] = MIDDLE;
@@ -600,8 +602,10 @@ static void all_arm_start_task(void *state)
         small_arm_start(1);
         while (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_S_ARM] != TARG)
         {
-            if (motor_read_target_reached(MOTOR_STATION[MOTOR_S_ARM]) == HAL_OK)
+            // if (motor_read_target_reached(MOTOR_STATION[MOTOR_S_ARM]) == HAL_OK)
+            if (abs(MOTOR_TARG_PULSE[MOTOR_S_ARM] + MOTOR_ORIGIN_PULSE[MOTOR_S_ARM] - motor_read_position(MOTOR_STATION[MOTOR_S_ARM])) < 10)
             {
+                vTaskDelay(15 / portTICK_RATE_MS);
                 MOTOR_STATE_TABLE[MOTOR_S_ARM] = STOP;
                 MOTOR_IN_PLACE_STAT_TABLE[MOTOR_S_ARM] = TARG;
                 MOTOR_BK_OFF[MOTOR_S_ARM]();
@@ -626,8 +630,10 @@ static void all_arm_start_task(void *state)
         big_arm_start(1);
         while (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] != TARG)
         {
-            if (motor_read_target_reached(MOTOR_STATION[MOTOR_B_ARM]) == HAL_OK)
+            // if (motor_read_target_reached(MOTOR_STATION[MOTOR_B_ARM]) == HAL_OK)
+            if (abs(MOTOR_TARG_PULSE[MOTOR_B_ARM] + MOTOR_ORIGIN_PULSE[MOTOR_B_ARM] - motor_read_position(MOTOR_STATION[MOTOR_B_ARM])) < 10)
             {
+                vTaskDelay(15 / portTICK_RATE_MS);
                 MOTOR_STATE_TABLE[MOTOR_B_ARM] = STOP;
                 MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] = TARG;
                 MOTOR_BK_OFF[MOTOR_B_ARM]();
@@ -655,8 +661,10 @@ static void all_arm_start_task(void *state)
         big_arm_start(0);
         while (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] != ORIGIN)
         {
-            if (motor_read_target_reached(MOTOR_STATION[MOTOR_B_ARM]) == HAL_OK)
+            // if (motor_read_target_reached(MOTOR_STATION[MOTOR_B_ARM]) == HAL_OK)
+            if (abs(MOTOR_ORIGIN_PULSE[MOTOR_B_ARM] - motor_read_position(MOTOR_STATION[MOTOR_B_ARM])) < 10)
             {
+                vTaskDelay(15 / portTICK_RATE_MS);
                 MOTOR_STATE_TABLE[MOTOR_B_ARM] = STOP;
                 MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] = ORIGIN;
                 MOTOR_BK_OFF[MOTOR_B_ARM]();
@@ -681,8 +689,10 @@ static void all_arm_start_task(void *state)
         small_arm_start(0);
         while (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_S_ARM] != ORIGIN)
         {
-            if (motor_read_target_reached(MOTOR_STATION[MOTOR_S_ARM]) == HAL_OK)
+            // if (motor_read_target_reached(MOTOR_STATION[MOTOR_S_ARM]) == HAL_OK)
+            if (abs(MOTOR_ORIGIN_PULSE[MOTOR_S_ARM] - motor_read_position(MOTOR_STATION[MOTOR_S_ARM])) < 10)
             {
+                vTaskDelay(15 / portTICK_RATE_MS);
                 MOTOR_STATE_TABLE[MOTOR_S_ARM] = STOP;
                 MOTOR_IN_PLACE_STAT_TABLE[MOTOR_S_ARM] = ORIGIN;
                 MOTOR_BK_OFF[MOTOR_S_ARM]();
@@ -740,8 +750,10 @@ static void button_all_task(void *state)
         // while (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_S_ARM] != TARG)
         while (MOTOR_LIMIT_FLAG[MOTOR_S_ARM * 2]() != SET)
         {
-            if (motor_read_target_reached(MOTOR_STATION[MOTOR_S_ARM]) == HAL_OK)
+            // if (motor_read_target_reached(MOTOR_STATION[MOTOR_S_ARM]) == HAL_OK)
+            if (abs(MOTOR_TARG_PULSE[MOTOR_S_ARM] + MOTOR_ORIGIN_PULSE[MOTOR_S_ARM] - motor_read_position(MOTOR_STATION[MOTOR_S_ARM])) < 10)
             {
+                vTaskDelay(15 / portTICK_RATE_MS);
                 MOTOR_STATE_TABLE[MOTOR_S_ARM] = STOP;
                 MOTOR_IN_PLACE_STAT_TABLE[MOTOR_S_ARM] = TARG;
                 MOTOR_BK_OFF[MOTOR_S_ARM]();
@@ -769,8 +781,10 @@ static void button_all_task(void *state)
         big_arm_start(1);
         while (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] != TARG)
         {
-            if (motor_read_target_reached(MOTOR_STATION[MOTOR_B_ARM]) == HAL_OK)
+            // if (motor_read_target_reached(MOTOR_STATION[MOTOR_B_ARM]) == HAL_OK)
+            if (abs(MOTOR_TARG_PULSE[MOTOR_B_ARM] + MOTOR_ORIGIN_PULSE[MOTOR_B_ARM] - motor_read_position(MOTOR_STATION[MOTOR_B_ARM])) < 10)
             {
+                vTaskDelay(15 / portTICK_RATE_MS);
                 MOTOR_STATE_TABLE[MOTOR_B_ARM] = STOP;
                 MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] = TARG;
                 MOTOR_BK_OFF[MOTOR_B_ARM]();
@@ -810,8 +824,10 @@ static void button_all_task(void *state)
         {
             for (int i = MOTOR_FB_1; i < MOTOR_FB_1 + 3; i++)
             {
-                if (motor_read_target_reached(MOTOR_STATION[i]) == HAL_OK)
+                // if (motor_read_target_reached(MOTOR_STATION[i]) == HAL_OK)
+                if (abs(MOTOR_TARG_PULSE[i] + MOTOR_ORIGIN_PULSE[i] - motor_read_position(MOTOR_STATION[i])) < 10)
                 {
+                    vTaskDelay(15 / portTICK_RATE_MS);
                     MOTOR_STATE_TABLE[i] = STOP;
                     MOTOR_IN_PLACE_STAT_TABLE[i] = TARG;
                     MOTOR_BK_OFF[i]();
@@ -851,8 +867,10 @@ static void button_all_task(void *state)
         {
             for (int i = MOTOR_UD_1; i < MOTOR_UD_1 + 3; i++)
             {
-                if (motor_read_target_reached(MOTOR_STATION[i]) == HAL_OK)
+                // if (motor_read_target_reached(MOTOR_STATION[i]) == HAL_OK)
+                if (abs(MOTOR_TARG_PULSE[i] + MOTOR_ORIGIN_PULSE[i] - motor_read_position(MOTOR_STATION[i])) < 10)
                 {
+                    vTaskDelay(15 / portTICK_RATE_MS);
                     MOTOR_STATE_TABLE[i] = STOP;
                     MOTOR_IN_PLACE_STAT_TABLE[i] = TARG;
                     MOTOR_BK_OFF[i]();
@@ -896,8 +914,10 @@ static void button_all_task(void *state)
         {
             for (int i = MOTOR_UD_1; i < MOTOR_UD_1 + 3; i++)
             {
-                if (motor_read_target_reached(MOTOR_STATION[i]) == HAL_OK)
+                // if (motor_read_target_reached(MOTOR_STATION[i]) == HAL_OK)
+                if (abs(MOTOR_ORIGIN_PULSE[i] - motor_read_position(MOTOR_STATION[i])) < 10)
                 {
+                    vTaskDelay(15 / portTICK_RATE_MS);
                     MOTOR_STATE_TABLE[i] = STOP;
                     MOTOR_IN_PLACE_STAT_TABLE[i] = ORIGIN;
                     MOTOR_BK_OFF[i]();
@@ -939,8 +959,10 @@ static void button_all_task(void *state)
         {
             for (int i = MOTOR_FB_1; i < MOTOR_FB_1 + 3; i++)
             {
-                if (motor_read_target_reached(MOTOR_STATION[i]) == HAL_OK)
+                // if (motor_read_target_reached(MOTOR_STATION[i]) == HAL_OK)
+                if (abs(MOTOR_ORIGIN_PULSE[i] - motor_read_position(MOTOR_STATION[i])) < 10)
                 {
+                    vTaskDelay(15 / portTICK_RATE_MS);
                     MOTOR_STATE_TABLE[i] = STOP;
                     MOTOR_IN_PLACE_STAT_TABLE[i] = ORIGIN;
                     MOTOR_BK_OFF[i]();
@@ -970,8 +992,10 @@ static void button_all_task(void *state)
         // while (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] != ORIGIN)
         while (MOTOR_LIMIT_FLAG[MOTOR_B_ARM * 2 + 1]() != SET)
         {
-            if (motor_read_target_reached(MOTOR_STATION[MOTOR_B_ARM]) == HAL_OK)
+            // if (motor_read_target_reached(MOTOR_STATION[MOTOR_B_ARM]) == HAL_OK)
+            if (abs(MOTOR_ORIGIN_PULSE[MOTOR_B_ARM] - motor_read_position(MOTOR_STATION[MOTOR_B_ARM])) < 10)
             {
+                vTaskDelay(15 / portTICK_RATE_MS);
                 MOTOR_STATE_TABLE[MOTOR_B_ARM] = STOP;
                 MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] = ORIGIN;
                 MOTOR_BK_OFF[MOTOR_B_ARM]();
@@ -999,8 +1023,10 @@ static void button_all_task(void *state)
         small_arm_start(0);
         while (MOTOR_IN_PLACE_STAT_TABLE[MOTOR_S_ARM] != ORIGIN)
         {
-            if (motor_read_target_reached(MOTOR_STATION[MOTOR_S_ARM]) == HAL_OK)
+            // if (motor_read_target_reached(MOTOR_STATION[MOTOR_S_ARM]) == HAL_OK)
+            if (abs(MOTOR_ORIGIN_PULSE[MOTOR_S_ARM] - motor_read_position(MOTOR_STATION[MOTOR_S_ARM])) < 10)
             {
+                vTaskDelay(15 / portTICK_RATE_MS);
                 MOTOR_STATE_TABLE[MOTOR_S_ARM] = STOP;
                 MOTOR_IN_PLACE_STAT_TABLE[MOTOR_S_ARM] = ORIGIN;
                 MOTOR_BK_OFF[MOTOR_S_ARM]();
@@ -1159,7 +1185,7 @@ static void limit_stop(char flag_cali)
         {
             if ((flag_cali == 1) || (i == MOTOR_B_ARM) || (i == MOTOR_S_ARM))
             {
-                if (MOTOR_LIMIT_FLAG[((2 * i) + 1)]() == GPIO_PIN_RESET)
+                if (MOTOR_LIMIT_FLAG[((2 * i) + 1)]() == SET)
                 {
                     origin_flag_cnt_table[i]++;
                     if (origin_flag_cnt_table[i] > 1)
@@ -1183,7 +1209,7 @@ static void limit_stop(char flag_cali)
         }
         else if (MOTOR_STATE_TABLE[i] == RUNNING_TARG)
         {
-            if (MOTOR_LIMIT_FLAG[i * 2]() == GPIO_PIN_RESET)
+            if (MOTOR_LIMIT_FLAG[i * 2]() == SET)
             {
                 targ_flag_cnt_table[i]++;
                 if (targ_flag_cnt_table[i] > 1)
@@ -1503,7 +1529,7 @@ void brush_get_state(unsigned char *data)
         data[13 + i] = PUMP_STAT[i]();
     }
 
-    get_liquid_level(&data[20], &data[21], &data[22], NULL);
+    get_liquid_level(NULL, &data[22], &data[21], &data[20]);
 }
 
 unsigned char pre_cmd = 0;
@@ -1530,12 +1556,28 @@ void motor_record_stat(unsigned char cmd)
 //     }
 // }
 
+static void cs_read_pulse_cb(unsigned char *cmd)
+{
+    for (int i = 0; i < 8; i++)
+    {
+        elog_w("ORI-O", "--%ld", MOTOR_ORIGIN_PULSE[i]);
+    }
+    elog_w("ORI", "-----------------------------------");
+    for (int i = 0; i < 8; i++)
+    {
+        elog_w("ORI-R", "--%ld", motor_read_position(MOTOR_STATION[i]));
+    }
+    elog_w("ORI", "-----------------------------------");
+}
+
 /// @brief Daemon Thread
 /// @param
 void brush_deamon_task(void)
 {
-    static int temp_emer_state = 0;
+    static int temp_emer_state = 1;
     //    static int temp_anti_state = 1;
+    cs_reg_fun("pulse", cs_read_pulse_cb);
+    PUMP_ON[4]();
     motor_hal_can_init();
     // motor_ctrol_en();
     for (int i = 0; i < 6; i++)
@@ -1575,14 +1617,15 @@ void brush_deamon_task(void)
         if (temp_emer_state != EMERGENCY_KEY_FLAG())
         {
             temp_emer_state = EMERGENCY_KEY_FLAG();
-            if (temp_emer_state == 1)
+            if (temp_emer_state == 0)
             {
                 button_stop();
             }
-            // else
-            // {
-            //     motor_restore_stat();
-            // }
+            else
+            {
+                PUMP_ON[4]();
+                //     motor_restore_stat();
+            }
         }
 
         // if (temp_anti_state != ANTI_COLLISION_FLAG())
@@ -1593,9 +1636,15 @@ void brush_deamon_task(void)
         //         button_stop();
         //     }
         // }
+        // if (abs(MOTOR_ORIGIN_PULSE[MOTOR_UD_2] - motor_read_position(MOTOR_STATION[MOTOR_UD_2])) < 10)
+        // {
+        //     vTaskDelay(15 / portTICK_RATE_MS);
+        //     MOTOR_STATE_TABLE[MOTOR_UD_2] = STOP;
+        //     MOTOR_IN_PLACE_STAT_TABLE[MOTOR_UD_2] = ORIGIN;
+        //     MOTOR_BK_OFF[MOTOR_UD_2]();
+        //     motor_stop(MOTOR_STATION[MOTOR_UD_2]);
+        // }
 
-        // printf("position->%ld\r\n",motor_read_position(0x601));
-        // printf("%d\r\n",motor_read_target_reached(0x601));
         vTaskDelay(8 / portTICK_RATE_MS);
     }
 }

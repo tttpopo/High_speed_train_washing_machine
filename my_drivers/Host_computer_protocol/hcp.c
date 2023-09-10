@@ -74,7 +74,7 @@ static void hcp_analyse_callback(unsigned int size)
     // Record the current one click start command
     motor_record_stat(hcp_buf[3]);
 
-    if (EMERGENCY_KEY_FLAG() != 0)
+    if (EMERGENCY_KEY_FLAG() == 0)
     {
         if (hcp_buf[3] == 0x01)
         {
@@ -152,24 +152,6 @@ static void hcp_analyse_callback(unsigned int size)
         elog_d("HCP", "water pump start or stop");
         water_pump_set(&hcp_buf[4]);
         break;
-    // case 0x12:
-    //     elog_d("HCP", "heartbeat");
-    //     // response 0x11
-    //     response_beat();
-    //     water_pump_set(&hcp_buf[4]);
-    //     break;
-    // case 0x13:
-    //     elog_d("HCP", "one button start");
-    //     button_start();
-    //     break;
-    // case 0x14:
-    //     elog_d("HCP", "One button reset");
-    //     button_reset();
-    //     break;
-    // case 0x15:
-    //     elog_d("HCP", "One button stop");
-    //     button_stop();
-    //     break;
     case 0x16:
         elog_d("HCP", "Spraying rod big arm start");
         big_arm_start(hcp_buf[4]);
@@ -190,14 +172,10 @@ static void hcp_analyse_callback(unsigned int size)
         elog_d("HCP", "ud1 negative pulse");
         brush_ud_1_negative_pulse();
         break;
-        // case 0xA2:
-        //     elog_d("HCP", "ud1 negative pulse");
-        //     brush_ud_2_negative_pulse();
-        //     break;
-        // case 0xA3:
-        //     elog_d("HCP", "ud1 negative pulse");
-        //     brush_ud_3_negative_pulse();
-        //     break;
+    case 0x19:
+        elog_d("HCP", "ud1 negative pulse");
+
+        break;
     }
 }
 
@@ -210,7 +188,7 @@ void hcp_task()
     {
         if (xTaskNotifyWait(0, 0, &size, 1000) == pdFALSE)
         {
-            elog_e("HCP", "Upper computer lost");
+            // elog_e("HCP", "Upper computer lost");
             // HAL_UART_Receive_IT(&huart2, &hcp_rec_s, 1);
         }
         else
