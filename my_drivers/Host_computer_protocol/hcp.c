@@ -174,7 +174,7 @@ static void hcp_analyse_callback(unsigned int size)
         break;
     case 0x19:
         elog_d("HCP", "ud1 negative pulse");
-
+        change_B_S_arm_state(hcp_buf[4]);
         break;
     }
 }

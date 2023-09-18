@@ -41,6 +41,8 @@ long int UD3_TARG_PULSE = 3800000; // Lifting brush group end point pulse value
 // long int B_ARM_ORIGIN_PULSE = 0;
 // long int S_ARM_ORIGIN_PULSE = 0;
 
+unsigned char B_S_ARM_EN = 0;
+
 #define CAL_PULSE 0
 #define B_ARM_CAL_PULSE 5000000
 
@@ -744,6 +746,13 @@ static void button_all_task(void *state)
     switch (*((unsigned char *)state))
     {
     case 1:
+        if (B_S_ARM_EN == 0)
+        {
+            MOTOR_IN_PLACE_STAT_TABLE[MOTOR_S_ARM] = TARG;
+            MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] = TARG;
+            goto B_S_TARG_END;
+        }
+
         small_arm_start(1);
         vTaskDelay(80 / portTICK_RATE_MS);
         small_arm_start(1);
@@ -806,7 +815,7 @@ static void button_all_task(void *state)
             }
             vTaskDelay(50 / portTICK_RATE_MS);
         }
-
+    B_S_TARG_END:
         vTaskDelay(200 / portTICK_RATE_MS);
         brush_fb_1(1);
         vTaskDelay(100 / portTICK_RATE_MS);
@@ -985,6 +994,13 @@ static void button_all_task(void *state)
                 vTaskDelay(50 / portTICK_RATE_MS);
             }
         }
+        if (B_S_ARM_EN == 0)
+        {
+            MOTOR_IN_PLACE_STAT_TABLE[MOTOR_B_ARM] = ORIGIN;
+            MOTOR_IN_PLACE_STAT_TABLE[MOTOR_S_ARM] = ORIGIN;
+            goto B_S_ARM_ORIGN_END;
+        }
+
         vTaskDelay(200 / portTICK_RATE_MS);
         big_arm_start(0);
         vTaskDelay(100 / portTICK_RATE_MS);
@@ -1048,6 +1064,7 @@ static void button_all_task(void *state)
             }
             vTaskDelay(50 / portTICK_RATE_MS);
         }
+    B_S_ARM_ORIGN_END:
         break;
     }
     elog_w("TEST", "button all task is delete");
@@ -1393,6 +1410,11 @@ void brush_ud_1_negative_pulse()
     {
         xTaskCreate((TaskFunction_t)calibration_2, "calibration task", 200, NULL, 0, &self_cali_task_handle);
     }
+}
+
+void change_B_S_arm_state(unsigned char en)
+{
+    B_S_ARM_EN = en;
 }
 
 void err_deal()
